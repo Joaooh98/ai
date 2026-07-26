@@ -1,0 +1,79 @@
+"""
+Bad prompt test: Text before JSON.
+
+Tests a prompt that adds explanatory text before the JSON response.
+Expected: LOW scores in format adherence.
+"""
+from langsmith import evaluate
+from langsmith.evaluation import LangChainStringEvaluator
+from pathlib import Path
+
+from shared.clients import get_openai_client
+from shared.prompts import load_yaml_prompt, execute_text_prompt
+from shared.evaluators import prepare_with_input
+
+# Configuration
+DATASET_NAME = "evaluation_basic_dataset"
+BASE_DIR = Path(__file__).parent
+
+# Setup
+oai_client = get_openai_client()
+
+
+def run_bad_text_before(inputs: dict) -> dict:
+    """Runs the bad_text_before prompt"""
+    prompt = load_yaml_prompt("bad_text_before.yaml")
+    # Note: Using higher temperature for this bad example
+    return execute_text_prompt(prompt, inputs, oai_client, input_key="code", temperature=0.7)
+
+
+# Evaluators focused on detecting lack of detail and depth
+evaluators = [
+    # Detects lack of details (bad_text_before should have low score)
+    LangChainStringEvaluator(
+        "score_string",
+        config={"criteria": "detail", "normalize_by": 10},
+        prepare_data=prepare_with_input
+    ),
+
+    # Detects superficial analysis (bad_text_before should have low score)
+    LangChainStringEvaluator(
+        "score_string",
+        config={"criteria": "depth", "normalize_by": 10},
+        prepare_data=prepare_with_input
+    ),
+
+    # Additional metrics for context
+    LangChainStringEvaluator(
+        "score_string",
+        config={"criteria": "helpfulness", "normalize_by": 10},
+        prepare_data=prepare_with_input
+    ),
+
+    LangChainStringEvaluator(
+        "score_string",
+        config={"criteria": "coherence", "normalize_by": 10},
+        prepare_data=prepare_with_input
+    ),
+]
+
+print("="*80)
+print("TEST: BAD_TEXT_BEFORE")
+print("="*80)
+print("\nExpected: LOW scores in detail and depth (< 0.4)")
+print("Prompt: Optimistic reviewer who ignores issues")
+print("="*80)
+print()
+
+# Run evaluation
+results = evaluate(
+    run_bad_text_before,
+    data=DATASET_NAME,
+    evaluators=evaluators,
+    experiment_prefix="BadTextBefore_Test",
+    max_concurrency=2
+)
+
+print("="*80)
+print(f"EXPERIMENT: {results.experiment_name}")
+print("="*80)
