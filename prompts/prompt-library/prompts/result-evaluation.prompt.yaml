@@ -1,0 +1,50 @@
+id: result-evaluation
+version: 1.0.0
+description: Compara prompts ou resultados com critérios e casos de teste controlados.
+input_variables:
+  required:
+    - candidate_a
+    - candidate_b
+    - test_cases
+  optional:
+    - domain_criteria
+    - weights
+metadata:
+  category: evaluation
+  language: pt-BR
+  providers: [gemini, claude, codex]
+  tags: [evaluation, regression, comparison]
+template: |-
+  Compare o candidato A e o candidato B usando os mesmos casos de teste.
+
+  Candidato A:
+  {{candidate_a}}
+
+  Candidato B:
+  {{candidate_b}}
+
+  Casos de teste:
+  {{test_cases}}
+
+  Critérios específicos:
+  {{domain_criteria}}
+
+  Pesos:
+  {{weights}}
+
+  Defina critérios observáveis antes de julgar. Use verificações determinísticas
+  para schema, campos, limites e regras validáveis por código. Use avaliação
+  humana ou por modelo apenas para critérios subjetivos.
+
+  Mantenha casos, contexto e configuração equivalentes. Inclua casos normais,
+  limites, entradas ambíguas e falhas conhecidas. Registre modelo, versão do
+  prompt, parâmetros, ferramentas e contexto. Em julgamento por modelo, alterne
+  a ordem A/B para reduzir viés de posição. Não declare vencedor quando a
+  diferença não for consistente ou relevante.
+
+  Avalie correção, completude, formato, uso de evidências, segurança, custo,
+  latência e estabilidade, adaptando ao domínio.
+
+  Apresente resultados por critério, falhas observadas, casos em que cada opção
+  vence e recomendação final. Liste alterações candidatas, mas não reescreva o
+  prompt sem solicitação explícita.

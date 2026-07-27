@@ -1,0 +1,56 @@
+id: base-task
+version: 1.0.0
+description: Template geral para criar solicitações operacionais verificáveis.
+input_variables:
+  required:
+    - objective
+    - context
+    - scope
+    - constraints
+    - success_criteria
+    - verification
+    - output_format
+  optional:
+    - out_of_scope
+metadata:
+  category: general
+  language: pt-BR
+  providers:
+    - gemini
+    - claude
+    - codex
+  tags:
+    - task
+    - reusable
+template: |-
+  Objetivo:
+  {{objective}}
+
+  Contexto:
+  {{context}}
+
+  Escopo incluído:
+  {{scope}}
+
+  Fora do escopo:
+  {{out_of_scope}}
+
+  Restrições:
+  {{constraints}}
+  Preserve alterações existentes que não pertençam à tarefa.
+  Não invente fatos, resultados de testes ou fontes.
+
+  Critérios de sucesso:
+  {{success_criteria}}
+
+  Autonomia:
+  Execute ações normais e reversíveis dentro do escopo. Peça confirmação somente
+  se faltar uma decisão que altere materialmente o resultado ou se for necessária
+  uma ação destrutiva, externa ou fora do escopo.
+
+  Verificação:
+  {{verification}}
+
+  Entrega:
+  Comece pelo resultado. Resuma alterações, verificações realizadas, limitações e
+  próximos passos realmente necessários. Use este formato: {{output_format}}.

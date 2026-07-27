@@ -1,0 +1,42 @@
+id: dependency-audit
+version: 1.0.0
+description: Audita dependências diretas, vulnerabilidades e riscos de manutenção.
+input_variables:
+  required:
+    - target
+  optional:
+    - ecosystem_focus
+    - distribution_context
+metadata:
+  category: software-security
+  language: pt-BR
+  providers: [gemini, claude, codex]
+  tags: [dependencies, security, licenses]
+template: |-
+  Audite as dependências diretas de {{target}} em modo somente leitura.
+
+  Ecossistemas prioritários:
+  {{ecosystem_focus}}
+
+  Contexto de uso e distribuição:
+  {{distribution_context}}
+
+  Identifique riscos comprováveis de segurança, manutenção, compatibilidade,
+  licenciamento e reprodutibilidade sem atualizar arquivos.
+
+  Detecte manifestos e lockfiles. Diferencie versão declarada, resolvida e
+  dependências transitivas. Use ferramentas nativas do ecossistema e fontes
+  primárias disponíveis. Para cada vulnerabilidade, confirme pacote, faixa
+  afetada, versão resolvida, advisory e aplicabilidade ao projeto.
+
+  Não classifique uma biblioteca como abandonada apenas pela idade da última
+  versão. Não considere a versão mais nova automaticamente adequada. Avalie
+  licença em relação ao uso e à distribuição. Separe itens não verificáveis.
+
+  Retorne resumo executivo, achados priorizados, inventário direto relevante,
+  vulnerabilidades confirmadas e alcance, manutenção e compatibilidade, licenças
+  que exigem análise, lacunas de reprodutibilidade, ações priorizadas, fontes e
+  limitações.
+
+  Não force uma quantidade fixa de achados. Inclua somente o que tiver evidência
+  e impacto plausível.

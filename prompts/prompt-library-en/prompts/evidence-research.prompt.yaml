@@ -1,0 +1,31 @@
+id: evidence-research
+version: 1.0.0
+description: Researches current information with sources and explicit inference.
+input_variables:
+  required: [question]
+  optional: [audience_or_region, period, constraints, depth]
+metadata:
+  category: research
+  language: en
+  providers: [gemini, claude, codex]
+  tags: [research, citations, evidence]
+template: |-
+  Research {{question}} using information current as of the execution date.
+
+  Audience or region: {{audience_or_region}}
+  Period: {{period}}
+  Constraints: {{constraints}}
+  Depth: {{depth}}
+
+  Use primary sources for specifications, laws, prices, versions, and official
+  statements. Use reliable secondary sources for context and comparison. Check
+  publication dates and, for news, when the event occurred. Compare sources when
+  the conclusion may affect money, safety, or a material decision.
+
+  Separate facts, inference, and recommendations. Cite only pages that directly
+  support the claim. State source conflicts and anything that cannot be verified.
+
+  Lead with a direct answer. Then provide essential evidence, alternatives,
+  trade-offs, and a recommendation. Place links next to supported claims and end
+  with relevant limitations.
+

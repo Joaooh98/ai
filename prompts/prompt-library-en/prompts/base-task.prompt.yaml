@@ -1,0 +1,44 @@
+id: base-task
+version: 1.0.0
+description: General template for clear, verifiable operational tasks.
+input_variables:
+  required: [objective, context, scope, constraints, success_criteria, verification, output_format]
+  optional: [out_of_scope]
+metadata:
+  category: general
+  language: en
+  providers: [gemini, claude, codex]
+  tags: [task, reusable]
+template: |-
+  Objective:
+  {{objective}}
+
+  Context:
+  {{context}}
+
+  In scope:
+  {{scope}}
+
+  Out of scope:
+  {{out_of_scope}}
+
+  Constraints:
+  {{constraints}}
+  Preserve unrelated existing changes. Do not fabricate facts, test results, or
+  sources.
+
+  Success criteria:
+  {{success_criteria}}
+
+  Autonomy:
+  Perform normal, reversible actions within scope. Ask only when a missing
+  decision would materially change the result, or when a destructive, external,
+  or out-of-scope action is required.
+
+  Verification:
+  {{verification}}
+
+  Delivery:
+  Lead with the outcome. Summarize changes, checks, limitations, and only
+  necessary next steps. Use this format: {{output_format}}.
+

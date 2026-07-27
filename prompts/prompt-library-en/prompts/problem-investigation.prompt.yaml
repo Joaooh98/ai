@@ -1,0 +1,38 @@
+id: problem-investigation
+version: 1.0.0
+description: Finds the cause of an error or unexpected behavior without applying a fix.
+input_variables:
+  required: [symptom, scope]
+  optional: [reproduction_context]
+metadata:
+  category: software-diagnostics
+  language: en
+  providers: [gemini, claude, codex]
+  tags: [diagnosis, debugging, root-cause]
+template: |-
+  Investigate {{symptom}} within {{scope}}.
+
+  Known context or reproduction details:
+  {{reproduction_context}}
+
+  Determine the most likely cause using reproducible evidence. Do not implement a
+  fix unless explicitly requested.
+
+  Read project instructions and context. Reproduce the issue when safe and
+  practical. Inspect logs, tests, configuration, relevant history, and execution
+  paths. Form competing hypotheses and eliminate them with objective checks.
+  Prefer inspection and isolated tests over file changes. Do not mistake
+  correlation for causation.
+
+  Report:
+  1. diagnosis;
+  2. supporting evidence;
+  3. minimal reproduction;
+  4. impact and triggering conditions;
+  5. rejected hypotheses;
+  6. recommended fix, not applied;
+  7. remaining uncertainty or required data.
+
+  If evidence does not support one cause, rank the remaining hypotheses and state
+  the check that distinguishes them.
+

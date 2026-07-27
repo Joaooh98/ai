@@ -1,0 +1,41 @@
+id: problem-investigation
+version: 1.0.0
+description: Investiga a causa de um erro ou comportamento sem aplicar correções.
+input_variables:
+  required:
+    - symptom
+    - scope
+  optional:
+    - reproduction_context
+metadata:
+  category: software-diagnostics
+  language: pt-BR
+  providers: [gemini, claude, codex]
+  tags: [diagnosis, debugging, root-cause]
+template: |-
+  Investigue {{symptom}} em {{scope}}.
+
+  Contexto conhecido ou reprodução:
+  {{reproduction_context}}
+
+  Objetivo:
+  Determinar a causa mais provável com evidências reproduzíveis. Não implemente a
+  correção nesta etapa, salvo se eu pedir explicitamente.
+
+  Leia instruções e contexto do projeto. Reproduza o problema quando isso for
+  seguro e viável. Examine logs, testes, configuração, histórico relevante e
+  caminho de execução. Formule hipóteses concorrentes e descarte-as com
+  verificações objetivas. Não altere arquivos apenas para experimentar; prefira
+  inspeção e testes isolados. Não confunda correlação com causa.
+
+  Informe:
+  1. diagnóstico;
+  2. evidências que sustentam a conclusão;
+  3. passos mínimos de reprodução;
+  4. impacto e condições em que ocorre;
+  5. hipóteses descartadas;
+  6. correção recomendada, sem aplicá-la;
+  7. incertezas ou dados ainda necessários.
+
+  Se não houver evidência suficiente para uma causa única, apresente as hipóteses
+  restantes em ordem de probabilidade e diga qual verificação as diferencia.

@@ -1,0 +1,36 @@
+id: code-review
+version: 1.0.0
+description: Reviews code changes for concrete, actionable defects.
+input_variables:
+  required: [target]
+  optional: [project_rules, risk_focus]
+metadata:
+  category: software-review
+  language: en
+  providers: [gemini, claude, codex]
+  tags: [review, pull-request, quality]
+template: |-
+  Review {{target}} in read-only mode.
+
+  Additional project rules:
+  {{project_rules}}
+
+  Risk focus:
+  {{risk_focus}}
+
+  Look for concrete issues in correctness, regressions, security, privacy,
+  concurrency, transactions, data consistency, API contracts, compatibility,
+  error handling, observability, performance with plausible impact, and test
+  coverage for changed behavior.
+
+  Read context around the diff before concluding. Report only actionable issues
+  introduced or exposed by the change. Do not treat style preferences as defects
+  unless they violate a project rule or create real risk. Do not claim tests ran
+  unless they did. Consider alternate execution paths.
+
+  Order findings by severity. For each, provide a concise title, severity, file
+  and location, triggering scenario, impact, and suggested fix.
+
+  Then list relevant questions and test gaps. If no actionable defects exist, say
+  so clearly and mention only important residual risks.
+

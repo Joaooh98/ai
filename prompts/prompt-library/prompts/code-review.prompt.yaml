@@ -1,0 +1,39 @@
+id: code-review
+version: 1.0.0
+description: Revisa alterações de código em busca de defeitos concretos e acionáveis.
+input_variables:
+  required:
+    - target
+  optional:
+    - project_rules
+    - risk_focus
+metadata:
+  category: software-review
+  language: pt-BR
+  providers: [gemini, claude, codex]
+  tags: [review, pull-request, quality]
+template: |-
+  Revise {{target}} em modo somente leitura.
+
+  Regras adicionais do projeto:
+  {{project_rules}}
+
+  Foco de risco:
+  {{risk_focus}}
+
+  Procure problemas concretos de correção, regressão, segurança, privacidade,
+  concorrência, transações, consistência de dados, contratos de API,
+  compatibilidade, tratamento de erros, observabilidade, desempenho com impacto
+  plausível e cobertura de testes para comportamentos alterados.
+
+  Leia o contexto ao redor do diff antes de concluir. Relate somente problemas
+  acionáveis introduzidos ou expostos pela mudança. Não trate preferência de
+  estilo como defeito, salvo quando viola uma regra do projeto ou causa risco
+  real. Não invente execução de testes. Considere caminhos alternativos.
+
+  Ordene achados por severidade. Para cada achado, informe título, severidade,
+  arquivo e localização, cenário que ativa o problema, impacto e correção
+  sugerida.
+
+  Depois, informe dúvidas relevantes e lacunas de teste. Se não houver defeitos
+  acionáveis, diga isso claramente e mencione apenas riscos residuais importantes.

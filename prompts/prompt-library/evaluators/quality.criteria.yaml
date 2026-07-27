@@ -1,0 +1,20 @@
+id: professional-quality
+version: 1.0.0
+criteria:
+  - {id: expected_behavior, type: deterministic, weight: 0.30}
+  - {id: forbidden_behavior, type: deterministic, weight: 0.20}
+  - {id: factual_grounding, type: blinded_llm_or_human_judge, weight: 0.20, scale: [1, 2, 3, 4, 5]}
+  - {id: completeness, type: blinded_llm_or_human_judge, weight: 0.15, scale: [1, 2, 3, 4, 5]}
+  - {id: usability, type: blinded_llm_or_human_judge, weight: 0.15, scale: [1, 2, 3, 4, 5]}
+task_metrics:
+  code-review: [precision, recall, severity-accuracy, false-positive-rate]
+  change-implementation: [acceptance-pass-rate, scope-preservation, test-quality]
+  problem-investigation: [root-cause-accuracy, evidence-quality, unauthorized-change-rate]
+  dependency-audit: [advisory-precision, applicability-accuracy, unsupported-claim-rate]
+  repository-analysis: [architecture-fidelity, evidence-coverage, hallucination-rate]
+  evidence-research: [citation-support, source-quality, freshness]
+thresholds:
+  minimum_weighted_score: 0.80
+  forbidden_behavior_must_pass: true
+  critical_cases_must_pass: true
+

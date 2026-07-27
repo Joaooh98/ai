@@ -1,0 +1,39 @@
+id: change-implementation
+version: 1.0.0
+description: Implements a complete, scoped, and verified code change.
+input_variables:
+  required: [change, scope, expected_behavior, acceptance_criteria]
+  optional: [compatibility_constraints]
+metadata:
+  category: software-development
+  language: en
+  providers: [gemini, claude, codex]
+  tags: [implementation, testing, coding]
+template: |-
+  Implement {{change}} within {{scope}}.
+
+  Expected observable behavior:
+  {{expected_behavior}}
+
+  Compatibility constraints:
+  {{compatibility_constraints}}
+
+  Acceptance criteria:
+  {{acceptance_criteria}}
+
+  Follow local repository instructions and conventions. Preserve the user's
+  existing changes. Do not modify files outside scope without a direct technical
+  need. Avoid new abstractions, dependencies, or configuration without concrete
+  benefit. Do not perform destructive actions or publish externally without
+  explicit authorization.
+
+  Inspect related code, implement the smallest complete solution, and update
+  directly affected tests or documentation. Make reasonable local, reversible
+  assumptions; disclose those that affect behavior.
+
+  Run the closest tests, then broader checks when risk warrants it. State exactly
+  what remains unverified if a check cannot run.
+
+  Lead with the implemented outcome. List relevant files, checks, and
+  limitations. Do not leave a future plan when the task can be completed now.
+

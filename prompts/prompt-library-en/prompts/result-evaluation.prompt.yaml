@@ -1,0 +1,42 @@
+id: result-evaluation
+version: 1.0.0
+description: Compares prompts or outputs using controlled criteria and test cases.
+input_variables:
+  required: [candidate_a, candidate_b, test_cases]
+  optional: [domain_criteria, weights]
+metadata:
+  category: evaluation
+  language: en
+  providers: [gemini, claude, codex]
+  tags: [evaluation, regression, comparison]
+template: |-
+  Compare candidate A and candidate B on the same test cases.
+
+  Candidate A:
+  {{candidate_a}}
+
+  Candidate B:
+  {{candidate_b}}
+
+  Test cases:
+  {{test_cases}}
+
+  Domain criteria: {{domain_criteria}}
+  Weights: {{weights}}
+
+  Define observable criteria before judging. Use deterministic checks for schema,
+  fields, limits, and rules that code can validate. Use human or model judgment
+  only for subjective criteria.
+
+  Keep cases, context, and configuration equivalent. Include normal, boundary,
+  ambiguous, and known-failure cases. Record model, prompt version, parameters,
+  tools, and context. For model judging, alternate A/B order to reduce position
+  bias. Do not declare a winner unless the difference is consistent and material.
+
+  Evaluate correctness, completeness, format compliance, evidence use, safety,
+  cost, latency, and run-to-run stability as relevant to the domain.
+
+  Report results by criterion, observed failures, where each candidate wins, and
+  a final recommendation. List candidate improvements, but do not rewrite the
+  prompt unless explicitly requested.
+

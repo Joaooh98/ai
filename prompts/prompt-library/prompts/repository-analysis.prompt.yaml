@@ -1,0 +1,48 @@
+id: repository-analysis
+version: 1.0.0
+description: Produz uma visão técnica e prática de um repositório desconhecido.
+input_variables:
+  required:
+    - target
+  optional:
+    - focus
+    - excluded_paths
+metadata:
+  category: software-analysis
+  language: pt-BR
+  providers: [gemini, claude, codex]
+  tags: [repository, architecture, onboarding]
+template: |-
+  Analise {{target}} em modo somente leitura.
+
+  Objetivo:
+  Produzir uma visão confiável do sistema para alguém que precisa compreender,
+  executar, testar e modificar o projeto com segurança.
+
+  Foco específico:
+  {{focus}}
+
+  Caminhos excluídos:
+  {{excluded_paths}}
+
+  Leia primeiro instruções locais, README, manifestos, configuração, pontos de
+  entrada, código principal, testes e CI/CD. Não execute builds, migrações ou
+  comandos que alterem estado.
+
+  Sustente afirmações com arquivos e caminhos concretos. Diferencie fatos
+  observados de inferências. Quando algo não puder ser determinado, registre a
+  lacuna sem preencher por suposição. Não liste dependências transitivas como se
+  fossem decisões diretas do projeto.
+
+  Retorne:
+  1. propósito e estado geral;
+  2. principais funcionalidades e pontos de entrada;
+  3. arquitetura, limites e fluxo de dados;
+  4. componentes críticos e relações;
+  5. stack, persistência, integrações e operação;
+  6. estratégia de testes e lacunas relevantes;
+  7. riscos de manutenção sustentados por evidência;
+  8. primeiros arquivos que um desenvolvedor deveria ler.
+
+  Se o projeto for grande, faça primeiro um mapa geral e aprofunde somente os
+  componentes críticos. Evite inventários exaustivos sem utilidade prática.

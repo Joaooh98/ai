@@ -1,0 +1,37 @@
+id: dependency-audit
+version: 1.0.0
+description: Audits direct dependencies, vulnerabilities, and maintenance risk.
+input_variables:
+  required: [target]
+  optional: [ecosystem_focus, distribution_context]
+metadata:
+  category: software-security
+  language: en
+  providers: [gemini, claude, codex]
+  tags: [dependencies, security, licenses]
+template: |-
+  Audit direct dependencies in {{target}} in read-only mode.
+
+  Priority ecosystems: {{ecosystem_focus}}
+  Usage and distribution context: {{distribution_context}}
+
+  Identify evidence-backed security, maintenance, compatibility, licensing, and
+  reproducibility risks without updating files.
+
+  Detect manifests and lockfiles. Distinguish declared, resolved, and transitive
+  dependencies. Use native ecosystem tools and available primary sources. For
+  each vulnerability, confirm the package, affected range, resolved version,
+  advisory source, and applicability to this project.
+
+  Do not label a library abandoned only because its last release is old. Do not
+  assume the newest version is appropriate. Evaluate licensing against actual
+  use and distribution. Separate anything that cannot be verified.
+
+  Return an executive summary, prioritized findings, relevant direct dependency
+  inventory, confirmed vulnerabilities and reachability, maintenance and
+  compatibility concerns, licenses needing review, reproducibility gaps,
+  prioritized actions, sources, and limitations.
+
+  Do not force a fixed number of findings. Include only evidence-backed issues
+  with plausible impact.
+

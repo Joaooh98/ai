@@ -1,0 +1,44 @@
+id: change-implementation
+version: 1.0.0
+description: Implementa uma mudança de código completa, restrita e verificada.
+input_variables:
+  required:
+    - change
+    - scope
+    - expected_behavior
+    - acceptance_criteria
+  optional:
+    - compatibility_constraints
+metadata:
+  category: software-development
+  language: pt-BR
+  providers: [gemini, claude, codex]
+  tags: [implementation, testing, coding]
+template: |-
+  Implemente {{change}} em {{scope}}.
+
+  Resultado observável esperado:
+  {{expected_behavior}}
+
+  Compatibilidade e restrições:
+  {{compatibility_constraints}}
+
+  Critérios de aceite:
+  {{acceptance_criteria}}
+
+  Siga as convenções e instruções locais. Preserve mudanças existentes do
+  usuário. Não altere arquivos fora do escopo sem necessidade técnica direta.
+  Não adicione abstrações, dependências ou configuração sem benefício concreto.
+  Não faça operações destrutivas nem publique mudanças externamente sem
+  autorização explícita.
+
+  Inspecione o código relacionado, implemente a menor solução completa e atualize
+  testes ou documentação diretamente afetados. Faça suposições razoáveis quando
+  forem locais e reversíveis; explicite as que afetarem o comportamento.
+
+  Execute os testes mais próximos e depois verificações mais amplas quando o risco
+  justificar. Se algo não puder ser executado, explique o que ficou sem validar.
+
+  Comece a entrega pelo resultado implementado. Liste arquivos relevantes, testes
+  executados e limitações. Não apresente um plano futuro quando a tarefa puder ser
+  concluída agora.

@@ -1,0 +1,37 @@
+id: evidence-research
+version: 1.0.0
+description: Pesquisa informações atuais com fontes e distinção entre fato e inferência.
+input_variables:
+  required:
+    - question
+  optional:
+    - audience_or_region
+    - period
+    - constraints
+    - depth
+metadata:
+  category: research
+  language: pt-BR
+  providers: [gemini, claude, codex]
+  tags: [research, citations, evidence]
+template: |-
+  Pesquise {{question}} considerando informações atuais até a data da execução.
+
+  Público ou região: {{audience_or_region}}
+  Período: {{period}}
+  Restrições: {{constraints}}
+  Profundidade: {{depth}}
+
+  Use fontes primárias para especificações, leis, preços, versões e declarações
+  oficiais. Use fontes secundárias confiáveis para contexto e comparação.
+  Verifique datas de publicação e, em notícias, a data em que o fato ocorreu.
+  Compare fontes quando a conclusão puder afetar dinheiro, segurança ou uma
+  decisão relevante.
+
+  Separe fatos, inferências e recomendações. Não cite páginas que não sustentem
+  diretamente a afirmação. Declare conflitos entre fontes e informações que não
+  puderem ser confirmadas.
+
+  Comece com uma resposta direta. Depois apresente evidências essenciais,
+  alternativas, trade-offs e recomendação. Coloque links junto das afirmações que
+  sustentam e termine com limitações relevantes.

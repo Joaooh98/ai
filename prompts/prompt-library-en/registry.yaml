@@ -1,0 +1,13 @@
+schema_version: 1
+library: production-prompt-library
+language: en
+entries:
+  - {prompt: base-task, path: prompts/base-task.prompt.yaml}
+  - {prompt: repository-analysis, path: prompts/repository-analysis.prompt.yaml, dataset: datasets/professional-workflows.dataset.yaml}
+  - {prompt: problem-investigation, path: prompts/problem-investigation.prompt.yaml, dataset: datasets/professional-workflows.dataset.yaml}
+  - {prompt: change-implementation, path: prompts/change-implementation.prompt.yaml, dataset: datasets/professional-workflows.dataset.yaml}
+  - {prompt: code-review, path: prompts/code-review.prompt.yaml, dataset: datasets/professional-workflows.dataset.yaml}
+  - {prompt: dependency-audit, path: prompts/dependency-audit.prompt.yaml, dataset: datasets/professional-workflows.dataset.yaml}
+  - {prompt: evidence-research, path: prompts/evidence-research.prompt.yaml, dataset: datasets/professional-workflows.dataset.yaml}
+  - {prompt: result-evaluation, path: prompts/result-evaluation.prompt.yaml}
+
