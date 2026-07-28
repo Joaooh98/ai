@@ -1,0 +1,78 @@
+- generic [active] [ref=f1e1]:
+  - toolbar "Diagram actions" [ref=f1e2]:
+    - button "Toggle color theme" [pressed] [ref=f1e3] [cursor=pointer]:
+      - generic [ref=f1e4]: ☼
+      - generic [ref=f1e5]: Light
+    - button "Export diagram" [ref=f1e7] [cursor=pointer]:
+      - text: Export
+      - generic [ref=f1e8]: ▾
+  - generic [ref=f1e9]:
+    - generic [ref=f1e10]:
+      - heading "Fluxo /sdlc" [level=1] [ref=f1e13]
+      - paragraph [ref=f1e14]: Uma invocação, uma onda, um portão — o estado vem do disco
+    - img "Fluxo /sdlc — Uma invocação, uma onda, um portão — o estado vem do disco (workflow diagram)" [ref=f1e16]:
+      - generic [ref=f1e19]: 01 / Você
+      - generic [ref=f1e21]: 02 / Orquestração
+      - generic [ref=f1e23]: 03 / Equipe de agentes
+      - generic [ref=f1e25]: 04 / Portão de qualidade
+      - generic [ref=f1e28]: EX / Reprovação
+      - generic [ref=f1e30]: Entrada
+      - generic [ref=f1e32]: Execução da onda
+      - generic [ref=f1e34]: Veredito
+      - generic [ref=f1e36]: Uma onda por invocação
+      - generic [ref=f1e45]: Objetivo
+      - generic [ref=f1e46]: /sdlc "..."
+      - generic [ref=f1e49]: Report
+      - generic [ref=f1e50]: veredito + próximo passo
+      - generic [ref=f1e53]: Lê o disco
+      - generic [ref=f1e54]: sdlc-state.sh
+      - generic [ref=f1e55]: fonte da verdade
+      - generic [ref=f1e58]: Despacha
+      - generic [ref=f1e59]: skill da fase
+      - generic [ref=f1e62]: Especialistas
+      - generic [ref=f1e63]: em paralelo
+      - generic [ref=f1e64]: 27 agentes
+      - generic [ref=f1e67]: Portão
+      - generic [ref=f1e68]: artifact-lint.sh
+      - generic [ref=f1e69]: exit 1 = reprova
+      - generic [ref=f1e72]: Bloqueado
+      - generic [ref=f1e73]: defeito → agente dono
+      - generic [ref=f1e75]: delega
+      - generic [ref=f1e77]: onda completa
+      - generic [ref=f1e79]: aprovado
+      - generic [ref=f1e81]: bloqueado
+      - generic [ref=f1e83]: corrigido, rode de novo
+      - generic [ref=f1e84]: Legend
+      - generic [ref=f1e86]: User UI
+      - generic [ref=f1e88]: Agent logic
+      - generic [ref=f1e90]: Policy
+      - generic [ref=f1e92]: Tool action
+      - generic [ref=f1e94]: Context / trace
+    - generic [ref=f1e95]:
+      - generic [ref=f1e96]:
+        - heading "O que garante" [level=3] [ref=f1e99]
+        - list [ref=f1e100]:
+          - listitem [ref=f1e101]: • Nenhuma fase avança sem portão avaliado
+          - listitem [ref=f1e102]: • Estado lido do disco, não da conversa
+          - listitem [ref=f1e103]: • Um dono por artefato, sem colisão
+          - listitem [ref=f1e104]: • Sessão nova continua de onde parou
+      - generic [ref=f1e105]:
+        - heading "O portão é real" [level=3] [ref=f1e108]
+        - list [ref=f1e109]:
+          - listitem [ref=f1e110]: • artifact-lint.sh sai com código 1
+          - listitem [ref=f1e111]: • Artefato ausente reprova
+          - listitem [ref=f1e112]: • Só o esqueleto do template reprova
+          - listitem [ref=f1e113]: • Contradição entre artefatos é blocker
+      - generic [ref=f1e114]:
+        - heading "As seis ondas" [level=3] [ref=f1e117]
+        - list [ref=f1e118]:
+          - listitem [ref=f1e119]: • 00 bootstrap · perfil e plano
+          - listitem [ref=f1e120]: • 01 discovery · PRD testável
+          - listitem [ref=f1e121]: • 02 design · arquitetura, ADR, ameaças
+          - listitem [ref=f1e122]: • 03 build · teste que falha primeiro
+          - listitem [ref=f1e123]: • 04 quality · review, segurança, performance
+          - listitem [ref=f1e124]: • 05 delivery · go / no-go com evidência
+    - paragraph [ref=f1e125]:
+      - text: Workflow diagram • Built with Archify
+      - generic [ref=f1e126]: • Press T for theme and E for export
+  - status

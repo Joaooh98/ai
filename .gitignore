@@ -1,0 +1,14 @@
+# Links simbólicos gerados por agents/install.sh (apontam para caminhos absolutos
+# da máquina local). As fontes versionadas são agents/, skills/ e workflow/hooks/.
+.claude/agents/
+.claude/skills/
+.claude/commands/
+
+# Logs operacionais dos hooks
+.claude/logs/
+
+# Configuração pessoal — a do time é .claude/settings.json, versionada
+.claude/settings.local.json
+
+# .mcp.json NÃO está ignorado: é escopo de projeto e deve ser versionado quando
+# existir, para quem clonar o repositório receber os mesmos servidores.
