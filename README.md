@@ -6,9 +6,9 @@ desenvolvimento em agentes** montada a partir da curadoria dos melhores reposit�
 
 ```
 agents/     27 agentes — 24 do SDLC + 2 de incidente + 1 de integração externa
-skills/     16 skills — os fluxos, a entrada por ticket e a disciplina da equipe
+skills/     17 skills — os fluxos, a entrada por ticket e a disciplina da equipe
 workflow/   3 hooks que impõem as fronteiras e registram o que acontece
-tools/      8 scripts de apoio somente-leitura chamados pelos agentes
+tools/      9 scripts de apoio somente-leitura chamados pelos agentes
 mcp/        como a equipe detecta o ferramental do projeto, em vez de assumir
 prompts/    material do MBA + biblioteca de prompts versionada (PT e EN)
 ```
@@ -93,6 +93,7 @@ Comandos de apoio:
 | `/setup` | Calibrar a equipe para este projeto (rode depois de instalar) |
 | `/sdlc-intake` | Puxar a tarefa do Jira/Linear/GitHub e devolver status para lá |
 | `/verify-live` | Subir num ambiente controlado e verificar de verdade, no navegador |
+| `/arch-conformance` | Manter o código fiel à arquitetura sem parar a entrega — valida e paga a dívida |
 | `/nightly` | Catálogo de trabalho recorrente fora do horário |
 
 ## O modo emergência

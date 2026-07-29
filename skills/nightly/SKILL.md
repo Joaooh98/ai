@@ -59,6 +59,19 @@ Executa cada comando documentado e confere se ainda funciona. Documentação err
 ausente, porque é confiada.
 → `tech-writer`. Saída: comandos que quebraram, com a saída real. Semanal.
 
+### `arch-drift` — deriva da arquitetura
+Compara o código com as regras destiladas da arquitetura decidida, separa violação **nova** de
+dívida já registrada, e cobra as isenções que estão vencendo. Deriva arquitetural não aparece em
+nenhum PR isolado: cada um parece razoável, e o desenho vira outro em seis meses.
+→ `/arch-conformance` (`solution-architect` para as regras, o engenheiro da camada para o
+pagamento). Saída: `docs/sdlc/04-quality/arch-conformance-<data>.md`. Diária para a validação,
+semanal para o pagamento.
+
+**Esta é a exceção à regra 1 abaixo**, e a exceção é estreita: ela pode alterar código porque a
+alteração é uma refatoração *behavior-preserving*, entra com teste que fixa o comportamento antes,
+tem orçamento de um item por rodada e sai como PR para review — não como merge automático. Fora
+dessas quatro condições, ela reporta e para.
+
 ### `gate-audit` — auditoria dos portões
 Roda `tools/artifact-lint.sh all` e reconcilia o `MANIFEST.md` contra os arquivos que existem de
 fato. Pega portão marcado como aprovado sem evidência.
@@ -79,9 +92,14 @@ não aparece em nenhum PR isolado.
 ## Regras
 
 1. **Rotina não altera código.** Ela investiga e reporta; a correção entra pelo `/sdlc` com você
-   decidindo. Correção automática sem revisão é como se cria o incidente das 3h.
+   decidindo. Correção automática sem revisão é como se cria o incidente das 3h. A única exceção é
+   o `arch-drift`, e ela é condicionada — as quatro condições estão na entrada dele. O que a regra
+   proíbe não é "alterar código": é **alterar sem teste que fixe o comportamento e sem revisão**.
 2. **Rotina que sempre passa deve ser desligada.** Se `deps` nunca acha nada em dois meses, ou o
-   projeto é excepcional ou a checagem está quebrada — descubra qual.
+   projeto é excepcional ou a checagem está quebrada — descubra qual. O `arch-drift` é a exceção
+   também aqui: quando ele para de achar violação nova, é a catraca funcionando, e desligar
+   devolve a deriva. Nele o sintoma de checagem quebrada é outro — regra que não casa arquivo
+   nenhum.
 3. **Todo relatório aponta ação ou diz "nada a fazer".** Relatório que ninguém lê é custo puro.
 4. **Comece com uma.** Seis rotinas de uma vez viram seis relatórios ignorados. `flaky` costuma
    dar o maior retorno inicial, porque o estrago já existe e ninguém mediu.
