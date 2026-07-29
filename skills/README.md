@@ -28,6 +28,7 @@ skills/
 ├── sdlc-ship/               onda 05
 ├── sdlc-gate/               /sdlc-gate + gates.md (critérios dos 4 portões)
 ├── sdlc-status/             /sdlc-status
+├── arch-conformance/        /arch-conformance — a catraca: violação nova bloqueia, dívida antiga é paga por orçamento
 ├── incident/                /incident — modo emergência + severity.md + templates/postmortem.md
 ├── setup/                   /setup — calibra a equipe para o projeto que a recebeu
 └── practices/

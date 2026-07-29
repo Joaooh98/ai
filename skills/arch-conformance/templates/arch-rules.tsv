@@ -1,0 +1,35 @@
+# Regras de conformidade arquitetural — TEMPLATE
+#
+# Copie para docs/sdlc/02-design/arch-rules.tsv (ou docs/arq/arch-rules.tsv em projeto
+# que ja documentava arquitetura fora do fluxo) e substitua TUDO. As linhas abaixo sao
+# exemplo de FORMATO, nao regra para herdar: regra sem origem na arquitetura DESTE
+# projeto e preferencia disfarcada, e vai ser discutida em vez de corrigida.
+#
+# Seis campos separados por TAB — espaco nao funciona:
+#
+#   id  tipo  alvo  argumento  severidade  origem
+#
+#   id          curto e estavel; entra no ledger, e mudar o id orfana a divida
+#   tipo        proibe-conteudo | exige-conteudo | limita-publico | exige-par
+#   alvo        ERE casada contra o CAMINHO relativo do arquivo
+#   argumento   ERE de conteudo; ou o limite; ou o par esperado, com %B = basename
+#   severidade  blocker (violacao nova reprova) | aviso (aparece, nao reprova)
+#   origem      documento e secao que decidiram isso
+#
+# Escreva o alvo com (^|/) e nao com / no inicio: `/src/main/java/` casa monorepo e
+# NAO casa repositorio de modulo unico, onde o caminho comeca em src/. Regra que nao
+# casa arquivo devolve "conforme" sem verificar nada — o script denuncia, e reprova
+# com codigo 2 se nenhuma regra casar.
+
+# --- proibe-conteudo: o alvo NAO pode conter o padrao ---
+NUCLEO-SEM-FRAMEWORK	proibe-conteudo	(^|/)src/main/java/.*/domain/usecase.*\.java$	^import[[:space:]]+(jakarta\.ws\.rs|jakarta\.persistence|io\.quarkus)	blocker	architecture.md §X — o nucleo nao conhece HTTP nem ORM
+
+# --- exige-conteudo: o alvo TEM QUE conter o padrao ---
+IMPL-DECLARA-CONTRATO	exige-conteudo	(^|/)src/main/java/.*/infra/.*Repository\.java$	implements[[:space:]]+.*I[A-Z][A-Za-z0-9]*Repository\b	blocker	architecture.md §X — inversao de dependencia: o dominio define o contrato
+
+# --- limita-publico: no maximo N metodos publicos de nomes DISTINTOS ---
+# Sobrecarga nao conta: execute(a) + execute(a,b) continua sendo uma acao so.
+UMA-ACAO-POR-CASO	limita-publico	(^|/)src/main/java/.*UseCase\.java$	1	blocker	architecture.md §X — um caso de uso = uma acao de negocio
+
+# --- exige-par: para cada arquivo do alvo, existe outro casando o padrao ---
+CASO-COM-TESTE	exige-par	(^|/)src/main/java/.*UseCase\.java$	(^|/)src/test/java/.*%B(Test|IT)\.java$	aviso	test-plan.md §X — caso de uso novo entra com teste junto

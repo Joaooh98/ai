@@ -11,11 +11,19 @@ Pré-condição: `docs/sdlc/01-discovery/prd.md` existe e passou no Portão 1.
 
 Os outros dependem das fronteiras que ela define. Rode antes, não junto.
 
-**`solution-architect`** → `docs/sdlc/02-design/architecture.md` + `adr/ADR-*.md`
+**`solution-architect`** → `docs/sdlc/02-design/architecture.md` + `adr/ADR-*.md` + `arch-rules.tsv`
 > Derive os NFRs quantificados do PRD. Modele estado atual e alvo em C4. Defina fronteiras de
 > componente, padrões de integração com comportamento de falha, plano de migração com rollback.
 > Registre cada decisão significativa como ADR — estrutura em `templates/adr.md`, ao lado desta
 > skill.
+>
+> Depois, destile as fronteiras em regras verificáveis por máquina em `arch-rules.tsv` — formato e
+> barra de qualidade em `../arch-conformance/SKILL.md`, onda A. Toda regra cita a seção da
+> arquitetura que a decidiu.
+
+A regra que nasce junto com a decisão é a que existe. Fronteira definida só em prosa é respeitada
+enquanto a pessoa que a escreveu está na revisão — depois vira sugestão, e a deriva não aparece em
+nenhum PR isolado porque cada um parece razoável.
 
 ## Passo 2 — Especialistas em paralelo
 

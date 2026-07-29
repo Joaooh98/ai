@@ -48,6 +48,10 @@ Fonte: `docs/sdlc/04-quality/` + a suíte de testes
 
 - [ ] `code-reviewer` sem blocker aberto
 - [ ] `security-auditor` sem achado BLOCK não remediado
+- [ ] **Nenhuma violação NOVA de conformidade arquitetural** — `tools/arch-conformance.sh` sai com
+      código 0. Violação já registrada no ledger **não** reprova aqui: ela é dívida com dono e
+      prazo, e reprovar por ela seria parar a entrega por algo que já estava lá
+- [ ] Nenhuma isenção arquitetural vencida (o mesmo script reprova por isso)
 - [ ] Todo critério de aceite mapeia para teste nomeado que existe e passa
 - [ ] Suíte roda repetidamente e em ordem aleatória sem falhar
 - [ ] Orçamentos de performance atendidos, quando existirem
@@ -75,10 +79,16 @@ Fonte: `docs/sdlc/05-delivery/` + todos os anteriores
 Antes do julgamento humano, rode:
 
 ```bash
-tools/artifact-lint.sh 01   # ou 02, 04, 05, all
+tools/artifact-lint.sh 01        # ou 02, 04, 05, all
+tools/arch-conformance.sh        # no Portão 3 — conformidade com a arquitetura decidida
 ```
 
 Exit 1 = artefato ausente, incompleto ou só o esqueleto do template. É reprovação.
+
+No `arch-conformance.sh`, exit 1 = violação arquitetural **nova** ou isenção vencida, e também é
+reprovação. Exit 2 = as regras não estão calibradas (nenhuma casou arquivo) — não é veredito de
+código, é configuração quebrada, e tratar como aprovado seria falso verde. Exit 0 sem arquivo de
+regras significa que o projeto ainda não destilou as regras: rode `/arch-conformance`.
 
 O lint verifica **estrutura**; os itens acima verificam **conteúdo**. Passar no lint não aprova
 o portão.
