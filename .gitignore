@@ -20,3 +20,7 @@ workspace/projects/*.md
 
 # .mcp.json NÃO está ignorado: é escopo de projeto e deve ser versionado quando
 # existir, para quem clonar o repositório receber os mesmos servidores.
+
+# Rascunho de ferramenta: snapshots e logs do Playwright MCP.
+# São saída de sessão, não conteúdo do repositório.
+.playwright-mcp/

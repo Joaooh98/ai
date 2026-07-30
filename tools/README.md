@@ -47,6 +47,7 @@ Arquitetura se descobre lendo o código — trabalho do `project-analyst`, não 
 | `preview-env.sh [dir]` | Como subir o projeto num ambiente controlado e o que já está de pé. Não sobe nem derruba nada | `/verify-live` |
 | `tracker.sh [dir]` | Qual rastreador de trabalho (Jira, Linear, GitHub, GitLab) o projeto usa e como falar com ele. Sem chamada de rede | `/sdlc-intake` |
 | `git-conventions.sh [dir] [n]` | Como o time versiona: formato de commit, prefixo de branch, branch de integração e se MR é o caminho. `--resumo` devolve 4 linhas para o toolbelt | `/setup`, `code-reviewer`, `release-manager` |
+| `docs-lint.sh [raiz]` | Confere a documentação **deste** repositório contra ele mesmo: link quebrado, caminho citado que não existe, contagem declarada que não bate, pasta sem README, agente/skill/tool sem menção, arquivo órfão. Exit 1 em divergência | manutenção do próprio toolkit |
 
 ## Uso
 
@@ -75,6 +76,8 @@ confere.
 tools/meta-check.sh                                    # relatório completo
 tools/meta-check.sh --resumo                           # 3 linhas, para injeção em skill
 tools/meta-check.sh --baseline > .claude/meta-baseline.tsv   # congela a catraca
+tools/meta-check.sh --meta <arquivo>                   # outro arquivo de metas
+tools/meta-check.sh --dir <raiz>                       # outra raiz de projeto
 ```
 
 Três decisões de desenho sustentam isso:
@@ -118,7 +121,7 @@ agente — inclusive `jq` não instalado, que nenhum agente de build conserta. Q
 
 MCP resolve acesso a **sistemas externos** (GitLab, Figma, VPS, documentação). Estes scripts
 resolvem **fatos locais do repositório**. Um agente sem nenhum servidor MCP configurado continua
-tendo os dez — é o piso de capacidade da equipe, não um extra.
+tendo os onze — é o piso de capacidade da equipe, não um extra.
 
 ## Como as skills os alcançam
 

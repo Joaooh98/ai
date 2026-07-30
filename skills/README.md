@@ -37,7 +37,8 @@ skills/
 ├── setup/                   /setup — calibra a equipe para o projeto que a recebeu
 └── practices/
     ├── engineering-discipline/   disciplina compartilhada — todos os 27 agentes
-    └── mcp-toolbelt/             ferramental detectado por projeto — 26 agentes
+    └── mcp-toolbelt/             ferramental detectado por projeto — 26 dos 27 agentes
+                                  (o context-manager não a carrega: não fala com sistema externo)
 ```
 
 ## Você só precisa lembrar de um comando

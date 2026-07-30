@@ -5,15 +5,20 @@ o **material do curso** (prompt engineering, evaluation, versionamento) e uma **
 desenvolvimento em agentes** montada a partir da curadoria dos melhores repositórios do ecossistema.
 
 ```
-agents/     27 agentes — 24 do SDLC + 2 de incidente + 1 de integração externa
-skills/     16 skills — os fluxos, a entrada por ticket e a disciplina da equipe
-workflow/   3 hooks que impõem as fronteiras e registram o que acontece
-tools/      10 scripts de apoio somente-leitura chamados pelos agentes
-workspace/  os projetos onde você trabalha — cadastro e abertura de sessão
-mcp/        como a equipe detecta o ferramental do projeto, em vez de assumir
-docs/       dois diagramas interativos: como o repo é feito e como se usa
-prompts/    material do MBA + biblioteca de prompts versionada (PT e EN)
+agents/       27 agentes — 24 do SDLC + 2 de incidente + 1 de integração externa
+skills/       16 skills — os fluxos, a entrada por ticket e a disciplina da equipe
+workflow/     3 hooks que impõem as fronteiras e registram o que acontece
+tools/        11 scripts de apoio somente-leitura chamados pelos agentes
+workspace/    os projetos onde você trabalha — cadastro e abertura de sessão
+mcp/          como a equipe detecta o ferramental do projeto, em vez de assumir
+docs/         dois diagramas interativos: como o repo é feito e como se usa
+plans/        decidido e ainda não construído — com a medição que sustenta a decisão
+prompts/      material do MBA + biblioteca de prompts versionada (PT e EN)
+design-docs/  ensaios de contexto do MBA: documentação como ativo, e RUP
 ```
+
+Cada pasta tem README próprio com as decisões de desenho. Este arquivo é o mapa; os detalhes
+ficam onde o código está.
 
 **Este repositório é a oficina.** Nenhum trabalho de produto acontece aqui dentro — os projetos
 ficam cadastrados em `workspace/` e a sessão abre dentro deles.
@@ -345,7 +350,7 @@ smart/                        ← a sessão abre aqui
 | Servidor MCP não responde | `claude mcp list` — configurado ≠ conectado |
 | Hooks não bloqueiam nada | `command -v jq` — sem `jq` eles falham em modo aberto |
 
-Os 10 scripts de `tools/` também rodam direto no shell, sem sessão — todos somente leitura:
+Os 11 scripts de `tools/` também rodam direto no shell, sem sessão — todos somente leitura:
 
 ```bash
 tools/repo-facts.sh              # manifests, versões, comandos declarados, estado do git
@@ -407,6 +412,27 @@ Seis mecanismos, e nenhum deles é "o prompt é bom":
    o ledger no projeto alvo.
 
 ---
+
+## O que está decidido e ainda não existe
+
+`plans/` guarda **só** trabalho já analisado a ponto de ser executável, e ainda não construído.
+Nada listado lá está no ar.
+
+A pasta existe porque análise sem registro apodrece: a decisão tomada numa conversa — junto com a
+medição que a sustenta — se perde, e a próxima sessão refaz o mesmo estudo para chegar à mesma
+conclusão. Por isso um plano só entra com **evidência medida**: número, saída de comando ou
+caminho de arquivo. Sem isso é vontade, não plano.
+
+| Plano | Sobre |
+|---|---|
+| [`plans/mcp-pre-setado.md`](plans/mcp-pre-setado.md) | Sugerir os servidores MCP a partir da stack detectada, em vez de perguntar do zero — com a ressalva de cobertura de versão junto |
+| [`plans/grafo-de-codigo.md`](plans/grafo-de-codigo.md) | Grafo de símbolos para os agentes responderem "quem chama isto" por consulta, e não por grep |
+
+Plano **descartado fica no repositório, com o motivo** — é o registro mais barato contra refazer a
+mesma análise para chegar à mesma recusa. Entregue, o conteúdo migra para o README da pasta que
+passa a descrevê-lo e o arquivo de plano é apagado.
+
+Detalhes e o formato obrigatório: [`plans/README.md`](plans/README.md).
 
 ## Material do MBA
 

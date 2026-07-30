@@ -7,8 +7,8 @@ user-invocable: false
 # Disciplina de engenharia
 
 Regras que valem para todo agente da equipe, independente do papel. Estão aqui, e não dentro de
-cada agente, porque escritas 24 vezes elas divergem — e divergiram: antes desta skill, "rode
-antes de afirmar" existia em 6 dos 24 agentes, e "teste que falha primeiro" em 1.
+cada agente, porque escritas 27 vezes elas divergem — e divergiram: quando esta skill foi criada,
+com 24 agentes, "rode antes de afirmar" existia em 6 deles e "teste que falha primeiro" em 1.
 
 ---
 
