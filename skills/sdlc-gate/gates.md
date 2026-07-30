@@ -50,7 +50,7 @@ Fonte: `docs/sdlc/04-quality/` + a suíte de testes
 - [ ] `security-auditor` sem achado BLOCK não remediado
 - [ ] Todo critério de aceite mapeia para teste nomeado que existe e passa
 - [ ] Suíte roda repetidamente e em ordem aleatória sem falhar
-- [ ] Orçamentos de performance atendidos, quando existirem
+- [ ] **`tools/meta-check.sh` sai com 0** — as metas declaradas do projeto são atendidas
 - [ ] Nenhum teste pulado sem dono e motivo registrado
 - [ ] **A suíte roda sem rede** — nenhum teste depende de chamar o fornecedor de verdade
 - [ ] Falhas do terceiro são testadas: timeout, 5xx, 429, resposta malformada, evento duplicado
@@ -61,6 +61,7 @@ Fonte: `docs/sdlc/04-quality/` + a suíte de testes
 Fonte: `docs/sdlc/05-delivery/` + todos os anteriores
 
 - [ ] Cada portão anterior tem evidência anexada (caminho de arquivo, não afirmação)
+- [ ] **`tools/meta-check.sh` sai com 0 na medição desta release** — não na do portão 3
 - [ ] Versão coerente com semver
 - [ ] Changelog derivado do diff real, não de mensagens de commit
 - [ ] Critérios de rollback numéricos, com dono da decisão
@@ -70,15 +71,28 @@ Fonte: `docs/sdlc/05-delivery/` + todos os anteriores
 
 ---
 
-## Verificação estrutural automática
+## Verificação automática
 
-Antes do julgamento humano, rode:
+Antes do julgamento humano, rode as duas. Cada uma responde uma pergunta diferente, e nenhuma
+substitui a outra:
 
 ```bash
-tools/artifact-lint.sh 01   # ou 02, 04, 05, all
+tools/artifact-lint.sh 01   # ou 02, 04, 05, all — o artefato está completo?
+tools/meta-check.sh         # portões 3 e 4 — o projeto está dentro do que declarou?
 ```
 
-Exit 1 = artefato ausente, incompleto ou só o esqueleto do template. É reprovação.
+| | Exit 1 significa | Verifica |
+|---|---|---|
+| `artifact-lint.sh` | artefato ausente, incompleto ou só o esqueleto | **estrutura** |
+| `meta-check.sh` | meta blocker fora, não verificável ou desatualizada | **número** |
 
-O lint verifica **estrutura**; os itens acima verificam **conteúdo**. Passar no lint não aprova
-o portão.
+Os itens marcados acima verificam **conteúdo**, e é aí que entra o julgamento. Passar nas duas
+automáticas não aprova o portão; reprovar em qualquer uma reprova.
+
+**Sobre `meta-check.sh`:** ele lê relatório, nunca executa build ou teste. Se o relatório de
+cobertura não existe, ou é mais antigo que o código, ele devolve *não verificável* — e não
+verificável bloqueia, pela regra geral no topo deste arquivo. Rode a suíte **antes** de avaliar o
+portão; avaliar com número velho é aprovar com evidência que não descreve este código.
+
+Projeto sem `.claude/meta.tsv` faz `meta-check.sh` sair com 0 e avisar que não está configurado.
+Isso **não** é aprovação: é a ausência do critério. Registre como lacuna e rode `/setup`.

@@ -1,0 +1,78 @@
+# METAS DE QUALIDADE DESTE PROJETO
+#
+# Copie para `.claude/meta.tsv` na raiz do projeto e ajuste. Versione junto do
+# `toolbelt.md`: quem clonar o repositório recebe as mesmas metas.
+#
+# Conferido por `tools/meta-check.sh`, que os Portões 3 e 4 executam. Exit 1 em
+# meta blocker fora, não verificável ou desatualizada.
+#
+# ---------------------------------------------------------------------------
+# COLUNAS (8, separadas por TAB — não por espaço)
+#
+#   id           curto e estável. Aparece no relatório do portão.
+#   metrica      nome legível. É o que o humano lê no bloqueio.
+#   fonte        caminho do RELATÓRIO já produzido, relativo à raiz do projeto.
+#   extrator     como tirar o número. Lista fechada:
+#                  jacoco-line       % de linha do jacoco.xml
+#                  lcov-line         % de linha do lcov.info
+#                  json:<jq>         caminho jq, ex.: json:.metrics.p95
+#                  regex:<ERE>       primeiro grupo de captura como número
+#                  count:<ERE>       quantas linhas casam
+#   operador     >= | <= | == | nao-cai | nao-sobe
+#   valor        o alvo. "-" nos operadores de catraca.
+#   severidade   blocker | aviso
+#   origem       quem decidiu. ADR, política do time, ou "/setup <data>".
+#
+# ---------------------------------------------------------------------------
+# ESCOLHENDO O OPERADOR
+#
+#   >= <= ==     meta absoluta. Use quando o time se compromete com o número.
+#   nao-cai      catraca para métrica onde MAIOR é melhor (cobertura).
+#   nao-sobe     catraca para métrica onde MENOR é melhor (p95, contagem).
+#
+# Catraca é o operador certo em projeto que já existe: ela não bloqueia o que já
+# estava lá, só impede piorar. Congele o ponto de partida com:
+#
+#     tools/meta-check.sh --baseline > .claude/meta-baseline.tsv
+#
+# Quando a métrica melhorar, o relatório avisa — apertar a catraca é decisão
+# explícita, não efeito colateral de uma medição que oscilou.
+#
+# ---------------------------------------------------------------------------
+# A REGRA QUE SUSTENTA TUDO
+#
+# O número vem de relatório que a rodada REAL produziu. `meta-check.sh` nunca
+# executa build nem teste — ele lê. Relatório ausente, ou mais velho que o
+# código, é NÃO VERIFICÁVEL, e não verificável bloqueia igual a falha.
+#
+# Consequência prática: meta só funciona se o comando que gera o relatório
+# estiver rodando. Não tem relatório de cobertura? Ou você habilita a geração,
+# ou a meta é `count:` sobre os artefatos de `docs/sdlc/04-quality/`.
+#
+# ---------------------------------------------------------------------------
+# EXEMPLOS — apague os que não valem aqui
+id	metrica	fonte	extrator	operador	valor	severidade	origem
+
+# --- Java / Maven, com JaCoCo habilitado
+COB-1	cobertura de linha	target/site/jacoco/jacoco.xml	jacoco-line	>=	70	blocker	/setup
+
+# --- Java legado: não exija 70 de quem está em 41. Exija que não caia.
+COB-L	cobertura (catraca)	target/site/jacoco/jacoco.xml	jacoco-line	nao-cai	-	blocker	catraca
+
+# --- JS / TS com jest ou vitest gerando lcov
+COB-2	cobertura front	coverage/lcov.info	lcov-line	>=	60	aviso	/setup
+
+# --- Performance: aponte para o JSON de saída da ferramenta de carga
+PERF-1	p95 do checkout (ms)	docs/sdlc/04-quality/perf.json	json:.metrics.p95	<=	300	blocker	ADR-004
+
+# --- Sem ferramenta de cobertura? Meta sobre os artefatos ainda funciona.
+#     Estas duas dão ao portão um número conferível em QUALQUER projeto, e o
+#     regex casa o contrato de saída real dos agentes: a linha `Verdict:`.
+#     `fonte` aceita glob — review é um arquivo por item de trabalho.
+SEC-1	veredito da auditoria	docs/sdlc/04-quality/security-audit.md	count:^Verdict:.*BLOCK	==	0	blocker	política
+REV-1	reviews com veredito BLOCK	docs/sdlc/04-quality/review-*.md	count:^Verdict:.*BLOCK	==	0	blocker	política
+
+# Ajustando o regex de `count:`: ele tem que casar o formato do SEU artefato.
+# Errar para MAIS bloqueia o portão (seguro); errar para MENOS aprova com achado
+# aberto (perigoso). Na dúvida, escreva o regex mais largo — falso bloqueio você
+# descobre em segundos, falso verde só em produção.

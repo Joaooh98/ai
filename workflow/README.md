@@ -81,6 +81,30 @@ mora aqui guarda corretamente uma sessão rodando em outro repositório — o le
 Os três precisam de `jq`. Sem ele **falham em modo aberto** — não bloqueiam e não registram, mas
 também não travam a sessão. `sudo apt install jq`.
 
+## O limite conhecido: ferramenta MCP de escrita passa por fora
+
+O `guard-artifacts.sh` é registrado com o matcher `Write|Edit|NotebookEdit` e lê
+`.tool_input.file_path`. Um servidor MCP que ofereça edição — `replace_symbol_body`,
+`insert_after_symbol`, `execute_shell_command` e afins — **não casa esse matcher**, então o hook
+nem chega a rodar. E se rodasse, o esquema de entrada dessas ferramentas não tem `file_path`: o
+hook cairia no `[ -z "$path" ] && exit 0` e permitiria.
+
+Consequência concreta: com um servidor desses habilitado, o `solution-architect` e o
+`security-auditor` ganham um caminho para alterar código de produção, **sem linha no
+`guard.tsv`** — a fronteira continua escrita, e deixa de ser imposta.
+
+Isso não é motivo para não usar MCP. É motivo para habilitar com cuidado:
+
+1. **Prefira servidor somente-leitura.** Um servidor de documentação ou de busca por símbolo não
+   tem essa superfície. É o caso do Context7 e de um servidor de grafo de código em modo leitura.
+2. **Servidor que edita, configure em modo somente-leitura** na configuração dele próprio, e
+   exclua explicitamente a ferramenta de execução de shell.
+3. **Precisando mesmo da escrita**, estenda o matcher em `settings.json` para incluir o nome das
+   ferramentas MCP de escrita, e ensine o `guard-artifacts.sh` a ler o campo de caminho que
+   aquele servidor usa — o nome do campo varia por servidor, não existe um genérico.
+
+O `/setup` pergunta antes de habilitar qualquer servidor, e este aviso é o que ele referencia.
+
 ## Testando
 
 Hooks são scripts; teste sem subir sessão:

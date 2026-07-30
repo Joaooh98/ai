@@ -157,6 +157,55 @@ else
   echo "- \`tools/git-conventions.sh\` não encontrado."
 fi
 
+# ------------------------------------------------------------ metas de qualidade
+# Os portões 3 e 4 pedem número — "orçamentos de performance atendidos", "critérios
+# de rollback numéricos". Sem meta declarada esses itens caem no julgamento e
+# passam sempre. O que esta seção faz é dizer DE ONDE o número poderia sair neste
+# projeto, para o /setup perguntar coisa concreta em vez de perguntar em abstrato.
+echo
+echo "## Metas de qualidade"
+echo
+if [ -f .claude/meta.tsv ]; then
+  n_metas="$(grep -cvE '^\s*$|^#|^id\s' .claude/meta.tsv 2>/dev/null || echo 0)"
+  echo "- \`.claude/meta.tsv\` já existe — $n_metas meta(s) declarada(s)."
+  echo "  Confira com \`tools/meta-check.sh\` e só mude o que o time decidir mudar."
+else
+  echo "- **Nenhuma meta declarada** (\`.claude/meta.tsv\` ausente)."
+  echo "  Enquanto não existir, os itens numéricos dos portões 3 e 4 não são conferíveis."
+fi
+echo
+echo "Fontes de número disponíveis neste projeto:"
+fontes=0
+if grep -qi 'jacoco' pom.xml build.gradle build.gradle.kts 2>/dev/null; then
+  echo "- Cobertura Java: JaCoCo declarado → \`target/site/jacoco/jacoco.xml\` (extrator \`jacoco-line\`)"
+  fontes=$((fontes + 1))
+elif [ -f target/site/jacoco/jacoco.xml ]; then
+  echo "- Cobertura Java: relatório presente → \`target/site/jacoco/jacoco.xml\` (extrator \`jacoco-line\`)"
+  fontes=$((fontes + 1))
+fi
+if [ -f coverage/lcov.info ]; then
+  echo "- Cobertura JS/TS: \`coverage/lcov.info\` (extrator \`lcov-line\`)"
+  fontes=$((fontes + 1))
+elif grep -q '"coverage"\|--coverage' package.json 2>/dev/null; then
+  echo "- Cobertura JS/TS: script de coverage declarado → gere \`coverage/lcov.info\` (extrator \`lcov-line\`)"
+  fontes=$((fontes + 1))
+fi
+for pf in k6 gatling jmeter artillery; do
+  if ls -d ./*"$pf"* >/dev/null 2>&1 || grep -qi "$pf" package.json pom.xml 2>/dev/null; then
+    echo "- Carga/performance: sinal de \`$pf\` — aponte a meta para o JSON de saída (extrator \`json:.caminho\`)"
+    fontes=$((fontes + 1))
+    break
+  fi
+done
+if [ "$fontes" -eq 0 ]; then
+  echo "- **Nenhuma.** Sem relatório de cobertura ou de carga, meta numérica não tem de onde sair."
+  echo "  Ou se habilita a geração do relatório, ou a meta fica em contagem de achado"
+  echo "  (extrator \`count:\`) sobre os artefatos de \`docs/sdlc/04-quality/\`."
+fi
+echo
+echo "Lembrete: \`meta-check.sh\` **lê** relatório, nunca roda build ou teste. O número"
+echo "tem que vir da execução de verdade — é isso que impede a meta de virar afirmação."
+
 # ------------------------------------------------------------------ a preencher
 echo
 echo "## A preencher — o que a detecção NÃO alcança"

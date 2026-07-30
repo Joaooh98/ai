@@ -40,6 +40,7 @@ Arquitetura se descobre lendo o código — trabalho do `project-analyst`, não 
 | `repo-facts.sh [dir]` | Manifests, versões declaradas, comandos de build/teste, config de qualidade, CI, migrações, estado do git. **Workspace:** abre com o mapa do sistema — membro, stack, atividade e remote | `project-analyst`, qualquer builder antes da primeira linha |
 | `diff-scope.sh [base]` | Escopo do diff + áreas de risco (auth, migração, segredos, infra, dependências, entrada externa) e se há teste no diff. **Workspace:** percorre os membros e reporta só os que têm diferença, resolvendo o nome da base em cada um | `code-reviewer`, `security-auditor`, `release-manager` |
 | `artifact-lint.sh [fase]` | Verifica se cada artefato do `docs/sdlc/` tem as seções obrigatórias do contrato de saída; detecta artefato que é só o esqueleto do template | `/sdlc-gate`, `/sdlc-status` |
+| `meta-check.sh` | Confere as metas de qualidade declaradas em `.claude/meta.tsv` contra os relatórios que a rodada real produziu. Exit 1 em meta blocker fora, não verificável ou desatualizada | `/sdlc-gate` (portões 3 e 4), `/setup` |
 | `sdlc-state.sh [dir]` | Fase atual lida do disco, separando artefato real de esqueleto | `/sdlc`, `/sdlc-status` |
 | `incident-evidence.sh [horas]` | O que mudou na janela: commits, arquivos por frequência, áreas de risco tocadas, tags, candidatos a bissecção. **Workspace:** abre com quais membros mudaram, e só detalha esses | `/incident`, `root-cause-analyst` |
 | `calibrate.sh [dir]` | Rascunho do `.claude/toolbelt.md`: o que o projeto é e o que a equipe pode fazer nele. Não executa build nem teste — relata o declarado, para `/setup` verificar | `/setup` |
@@ -63,11 +64,45 @@ tools/artifact-lint.sh 02              # só design
 `artifact-lint.sh` sai com código 1 quando encontra artefato ausente, incompleto ou vazio — é o
 que permite usá-lo como portão real em `/sdlc-gate`, e não como sugestão.
 
+## Meta: o número que o portão pede e nunca tinha
+
+Os portões 3 e 4 sempre pediram número — *"orçamentos de performance atendidos"*, *"critérios de
+rollback numéricos"*. Sem nada declarado, esses itens caíam no julgamento e passavam sempre.
+`.claude/meta.tsv` é onde o time declara o número, uma vez, no `/setup`; `meta-check.sh` só
+confere.
+
+```bash
+tools/meta-check.sh                                    # relatório completo
+tools/meta-check.sh --resumo                           # 3 linhas, para injeção em skill
+tools/meta-check.sh --baseline > .claude/meta-baseline.tsv   # congela a catraca
+```
+
+Três decisões de desenho sustentam isso:
+
+**Ele lê relatório, nunca executa build ou teste.** Preserva a invariante desta pasta e, mais
+importante, garante que o número veio da execução de verdade — não de um agente afirmando que
+rodou. Relatório ausente, ou mais **velho** que o código, é **não verificável**, e não verificável
+bloqueia igual a meta descumprida.
+
+**Catraca para projeto que já existe.** `nao-cai` e `nao-sobe` comparam contra um baseline
+congelado em vez de um alvo absoluto: não bloqueiam a dívida que já estava lá, só impedem
+piorar. Mesma assimetria que permite exigir a meta à risca sem parar a entrega. Quando a métrica
+melhora, o relatório avisa — apertar a catraca é decisão explícita, não efeito de uma medição
+que oscilou.
+
+**Extratores são lista fechada.** `jacoco-line`, `lcov-line`, `json:`, `regex:`, `count:`. Um
+campo que aceitasse comando arbitrário faria do arquivo de metas um vetor de execução, e ele é
+editável por agente. Extrator novo se adiciona ao script, com revisão.
+
+O campo `fonte` aceita glob, porque review é um arquivo por item de trabalho. Glob que não casa
+nada é **não verificável**, nunca zero: "ninguém escreveu o review" não pode passar como "review
+sem blocker".
+
 ## Por que separar de MCP
 
 MCP resolve acesso a **sistemas externos** (GitLab, Figma, VPS, documentação). Estes scripts
 resolvem **fatos locais do repositório**. Um agente sem nenhum servidor MCP configurado continua
-tendo os oito — é o piso de capacidade da equipe, não um extra.
+tendo os dez — é o piso de capacidade da equipe, não um extra.
 
 ## Como as skills os alcançam
 

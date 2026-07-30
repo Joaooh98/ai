@@ -8,7 +8,7 @@ desenvolvimento em agentes** montada a partir da curadoria dos melhores reposit�
 agents/     27 agentes — 24 do SDLC + 2 de incidente + 1 de integração externa
 skills/     16 skills — os fluxos, a entrada por ticket e a disciplina da equipe
 workflow/   3 hooks que impõem as fronteiras e registram o que acontece
-tools/      9 scripts de apoio somente-leitura chamados pelos agentes
+tools/      10 scripts de apoio somente-leitura chamados pelos agentes
 workspace/  os projetos onde você trabalha — cadastro e abertura de sessão
 mcp/        como a equipe detecta o ferramental do projeto, em vez de assumir
 docs/       dois diagramas interativos: como o repo é feito e como se usa
@@ -89,7 +89,17 @@ o comando de teste e o de build para confirmar que funcionam de verdade, pergunt
 detecção alcança (VPN, o que não pode ser mexido, como se verifica uma mudança aqui) e grava tudo
 em `.claude/toolbelt.md` — carregado por todo agente, em toda invocação.
 
-Sem calibrar, o primeiro "os testes passam" pode ser falso porque nem existe suíte.
+O `/setup` também **pergunta antes de habilitar**, em vez de assumir. Duas decisões que são suas:
+
+- **Quais servidores MCP este projeto ganha** — documentação, grafo de código, navegador. Ele
+  instala com `--scope project`, que escreve `.mcp.json`; instalado como conector de conta, o
+  servidor fica invisível para os 27 agentes e eles seguem adivinhando.
+- **Qual é a meta de qualidade daqui** — cobertura, latência, o que nunca vai para produção.
+  Gravada em `.claude/meta.tsv`, é o que os portões 3 e 4 conferem. Em projeto que já existe,
+  use catraca: não bloqueia a dívida que estava lá, só impede piorar.
+
+Sem calibrar, o primeiro "os testes passam" pode ser falso porque nem existe suíte — e sem meta,
+os itens numéricos do portão passam sempre, porque não há número contra o que conferir.
 
 Rode `/setup` de novo quando a stack mudar — ou quando um agente errar por falta de contexto, que
 é o sintoma de calibração velha.
@@ -303,6 +313,9 @@ docs/sdlc/
 docs/incidents/<data>-<slug>/    incident.md · root-cause.md   (fora do sdlc: não é uma fase)
 
 .claude/toolbelt.md      a calibração do /setup — versione, é contexto de time
+.claude/meta.tsv         as metas de qualidade do projeto — o número que os portões 3 e 4 conferem
+.claude/meta-baseline.tsv  o ponto de partida das metas de catraca, congelado por decisão
+.mcp.json                servidores MCP com escopo de projeto — é este arquivo que a detecção lê
 .claude/settings.json    os hooks apontando para a âncora
 .claude/ai-toolkit       link para esta oficina
 .claude/logs/guard.tsv   toda negação de fronteira, com carimbo de tempo
@@ -332,13 +345,14 @@ smart/                        ← a sessão abre aqui
 | Servidor MCP não responde | `claude mcp list` — configurado ≠ conectado |
 | Hooks não bloqueiam nada | `command -v jq` — sem `jq` eles falham em modo aberto |
 
-Os 8 scripts de `tools/` também rodam direto no shell, sem sessão — todos somente leitura:
+Os 10 scripts de `tools/` também rodam direto no shell, sem sessão — todos somente leitura:
 
 ```bash
 tools/repo-facts.sh              # manifests, versões, comandos declarados, estado do git
 tools/diff-scope.sh [base]       # escopo do diff e áreas de risco
 tools/sdlc-state.sh              # fase atual lida do disco
 tools/artifact-lint.sh [fase]    # sai com código 1 quando o artefato está incompleto
+tools/meta-check.sh              # sai com código 1 quando o projeto está fora da meta que declarou
 tools/incident-evidence.sh 24    # o que mudou nas últimas 24h
 tools/git-conventions.sh         # formato de commit, branch e MR do time
 ```
@@ -369,7 +383,11 @@ Seis mecanismos, e nenhum deles é "o prompt é bom":
    de um é literalmente a entrada do próximo. Sem passagem de contexto manual.
 2. **Gates com evidência** — nenhuma onda avança sem que os artefatos da anterior existam e passem
    nos critérios. `tools/artifact-lint.sh` sai com código 1 quando um artefato está incompleto,
-   o que torna o portão real e não uma sugestão.
+   o que torna o portão real e não uma sugestão. E `tools/meta-check.sh` faz o mesmo com o
+   **número**: a meta que o projeto declarou no `/setup` é conferida contra o relatório que a
+   rodada real produziu, não contra a afirmação de um agente. Relatório ausente ou mais velho que
+   o código é não verificável — e não verificável bloqueia, igual a meta descumprida. É o que
+   tira "orçamento de performance atendido, quando existir" do julgamento e põe num exit code.
 3. **Fronteiras em runtime** — um hook nega, por caminho, que agentes de especificação escrevam
    código ou artefatos de outras fases. O que o frontmatter não consegue expressar, o hook impõe.
 4. **Ferramental detectado, não assumido** — nenhum agente declara `tools:`, então todos herdam as
