@@ -33,7 +33,7 @@ skills/
 ├── sdlc-intake/             /sdlc-intake — puxa a tarefa do tracker e devolve status
 ├── incident/                /incident — modo emergência + severity.md + templates/postmortem.md
 ├── verify-live/             /verify-live — sobe num ambiente controlado e verifica de verdade
-├── nightly/                 /nightly — trabalho recorrente fora do horário
+├── nightly/                 /nightly — trabalho recorrente + routines/ (6 rotinas executáveis)
 ├── setup/                   /setup — calibra a equipe para o projeto que a recebeu
 └── practices/
     ├── engineering-discipline/   disciplina compartilhada — todos os 27 agentes
