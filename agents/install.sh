@@ -167,13 +167,30 @@ if [ -f "$REPO_ROOT/workspace/go" ]; then
   [ -x "$REPO_ROOT/workspace/go" ] || chmod +x "$REPO_ROOT/workspace/go"
 fi
 
+# ------------------------------------------------------------- validar secrets
+# Os scripts de secrets/ não têm extensão .sh — são comandos que o operador
+# chama pelo nome (secrets/vault-unseal). Um erro de sintaxe aqui só apareceria
+# na hora de destravar o cofre, que é o pior momento possível para descobrir.
+secret_count=0
+if [ -d "$REPO_ROOT/secrets" ]; then
+  while IFS= read -r -d '' f; do
+    case "$(basename "$f")" in
+      *.md|*.yml|*.yaml|*.hcl|*.json) continue ;;
+    esac
+    head -n 1 "$f" | grep -q '^#!.*sh' || continue
+    case "$(basename "$f")" in _*) ;; *) secret_count=$((secret_count + 1)) ;; esac
+    bash -n "$f" 2>/dev/null || fail "${f#"$REPO_ROOT"/}: erro de sintaxe"
+    [ -x "$f" ] || chmod +x "$f"
+  done < <(find "$REPO_ROOT/secrets" -maxdepth 1 -type f -print0 2>/dev/null | sort -z)
+fi
+
 if [ "$errors" -gt 0 ]; then
   echo "" >&2
   echo "validação falhou: $errors erro(s)" >&2
   exit 1
 fi
 
-echo "validação ok: $agent_count agentes, $skill_count skills, $hook_count hooks, $tool_count tools"
+echo "validação ok: $agent_count agentes, $skill_count skills, $hook_count hooks, $tool_count tools, $secret_count scripts de secrets"
 [ "$CHECK_ONLY" -eq 1 ] && exit 0
 
 # ---------------------------------------------------------------- instalação

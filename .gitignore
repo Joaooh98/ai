@@ -20,3 +20,15 @@ workspace/projects/*.md
 
 # .mcp.json NÃO está ignorado: é escopo de projeto e deve ser versionado quando
 # existir, para quem clonar o repositório receber os mesmos servidores.
+
+# Backups que os scripts fazem antes de alterar configuração que não é deles
+# (wire-mcp em ~/.claude.json, restrict.sh em settings.local.json). Ficam ao lado
+# do original, e o original pode estar aqui dentro.
+*.bak.[0-9]*
+
+# Nada de estado do vault no repositório. O storage mora num volume do Docker e
+# o token do wrapper em ~/.config/ai-secrets/ — de propósito, para não existir
+# caminho em que um segredo caia numa árvore versionada por descuido.
+secrets/.vault-token
+secrets/*.local
+secrets/vault-data/

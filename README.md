@@ -8,7 +8,8 @@ desenvolvimento em agentes** montada a partir da curadoria dos melhores reposit�
 agents/     27 agentes — 24 do SDLC + 2 de incidente + 1 de integração externa
 skills/     16 skills — os fluxos, a entrada por ticket e a disciplina da equipe
 workflow/   3 hooks que impõem as fronteiras e registram o que acontece
-tools/      9 scripts de apoio somente-leitura chamados pelos agentes
+tools/      11 scripts de apoio chamados pelos agentes e por você
+secrets/    vault local: as credenciais saem do disco e o agente não tem o que ler
 workspace/  os projetos onde você trabalha — cadastro e abertura de sessão
 mcp/        como a equipe detecta o ferramental do projeto, em vez de assumir
 docs/       dois diagramas interativos: como o repo é feito e como se usa
@@ -332,7 +333,8 @@ smart/                        ← a sessão abre aqui
 | Servidor MCP não responde | `claude mcp list` — configurado ≠ conectado |
 | Hooks não bloqueiam nada | `command -v jq` — sem `jq` eles falham em modo aberto |
 
-Os 8 scripts de `tools/` também rodam direto no shell, sem sessão — todos somente leitura:
+Os scripts de `tools/` também rodam direto no shell, sem sessão. Os nove primeiros são somente
+leitura; `restrict.sh` é o único que escreve, e só na sua configuração pessoal:
 
 ```bash
 tools/repo-facts.sh              # manifests, versões, comandos declarados, estado do git
@@ -341,7 +343,27 @@ tools/sdlc-state.sh              # fase atual lida do disco
 tools/artifact-lint.sh [fase]    # sai com código 1 quando o artefato está incompleto
 tools/incident-evidence.sh 24    # o que mudou nas últimas 24h
 tools/git-conventions.sh         # formato de commit, branch e MR do time
+tools/secret-scan.sh             # onde estão as credenciais; sai 1 se houver segredo no git
+tools/restrict.sh                # escolhe o que o agente não pode ler
 ```
+
+## Credenciais
+
+`.env` no disco é arquivo que o agente lê. `secrets/` sobe um Vault local onde as credenciais deste
+ambiente ficam guardadas, e um wrapper as entrega **direto ao processo que precisa delas** — o token
+de MCP nunca vira arquivo nem entra no ambiente da sessão, então nenhum `Bash` do agente o herda.
+
+```bash
+docker compose -f secrets/compose.yml up -d
+secrets/vault-init          # uma vez
+secrets/vault-unseal        # uma vez por boot — o GPG pede sua senha num popup
+secrets/vault-put hostinger APITOKEN
+secrets/wire-mcp            # mostra o diff; --apply para valer
+```
+
+Depois, `tools/restrict.sh` fecha o resto: aplica o mínimo e **deixa você escolher** o que mais o
+agente não deve conseguir ler. Detalhes, e o que isto explicitamente **não** protege, em
+[`secrets/README.md`](secrets/README.md).
 
 Referência completa: [`tools/README.md`](tools/README.md).
 
