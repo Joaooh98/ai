@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Repositório ai — a oficina e o alvo",
+    "subtitle": "Onde a equipe mora, e como ela alcança o projeto em que você trabalha",
+    "output": "arquitetura.html"
+  },
+  "components": [
+    { "id": "operator", "type": "external", "label": "Operador", "sublabel": "você", "pos": [40, 300], "size": [120, 60] },
+    { "id": "userscope", "type": "cloud", "label": "~/.claude", "sublabel": "escopo de usuário", "pos": [40, 430], "size": [120, 60], "tag": "27 agentes + 16 skills" },
+
+    { "id": "go", "type": "backend", "label": "workspace/go", "sublabel": "cadastro + fiação", "pos": [280, 300], "size": [130, 60], "tag": "o único comando" },
+    { "id": "registry", "type": "database", "label": "projects/", "sublabel": "cadastro local", "pos": [280, 430], "size": [130, 60] },
+    { "id": "agents", "type": "frontend", "label": "agents/", "sublabel": "27 especialistas", "pos": [390, 60], "size": [130, 60] },
+    { "id": "skills", "type": "backend", "label": "skills/", "sublabel": "16 procedimentos", "pos": [390, 160], "size": [130, 60] },
+    { "id": "tools", "type": "database", "label": "tools/", "sublabel": "8 scripts, só leitura", "pos": [560, 60], "size": [130, 60] },
+    { "id": "hooks", "type": "security", "label": "workflow/hooks/", "sublabel": "3 fronteiras", "pos": [560, 160], "size": [130, 60] },
+
+    { "id": "anchor", "type": "messagebus", "label": "ai-toolkit", "sublabel": "link → a oficina", "pos": [790, 300], "size": [130, 60], "tag": "a âncora" },
+    { "id": "settings", "type": "security", "label": "settings.json", "sublabel": "hooks fiados", "pos": [790, 430], "size": [130, 60] },
+    { "id": "sdlc", "type": "database", "label": "docs/sdlc/", "sublabel": "os artefatos", "pos": [1000, 300], "size": [130, 60] },
+    { "id": "toolbelt", "type": "cloud", "label": "toolbelt.md", "sublabel": "calibração do /setup", "pos": [1000, 430], "size": [130, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Repositório ai — a oficina (nenhum trabalho de produto acontece aqui)", "wraps": ["go", "registry", "agents", "skills", "tools", "hooks"] },
+    { "kind": "region", "label": "Projeto alvo — onde o trabalho acontece", "wraps": ["anchor", "settings", "sdlc", "toolbelt"] }
+  ],
+  "connections": [
+    { "from": "operator", "to": "go", "label": "./workspace/go crm", "variant": "emphasis" },
+    { "from": "go", "to": "registry", "variant": "dashed", "fromSide": "bottom", "toSide": "top" },
+    { "from": "go", "to": "userscope", "label": "install --user", "variant": "dashed", "fromSide": "left", "toSide": "top", "route": "orthogonal-v" },
+    { "from": "go", "to": "anchor", "label": "fia e abre a sessão lá", "variant": "emphasis" },
+    { "from": "anchor", "to": "hooks", "label": "resolve tools/ e hooks/", "variant": "security", "fromSide": "top", "toSide": "right" },
+    { "from": "anchor", "to": "settings", "fromSide": "bottom", "toSide": "top" },
+    { "from": "settings", "to": "sdlc", "label": "guarda quem escreve o quê", "variant": "security", "fromSide": "right", "toSide": "bottom" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "A oficina",
+      "items": [
+        "agents/ — 27 especialistas, nenhum preso a linguagem",
+        "skills/ — 16 procedimentos, o método escrito uma vez",
+        "tools/ — 8 scripts determinísticos, somente leitura",
+        "workflow/hooks/ — as fronteiras que o modelo não escolhe obedecer"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "A âncora — o mecanismo central",
+      "items": [
+        "Skills e hooks referenciam scripts por um caminho só:",
+        "${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/…",
+        "workspace/go cria esse link em cada projeto alvo",
+        "É o que faz o mesmo texto de skill funcionar nos dois lugares"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "O que fica no alvo",
+      "items": [
+        "docs/sdlc/ — os artefatos, ao lado do código que descrevem",
+        ".claude/toolbelt.md — a calibração, gravada pelo /setup",
+        ".claude/settings.json — os hooks apontando para a âncora",
+        "Os hooks resolvem o projeto por variável de ambiente, então",
+        "o ledger nasce aqui e não no repositório da oficina"
+      ]
+    }
+  ]
+}

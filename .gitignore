@@ -4,6 +4,14 @@
 .claude/skills/
 .claude/commands/
 
+# Âncora do toolkit — link para a raiz deste repo, recriado por install.sh
+.claude/ai-toolkit
+
+# Cadastro de projetos do operador: caminhos absolutos desta máquina.
+# Só o modelo é versionado. Detalhes em workspace/README.md.
+workspace/projects/*.md
+!workspace/projects/_template.md
+
 # Logs operacionais dos hooks
 .claude/logs/
 

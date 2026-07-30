@@ -2,7 +2,7 @@
 name: verify-live
 description: Sobe a aplicacao num ambiente controlado e verifica a mudanca de verdade - navegando o fluxo no browser, chamando o endpoint, olhando o log - em vez de deduzir do codigo. Use antes do portao de qualidade sempre que a mudanca for visivel ao usuario.
 argument-hint: [o que verificar]
-allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/tools/*.sh *) Bash(docker compose *) Bash(git *)
+allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/*.sh) Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/*.sh *) Bash(docker compose *) Bash(git *)
 ---
 
 # Verificação no mundo real
@@ -14,7 +14,7 @@ existe para fechar essa distância.
 
 ## O ambiente
 
-!`${CLAUDE_PROJECT_DIR}/tools/preview-env.sh`
+!`${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/preview-env.sh "${CLAUDE_PROJECT_DIR}"`
 
 ## Passo 1 — Escolher o ambiente, na ordem de preferência
 

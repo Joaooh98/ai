@@ -8,16 +8,190 @@ desenvolvimento em agentes** montada a partir da curadoria dos melhores reposit�
 agents/     27 agentes — 24 do SDLC + 2 de incidente + 1 de integração externa
 skills/     16 skills — os fluxos, a entrada por ticket e a disciplina da equipe
 workflow/   3 hooks que impõem as fronteiras e registram o que acontece
-tools/      8 scripts de apoio somente-leitura chamados pelos agentes
+tools/      9 scripts de apoio somente-leitura chamados pelos agentes
+workspace/  os projetos onde você trabalha — cadastro e abertura de sessão
 mcp/        como a equipe detecta o ferramental do projeto, em vez de assumir
+docs/       dois diagramas interativos: como o repo é feito e como se usa
 prompts/    material do MBA + biblioteca de prompts versionada (PT e EN)
 ```
+
+**Este repositório é a oficina.** Nenhum trabalho de produto acontece aqui dentro — os projetos
+ficam cadastrados em `workspace/` e a sessão abre dentro deles.
+
+**Ver antes de ler:** [`docs/arquitetura.html`](docs/arquitetura.html) mostra como o repositório é
+feito, [`docs/fluxo.html`](docs/fluxo.html) mostra como se usa. Tema claro/escuro e exportação.
+Abra com `xdg-open docs/fluxo.html`.
+
+---
+
+## Começar
+
+**Pré-requisitos:** `git`, o CLI `claude`, e `jq` — sem `jq` os hooks falham em modo aberto: não
+bloqueiam nada e não registram nada.
+
+```bash
+sudo apt install jq
+```
+
+### 1. Instalar a oficina, uma vez
+
+```bash
+git clone <este repo> && cd ai
+./agents/install.sh
+```
+
+Isso cria links simbólicos de `agents/` e `skills/` para `.claude/`, escreve os hooks e cria a
+âncora `.claude/ai-toolkit`. **Reinicie o Claude Code** se `.claude/agents/` não existia antes.
+
+### 2. Cadastrar um projeto
+
+```bash
+./workspace/go add /caminho/do/projeto
+```
+
+O nome sai do basename do caminho. `go` detecta sozinho qual dos dois formatos é:
+
+| Tipo | O que é | Exemplo |
+|---|---|---|
+| **repo** | um repositório git | uma API, um app |
+| **workspace** | raiz **sem** git, com repositórios embaixo | uma pasta com 11 serviços + 3 frontends que você trabalha junto |
+
+No workspace, os artefatos do ciclo nascem na **raiz** e código e teste ficam em cada repositório.
+É o formato certo quando você trabalha o conjunto — cadastrar cada repo em separado funciona, mas
+obriga a uma sessão por repositório.
+
+**Layout não é arquitetura.** Estar em dezessete repositórios ou em um só é história de time: os
+scripts reportam onde o código está, nunca como o sistema é desenhado. Do git se tira uma coisa só
+com honestidade — como o time versiona (`tools/git-conventions.sh`).
+
+Se a raiz não tem git **nem** repositórios embaixo, `go` cadastra e avisa: os artefatos não ficam
+versionados e `diff-scope.sh` / `incident-evidence.sh` não terão o que ler. Resolva com `git init`.
+
+### 3. Abrir a sessão lá
+
+```bash
+./workspace/go <nome>
+```
+
+`go` fia o que faltar antes de abrir — instala a equipe em escopo de usuário, cria a âncora e
+escreve os hooks no projeto alvo — e então abre o `claude` com o diretório de trabalho **no
+projeto**. É idempotente: rodar de novo não duplica nada.
+
+### 4. Calibrar, na primeira sessão de cada projeto
+
+```
+/setup
+```
+
+**Este é o passo que faz a equipe acertar, e o mais fácil de pular.** Instalar cria links: a
+equipe chega sabendo o método e **nada** sobre o seu projeto. Calibrar detecta a stack, **executa**
+o comando de teste e o de build para confirmar que funcionam de verdade, pergunta o que nenhuma
+detecção alcança (VPN, o que não pode ser mexido, como se verifica uma mudança aqui) e grava tudo
+em `.claude/toolbelt.md` — carregado por todo agente, em toda invocação.
+
+Sem calibrar, o primeiro "os testes passam" pode ser falso porque nem existe suíte.
+
+Rode `/setup` de novo quando a stack mudar — ou quando um agente errar por falta de contexto, que
+é o sintoma de calibração velha.
+
+### 5. Trabalhar
+
+```
+/sdlc "permitir que o cliente pause a assinatura"
+```
+
+Executa a próxima onda e **para no portão**. Rode de novo para avançar mais uma.
+
+---
+
+## Referência — `workspace/go`
+
+Roda no shell, a partir da raiz deste repositório.
+
+| Comando | Para |
+|---|---|
+| `./workspace/go` | Listar cadastro, tipo, estado da fiação e do fluxo de cada projeto |
+| `./workspace/go add <caminho> [nome]` | Cadastrar. Aceita `~`. Nome padrão = basename, precisa ser kebab-case |
+| `./workspace/go <nome> [args...]` | Fiar o que faltar e **abrir a sessão** no projeto |
+| `./workspace/go wire <nome>` | Só fiar, sem abrir |
+| `./workspace/go check <nome>` | Diagnóstico: tipo, fiação, âncora, hooks, calibração, fluxo, repositórios |
+| `./workspace/go rm <nome>` | Descadastrar. Não toca no projeto |
+
+Tudo que vem depois do nome vai direto para o `claude`, então dá para entrar já num fluxo:
+
+```bash
+./workspace/go crm "/sdlc-status"
+./workspace/go crm "/sdlc 'permitir pausar assinatura'"
+./workspace/go crm "/incident 'checkout 500 desde as 14h'"
+```
+
+O cadastro fica em `workspace/projects/<nome>.md` — frontmatter para a máquina, corpo livre para
+suas anotações. Não é versionado: guarda caminhos absolutos desta máquina.
+
+Detalhes e as decisões de desenho: [`workspace/README.md`](workspace/README.md).
+
+## Referência — comandos dentro da sessão
+
+**Os três que sustentam o trabalho planejado:**
+
+| Comando | Argumento | Para |
+|---|---|---|
+| `/sdlc` | `[objetivo]`, ou vazio para continuar | Executa a próxima onda e para no portão |
+| `/sdlc-status` | — | Onde o trabalho parou, lido do disco |
+| `/sdlc-gate` | `[1\|2\|3\|4]` | Valida um portão item a item, com evidência |
+
+**Apoio:**
+
+| Comando | Argumento | Para |
+|---|---|---|
+| `/setup` | — | Calibrar a equipe para este projeto |
+| `/sdlc-intake` | `[chave do ticket]` | Puxar do Jira/Linear/GitHub/GitLab e devolver status para lá |
+| `/verify-live` | `[o que verificar]` | Subir num ambiente controlado e verificar de verdade, no navegador |
+| `/nightly` | `[rotina]`, ou vazio para listar | Trabalho recorrente fora do horário |
+| `/incident` | `[sintoma observado]` | Modo emergência |
+
+**Também aparecem na lista, mas não é assim que o fluxo foi desenhado:** `/sdlc-bootstrap`,
+`/sdlc-discovery`, `/sdlc-design`, `/sdlc-build`, `/sdlc-quality` e `/sdlc-ship`. São as skills de
+fase, carregadas pelo `/sdlc`. Digitar a fase direto pula o portão — quem escolhe a onda é o
+`/sdlc`, lendo os artefatos.
+
+Você também pode acionar um especialista direto, sem fluxo:
+
+```
+Use o security-auditor para auditar o fluxo de upload
+Use o tech-lead-orchestrator para planejar <objetivo>
+```
+
+## Um dia de trabalho
+
+```bash
+./workspace/go                       # onde eu parei em cada projeto?
+./workspace/go crm "/sdlc-status"    # e neste, especificamente?
+./workspace/go crm                   # abre a sessão
+```
+
+Dentro da sessão:
+
+```
+/sdlc-intake PROJ-482       # puxa o ticket e traduz em objetivo
+/sdlc "<o objetivo>"        # onda 00: perfil da stack + plano
+/sdlc                       # onda 01: PRD, regras de domínio, UX
+/sdlc-gate 1                # o portão passou mesmo? confira sem avançar
+/sdlc                       # onda 02: arquitetura, contratos, ameaças
+/sdlc                       # onda 03: código, com teste que falha primeiro
+/verify-live "o fluxo de pausa"   # sobe e verifica no navegador
+/sdlc                       # onda 04: testes, review, segurança, performance
+/sdlc                       # onda 05: observabilidade, pipeline, go/no-go
+```
+
+Você não decora a ordem: `/sdlc` sem argumento continua de onde parou, porque **quem sabe onde
+parou é o disco**, não a memória da conversa.
 
 ---
 
 ## A equipe
 
-24 agentes genéricos — nenhum preso a linguagem ou framework. Cada um lê o perfil da stack do
+27 agentes genéricos — nenhum preso a linguagem ou framework. Cada um lê o perfil da stack do
 repositório e segue as convenções que já existem lá.
 
 | Fase | Agentes |
@@ -25,16 +199,18 @@ repositório e segue as convenções que já existem lá.
 | **00 Orquestração** | tech-lead-orchestrator · project-analyst · context-manager |
 | **01 Discovery** | product-owner · business-analyst · ux-researcher |
 | **02 Design** | solution-architect · api-designer · data-architect · ux-ui-designer · threat-modeler |
-| **03 Build** | backend · frontend · mobile · data · ai-engineer |
+| **03 Build** | backend · frontend · mobile · data · ai-engineer · integration-engineer |
 | **04 Quality** | test-engineer · code-reviewer · security-auditor · performance-engineer |
 | **05 Delivery** | devops-engineer · sre-observability · release-manager |
 | **06 Docs** | tech-writer |
+| **07 Incidente** | incident-commander · root-cause-analyst |
+
+O `integration-engineer` atua em duas ondas: desenha a interface interna na 02, implementa o
+adapter do fornecedor na 03. Os dois de incidente não são uma fase — entram por `/incident`.
 
 Detalhes, curadoria e roster completo: [`agents/README.md`](agents/README.md).
 
-## Seu fluxo de uso
-
-Dois modos, dois comandos. Você não decora ordem de fase nenhuma — quem sabe onde parou é o disco.
+## O ciclo
 
 ```mermaid
 flowchart LR
@@ -58,7 +234,7 @@ flowchart LR
 
     subgraph EMERG["2 · EMERGÊNCIA — o relógio corre, o portão atrapalha"]
         direction TB
-        G["/incident 'sintoma'"] --> H["o que mudou em 24h<br/>já vem coletado, em 33 ms"]
+        G["/incident 'sintoma'"] --> H["o que mudou em 24h<br/>já vem coletado na abertura"]
         H --> I["fatos em 5 min<br/>+ severidade SEV1-4"]
         I --> J{"existe mitigação<br/>REVERSÍVEL?"}
         J -->|sim| K["mitiga e restaura<br/>SEM exigir causa raiz"]
@@ -72,7 +248,7 @@ flowchart LR
     NIGHT(["/nightly — fora do horário<br/>flaky · deps · docs-drift · gates"]) -. "achado vira trabalho" .-> T
 ```
 
-As fases dentro de `/sdlc`:
+As ondas dentro de `/sdlc`:
 
 | Onda | Produz | Portão |
 |---|---|---|
@@ -82,18 +258,6 @@ As fases dentro de `/sdlc`:
 | 03 build | código, com teste que falha primeiro | — |
 | 04 quality | testes · review · segurança · performance | sem blockers |
 | 05 delivery | observabilidade · pipeline · changelog | go / no-go com evidência |
-
-Rodou `/sdlc` de novo, avança uma onda. `/sdlc-status` e `/sdlc-gate <n>` quando quiser olhar sem
-avançar — ambos leem o disco, não a memória da conversa.
-
-Comandos de apoio:
-
-| Comando | Para |
-|---|---|
-| `/setup` | Calibrar a equipe para este projeto (rode depois de instalar) |
-| `/sdlc-intake` | Puxar a tarefa do Jira/Linear/GitHub e devolver status para lá |
-| `/verify-live` | Subir num ambiente controlado e verificar de verdade, no navegador |
-| `/nightly` | Catálogo de trabalho recorrente fora do horário |
 
 ## O modo emergência
 
@@ -116,13 +280,90 @@ A regra que faz isso ser rápido **e** assertivo: **mitigar não é corrigir**. 
 reversível e dispensa causa raiz; correção exige causa raiz sempre. Confundir os dois é o que
 produz o segundo incidente.
 
-A evidência de "o que mudou nas últimas 24h" já vem coletada na abertura, em 33 ms.
+A evidência de "o que mudou nas últimas 24h" já vem coletada na abertura, em algumas dezenas de
+milissegundos.
 
 Detalhes: [`skills/README.md`](skills/README.md) · [`workflow/README.md`](workflow/README.md).
 
-### O que faz esse fluxo funcionar
+## Onde as coisas ficam
 
-Quatro mecanismos, e nenhum deles é "o prompt é bom":
+No **projeto alvo**, não aqui:
+
+```
+docs/sdlc/
+├── 00-orchestration/  plan.md · stack-profile.md · MANIFEST.md · artifact-ledger.tsv
+├── 01-discovery/      prd.md · domain.md · ux-research.md
+├── 02-design/         architecture.md · adr/ADR-NNN-*.md · api/ · data-model.md
+│                      ux-spec.md · threat-model.md
+├── 03-build/          implementation-log.md · data-pipelines/ · ai/
+├── 04-quality/        test-plan.md · review-*.md · security-audit.md · performance-*.md
+├── 05-delivery/       pipeline.md · observability.md · release-*.md
+└── 06-docs/           doc-status.md
+
+docs/incidents/<data>-<slug>/    incident.md · root-cause.md   (fora do sdlc: não é uma fase)
+
+.claude/toolbelt.md      a calibração do /setup — versione, é contexto de time
+.claude/settings.json    os hooks apontando para a âncora
+.claude/ai-toolkit       link para esta oficina
+.claude/logs/guard.tsv   toda negação de fronteira, com carimbo de tempo
+```
+
+Num **workspace**, essa árvore fica na raiz e descreve o sistema. Código, teste e o histórico de
+cada serviço ficam no repositório do membro:
+
+```
+smart/                        ← a sessão abre aqui
+├── docs/sdlc/                ← PRD, arquitetura, ADRs, contratos ENTRE membros
+├── .claude/                  ← toolbelt, hooks, âncora
+├── micro-services/dafe-pix/  ← repo próprio: código, teste, git, deploy
+├── micro-services/dafe-gateway/
+└── front-end/solve-report/
+```
+
+## Quando algo falha
+
+| Sintoma | Comando |
+|---|---|
+| "Será que este projeto está fiado?" | `./workspace/go check <nome>` |
+| Mexi em `agents/`, `skills/` ou `workflow/` | `./agents/install.sh --check` |
+| Um agente afirma coisa errada sobre o projeto | `/setup` — calibração velha |
+| Não sei em que fase o trabalho está | `/sdlc-status` |
+| "O portão passou mesmo?" | `/sdlc-gate <n>` |
+| Servidor MCP não responde | `claude mcp list` — configurado ≠ conectado |
+| Hooks não bloqueiam nada | `command -v jq` — sem `jq` eles falham em modo aberto |
+
+Os 8 scripts de `tools/` também rodam direto no shell, sem sessão — todos somente leitura:
+
+```bash
+tools/repo-facts.sh              # manifests, versões, comandos declarados, estado do git
+tools/diff-scope.sh [base]       # escopo do diff e áreas de risco
+tools/sdlc-state.sh              # fase atual lida do disco
+tools/artifact-lint.sh [fase]    # sai com código 1 quando o artefato está incompleto
+tools/incident-evidence.sh 24    # o que mudou nas últimas 24h
+tools/git-conventions.sh         # formato de commit, branch e MR do time
+```
+
+Referência completa: [`tools/README.md`](tools/README.md).
+
+Para amarrar um servidor MCP a um projeto em vez de globalmente:
+
+```bash
+claude mcp add --scope project <nome> <comando-ou-url>
+claude mcp list    # confirme que conecta antes de contar com ele
+```
+
+Outras opções do instalador:
+
+```bash
+./agents/install.sh            # projeto: .claude/{agents,skills,settings.json} + âncora
+./agents/install.sh --user     # global: ~/.claude/{agents,skills}
+./agents/install.sh --check    # só valida, não instala
+./agents/install.sh --no-hooks # agentes e skills, sem tocar em settings.json
+```
+
+## O que faz esse fluxo funcionar
+
+Seis mecanismos, e nenhum deles é "o prompt é bom":
 
 1. **Contrato de artefato** — cada agente escreve num caminho fixo em `docs/sdlc/`, então a saída
    de um é literalmente a entrada do próximo. Sem passagem de contexto manual.
@@ -135,47 +376,17 @@ Quatro mecanismos, e nenhum deles é "o prompt é bom":
    ferramentas MCP da sessão. A skill `mcp-toolbelt` roda uma detecção no carregamento e injeta o
    ferramental **daquele** projeto: remotes git, CLIs, servidores MCP, manifests. Ajuste por
    projeto em `.claude/toolbelt.md`, que tem precedência sobre a detecção.
-
----
-
-## Instalação
-
-```bash
-git clone <este repo> && cd ai
-sudo apt install jq          # os hooks precisam
-./agents/install.sh          # 1. cria os links
-# reinicie o Claude Code, então:
-/setup                       # 2. CALIBRA a equipe para este projeto
-```
-
-**Os dois passos são diferentes, e o segundo é o que importa.** Instalar cria links simbólicos —
-a equipe chega sabendo o método e nada sobre o seu projeto. Calibrar detecta a stack, **executa**
-o comando de teste e o de build para confirmar que funcionam de verdade, pergunta o que nenhuma
-detecção alcança (VPN, o que não pode ser mexido, como se verifica uma mudança aqui) e grava tudo
-em `.claude/toolbelt.md` — carregado por todo agente, em toda invocação.
-
-Sem calibrar, o primeiro "os testes passam" pode ser falso porque nem existe suíte.
-
-Rode `/setup` de novo quando a stack mudar — ou quando um agente errar por falta de contexto,
-que é o sintoma de calibração velha.
-
-Para amarrar um servidor MCP a este repositório em vez de globalmente:
-
-```bash
-claude mcp add --scope project <nome> <comando-ou-url>
-claude mcp list    # confirme que conecta antes de contar com ele
-```
-
-Reinicie o Claude Code depois da primeira instalação.
-
-Para usar a equipe em **outro** projeto:
-
-```bash
-./agents/install.sh --user   # agentes e comandos ficam disponíveis em todos os projetos
-```
-
-Os hooks ficam de fora nesse modo porque usam `${CLAUDE_PROJECT_DIR}` — copie
-`workflow/settings.hooks.json` para o `.claude/settings.json` do projeto alvo e ajuste os caminhos.
+5. **Um formato de projeto detectado, não declarado** — repo único e workspace multi-repo são
+   reconhecidos em runtime pela mesma regra: raiz que é repositório git nunca é workspace. Os
+   scripts que dependem de git percorrem os repositórios em vez de desistir, e o toolbelt reporta
+   os remotes reais — dizer "sem remote git" com 17 repositórios seria uma afirmação falsa injetada
+   em toda invocação de agente. O que esses scripts **não** fazem é inferir arquitetura do layout:
+   dizem onde o código está, e avisam na própria saída que isso não descreve o desenho.
+6. **Um caminho só para o toolkit** — skills e hooks alcançam `tools/` e `workflow/hooks/` por
+   `${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/…`, uma âncora criada aqui pelo `install.sh` e em cada
+   projeto pelo `workspace/go`. É o que permite o mesmo texto de skill funcionar nos dois lugares —
+   e os hooks, que resolvem o projeto por variável de ambiente e não pelo próprio caminho, gravam
+   o ledger no projeto alvo.
 
 ---
 
@@ -187,4 +398,5 @@ versionamento com LangSmith, prompts enriquecidos (ITER-RETGEN) e evaluation.
 `prompts/prompt-library/` e `prompts/prompt-library-en/` — biblioteca de prompts de produção
 versionada, com datasets, avaliadores e schema de validação.
 
+Cada capítulo tem **um venv e um `requirements.txt` próprios** — nunca instale dependência na raiz.
 Setup por capítulo: [`prompts/mba-ia-prompt-engineering/AGENTS.md`](prompts/mba-ia-prompt-engineering/AGENTS.md).

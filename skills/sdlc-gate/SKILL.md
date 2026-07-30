@@ -2,7 +2,7 @@
 name: sdlc-gate
 description: Avalia um portao do fluxo SDLC item a item, com evidencia, e devolve aprovado ou bloqueado. Use quando precisar validar uma fase antes de avancar, ou auditar um portao ja dado como aprovado.
 argument-hint: [1|2|3|4]
-allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/tools/artifact-lint.sh *)
+allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/artifact-lint.sh) Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/artifact-lint.sh *)
 ---
 
 # Avaliação de portão

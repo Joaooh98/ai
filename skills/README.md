@@ -1,7 +1,7 @@
 # Skills — Procedimentos da equipe
 
 Se os agentes são *quem* faz o trabalho, as skills são *como* se faz. Escritas uma vez, usadas por
-todos — é o que impede 24 agentes de divergirem sobre a mesma regra.
+todos — é o que impede 27 agentes de divergirem sobre a mesma regra.
 
 ## Como foram desenhadas
 
@@ -17,6 +17,8 @@ Curadoria a partir da pesquisa do ecossistema:
 
 ## Estrutura
 
+As 16 skills:
+
 ```
 skills/
 ├── sdlc/                    /sdlc — entrada única do fluxo
@@ -28,11 +30,14 @@ skills/
 ├── sdlc-ship/               onda 05
 ├── sdlc-gate/               /sdlc-gate + gates.md (critérios dos 4 portões)
 ├── sdlc-status/             /sdlc-status
+├── sdlc-intake/             /sdlc-intake — puxa a tarefa do tracker e devolve status
 ├── incident/                /incident — modo emergência + severity.md + templates/postmortem.md
+├── verify-live/             /verify-live — sobe num ambiente controlado e verifica de verdade
+├── nightly/                 /nightly — trabalho recorrente fora do horário
 ├── setup/                   /setup — calibra a equipe para o projeto que a recebeu
 └── practices/
-    ├── engineering-discipline/   disciplina compartilhada — todos os 24 agentes
-    └── mcp-toolbelt/             ferramental detectado por projeto — 23 agentes
+    ├── engineering-discipline/   disciplina compartilhada — todos os 27 agentes
+    └── mcp-toolbelt/             ferramental detectado por projeto — 26 agentes
 ```
 
 ## Você só precisa lembrar de um comando
@@ -52,7 +57,14 @@ Dois utilitários quando você quiser olhar sem avançar:
 /sdlc-gate 2      valida um portão item a item, com evidência
 ```
 
-Antes eram 8 comandos e você tinha que saber a ordem. Agora são 3, e a ordem é do fluxo.
+Antes você tinha que saber a ordem das fases. Agora não: são estes **três** que sustentam o fluxo
+planejado, e a ordem é do disco.
+
+> As seis skills de fase (`sdlc-bootstrap`, `sdlc-discovery`, `sdlc-design`, `sdlc-build`,
+> `sdlc-quality`, `sdlc-ship`) continuam aparecendo na lista de comandos, porque nenhuma declara
+> `user-invocable: false`. Elas funcionam se você digitar — só não é assim que o fluxo foi
+> desenhado, já que digitar a fase errada pula o portão. Quem escolhe a onda é o `/sdlc`, lendo os
+> artefatos.
 
 ## O outro modo: `/incident`
 
@@ -69,9 +81,10 @@ A regra que resolve a tensão:
 > **Mitigar ≠ corrigir.** Mitigação é reversível e **não exige** causa raiz — rollback, desligar
 > flag, escalar, failover. Correção exige causa raiz **sempre**.
 
-A skill injeta na abertura o resultado de `tools/incident-evidence.sh` (33 ms): o que mudou nas
-últimas 24h, quais áreas de risco foram tocadas, candidatos a bissecção. A pergunta que resolve a
-maioria dos incidentes — "o que mudou?" — já vem respondida antes da primeira interação.
+A skill injeta na abertura o resultado de `tools/incident-evidence.sh` (algumas dezenas de ms —
+25 ms medidos neste repositório, e cresce com o histórico do git): o que mudou nas últimas 24h,
+quais áreas de risco foram tocadas, candidatos a bissecção. A pergunta que resolve a maioria dos
+incidentes — "o que mudou?" — já vem respondida antes da primeira interação.
 
 Base: [Google SRE — Managing Incidents](https://sre.google/sre-book/managing-incidents/) para
 papéis e critérios de declaração; [obra/superpowers](https://github.com/obra/superpowers)
@@ -82,15 +95,16 @@ papéis e critérios de declaração; [obra/superpowers](https://github.com/obra
 Pré-carregadas nos agentes pelo campo `skills:` do frontmatter — não são invocadas, elas já
 estão lá quando o agente começa.
 
-**`engineering-discipline`** (todos os 24) — evidência antes de afirmação, ler antes de escrever,
+**`engineering-discipline`** (todos os 27) — evidência antes de afirmação, ler antes de escrever,
 teste que falha primeiro, nunca enfraquecer o sinal, honestidade sobre limites.
 
-Existe porque a medição mostrou o estrago de escrever a mesma regra em 24 lugares: "rode antes de
-afirmar" aparecia em 6 dos 24 agentes, e "teste que falha primeiro" em 1.
+Existe porque a medição mostrou o estrago de escrever a mesma regra em cada agente: "rode antes de
+afirmar" aparecia em 6 deles, e "teste que falha primeiro" em 1.
 
-**`mcp-toolbelt`** (23 — fora o `context-manager`) — roda uma detecção no carregamento e injeta o
-ferramental real **daquele** projeto: remotes git, CLIs, servidores MCP, manifests. Ajuste por
-projeto em `.claude/toolbelt.md`, que tem precedência.
+**`mcp-toolbelt`** (26 — fora o `context-manager`, que só registra artefato e não fala com sistema
+externo) — roda uma detecção no carregamento e injeta o ferramental real **daquele** projeto:
+remotes git, CLIs, servidores MCP, manifests. Ajuste por projeto em `.claude/toolbelt.md`, que tem
+precedência.
 
 ## Convenções para adicionar uma skill
 

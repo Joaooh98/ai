@@ -5,7 +5,12 @@ sobre o que é detectado. Mantenha curto e factual — cada linha aqui é carreg
 de agente.
 
 - Este repositório **é** a biblioteca de agentes. Trabalhar aqui significa editar `agents/`,
-  `skills/`, `workflow/` e `tools/`. Depois de qualquer alteração, rode `./agents/install.sh --check`.
+  `skills/`, `workflow/`, `tools/` e `workspace/`. Depois de qualquer alteração, rode
+  `./agents/install.sh --check`.
+- Trabalho de produto **não** acontece aqui. Os projetos ficam cadastrados em `workspace/projects/`
+  e a sessão abre dentro deles via `./workspace/go <nome>`.
+- Skills e hooks referenciam scripts por `${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/…`, nunca por
+  caminho relativo à raiz — a âncora é o que faz o mesmo texto funcionar aqui e no projeto alvo.
 - Remote é GitHub (`Joaooh98/ai`) — use `gh`, não `glab`.
 - O material do MBA em `prompts/` usa **um venv e um `requirements.txt` por capítulo**. Nunca
   instale dependência na raiz nem assuma um ambiente compartilhado. Detalhes em

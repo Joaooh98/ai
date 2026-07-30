@@ -1,0 +1,352 @@
+#!/usr/bin/env bash
+# Abre uma sessão da equipe dentro de um projeto cadastrado.
+#
+#   ./workspace/go                        lista os projetos e o estado de cada um
+#   ./workspace/go add <caminho> [nome]   cadastra um projeto
+#   ./workspace/go <nome> [args...]       fia se preciso e ABRE o claude lá
+#   ./workspace/go wire <nome>            só fia, não abre
+#   ./workspace/go check <nome>           diz o que está fiado e o que falta
+#   ./workspace/go rm <nome>              descadastra (não toca no projeto)
+#
+# O cadastro fica em workspace/projects/<nome>.md — frontmatter para a máquina,
+# corpo para o operador. A fiação é idempotente: rodar de novo não duplica nada.
+
+set -uo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+AI_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
+REGISTRY="$SCRIPT_DIR/projects"
+HOOK_SNIPPET="$AI_REPO/workflow/settings.hooks.json"
+
+# shellcheck source=/dev/null
+[ -r "$AI_REPO/tools/_workspace.sh" ] && . "$AI_REPO/tools/_workspace.sh"
+
+# Tipo do projeto, detectado na hora. Não é persistido de propósito: repositório
+# entra e sai de um workspace, e uma lista gravada envelheceria em silêncio.
+project_kind() {  # project_kind <caminho> -> "workspace:<n>" | "repo" | "sem-git"
+  local p="$1" n
+  if declare -F ws_members >/dev/null; then
+    n="$(ws_members "$p" | wc -l | tr -d ' ')"
+    [ "$n" -gt 0 ] && { printf 'workspace:%s' "$n"; return; }
+  fi
+  if git -C "$p" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    printf 'repo'
+  else
+    printf 'sem-git'
+  fi
+}
+
+bold() { printf '\033[1m%s\033[0m\n' "$1"; }
+warn() { printf 'AVISO  %s\n' "$1" >&2; }
+die()  { printf 'ERRO   %s\n' "$1" >&2; exit 1; }
+
+# ---------------------------------------------------------------- cadastro
+
+# Lê um campo do frontmatter de um arquivo de cadastro.
+field() {  # field <arquivo> <campo>
+  awk -v key="$2" '
+    NR == 1 && $0 == "---" { inside = 1; next }
+    inside && $0 == "---"  { exit }
+    inside {
+      if (index($0, key ":") == 1) {
+        sub("^" key ":[[:space:]]*", "")
+        print
+        exit
+      }
+    }
+  ' "$1"
+}
+
+entry_file() { printf '%s/%s.md' "$REGISTRY" "$1"; }
+
+# Caminho do projeto, com ~ expandido e resolvido para absoluto.
+project_path() {  # project_path <nome>
+  local f p
+  f="$(entry_file "$1")"
+  [ -f "$f" ] || return 1
+  p="$(field "$f" path)"
+  [ -n "$p" ] || return 1
+  p="${p/#\~/$HOME}"
+  printf '%s' "$p"
+}
+
+each_entry() {  # imprime os nomes cadastrados, um por linha
+  find "$REGISTRY" -maxdepth 1 -name '*.md' ! -name '_*' 2>/dev/null \
+    | sort | while IFS= read -r f; do basename "$f" .md; done
+}
+
+# ------------------------------------------------------------------ estado
+
+# Resumo do fluxo SDLC de um projeto, em uma linha.
+sdlc_summary() {  # sdlc_summary <caminho>
+  local sdlc="$1/docs/sdlc" n
+  if [ ! -d "$sdlc" ]; then printf 'sem fluxo iniciado'; return; fi
+  n="$(find "$sdlc" -type f -name '*.md' 2>/dev/null | wc -l | tr -d ' ')"
+  if [ -f "$sdlc/00-orchestration/plan.md" ]; then
+    printf '%s artefato(s) · plano existe' "$n"
+  else
+    printf '%s artefato(s) · sem plano' "$n"
+  fi
+}
+
+wired_state() {  # wired_state <caminho> -> "ok" | "parcial" | "nao"
+  local t="$1" link=0 hooks=0
+  [ -L "$t/.claude/ai-toolkit" ] && link=1
+  [ -f "$t/.claude/settings.json" ] \
+    && grep -q 'ai-toolkit/workflow/hooks' "$t/.claude/settings.json" 2>/dev/null && hooks=1
+  if [ "$link" = 1 ] && [ "$hooks" = 1 ]; then printf 'ok'
+  elif [ "$link" = 1 ] || [ "$hooks" = 1 ]; then printf 'parcial'
+  else printf 'nao'; fi
+}
+
+user_scope_ok() {
+  [ -e "$HOME/.claude/skills/sdlc" ] && [ -e "$HOME/.claude/agents/tech-lead-orchestrator.md" ]
+}
+
+# ------------------------------------------------------------------- ações
+
+cmd_list() {
+  local names
+  names="$(each_entry)"
+  if [ -z "$names" ]; then
+    bold "Nenhum projeto cadastrado."
+    echo
+    echo "  ./workspace/go add /caminho/do/projeto"
+    echo
+    echo "Modelo comentado: workspace/projects/_template.md"
+    return 0
+  fi
+
+  bold "Projetos cadastrados"
+  echo
+  # Cabeçalho com espaçamento literal: printf conta bytes, e "FIAÇÃO" tem
+  # acento — %-9s desalinharia a coluna em dois caracteres.
+  printf '  NOME           TIPO           FIAÇÃO    FLUXO                          CAMINHO\n'
+  while IFS= read -r name; do
+    local p state flow kind
+    p="$(project_path "$name")" || { printf '  %-14s %s\n' "$name" "cadastro inválido (sem 'path')"; continue; }
+    if [ ! -d "$p" ]; then
+      printf '  %-14s %-14s %-9s %-30s %s\n' "$name" "-" "-" "CAMINHO NÃO EXISTE" "$p"
+      continue
+    fi
+    kind="$(project_kind "$p")"
+    state="$(wired_state "$p")"
+    flow="$(sdlc_summary "$p")"
+    printf '  %-14s %-14s %-9s %-30s %s\n' "$name" "${kind/:/ · }" "$state" "$flow" "$p"
+  done <<< "$names"
+
+  echo
+  if ! user_scope_ok; then
+    warn "a equipe não está em escopo de usuário — os agentes não existem fora deste repo."
+    echo "       Resolva com:  ./agents/install.sh --user"
+    echo
+  fi
+  echo "Abrir:  ./workspace/go <nome>"
+}
+
+cmd_add() {
+  local raw="${1:-}" name="${2:-}" path f
+  [ -n "$raw" ] || die "uso: ./workspace/go add <caminho> [nome]"
+
+  path="${raw/#\~/$HOME}"
+  [ -d "$path" ] || die "não é um diretório: $path"
+  path="$(cd "$path" && pwd)"
+
+  [ -n "$name" ] || name="$(basename "$path")"
+  printf '%s' "$name" | grep -Eq '^[a-z0-9]+([-_][a-z0-9]+)*$' \
+    || die "nome deve ser kebab-case minúsculo (recebido: $name)"
+
+  f="$(entry_file "$name")"
+  [ -f "$f" ] && die "'$name' já está cadastrado em ${f#"$AI_REPO"/}"
+
+  local kind; kind="$(project_kind "$path")"
+
+  mkdir -p "$REGISTRY"
+  cat > "$f" <<EOF
+---
+name: $name
+path: $path
+type: ${kind%%:*}
+---
+
+# $name
+
+Contexto que só o operador sabe. Fica aqui como lembrete para você — o que a
+equipe carrega em toda invocação é o \`.claude/toolbelt.md\` do próprio projeto,
+escrito pelo \`/setup\`.
+
+-
+EOF
+
+  echo "cadastrado: $name -> $path"
+  echo "  ficha:   ${f#"$AI_REPO"/}"
+
+  case "$kind" in
+    workspace:*)
+      echo "  tipo:    WORKSPACE com ${kind#*:} repositórios"
+      echo
+      echo "Os artefatos do sistema (PRD, arquitetura, ADRs, contratos entre membros)"
+      echo "nascem em docs/sdlc/ na raiz. Código e teste ficam em cada membro."
+      ws_members "$path" | sed 's/^/    · /'
+      ;;
+    repo)
+      echo "  tipo:    repositório git"
+      ;;
+    sem-git)
+      echo "  tipo:    SEM GIT — e sem repositório embaixo"
+      echo
+      echo "AVISO  os artefatos não ficarão versionados, e diff-scope.sh e"
+      echo "       incident-evidence.sh não terão o que ler. Resolva com:"
+      echo "         git -C $path init"
+      ;;
+  esac
+
+  echo
+  echo "Próximo:  ./workspace/go $name"
+}
+
+cmd_rm() {
+  local name="${1:-}" f
+  [ -n "$name" ] || die "uso: ./workspace/go rm <nome>"
+  f="$(entry_file "$name")"
+  [ -f "$f" ] || die "'$name' não está cadastrado"
+  rm "$f"
+  echo "descadastrado: $name"
+  echo "(a fiação dentro do projeto continua lá — remova .claude/ai-toolkit à mão se quiser)"
+}
+
+# Deixa o projeto alvo pronto para receber a equipe. Idempotente.
+cmd_wire() {
+  local name="${1:-}" quiet="${2:-}" target
+  [ -n "$name" ] || die "uso: ./workspace/go wire <nome>"
+  target="$(project_path "$name")" || die "'$name' não está cadastrado"
+  [ -d "$target" ] || die "caminho cadastrado não existe: $target"
+
+  local changed=0
+
+  # 1. Âncora do toolkit. Todo caminho que a equipe usa passa por aqui, então o
+  #    mesmo texto de skill funciona neste repo e em qualquer projeto alvo.
+  mkdir -p "$target/.claude"
+  local link="$target/.claude/ai-toolkit"
+  if [ -L "$link" ]; then
+    if [ "$(readlink "$link")" != "$AI_REPO" ]; then
+      ln -sfn "$AI_REPO" "$link"; changed=1
+      [ -n "$quiet" ] || echo "  toolkit: link reapontado para $AI_REPO"
+    else
+      [ -n "$quiet" ] || echo "  toolkit: já apontava certo"
+    fi
+  elif [ -e "$link" ]; then
+    die "$link existe e não é link simbólico — remova à mão antes de fiar"
+  else
+    ln -s "$AI_REPO" "$link"; changed=1
+    [ -n "$quiet" ] || echo "  toolkit: link criado"
+  fi
+
+  # 2. Hooks. Mesmo snippet versionado deste repo — sem cópia divergente.
+  local settings="$target/.claude/settings.json"
+  if [ ! -f "$settings" ]; then
+    cp "$HOOK_SNIPPET" "$settings"; changed=1
+    [ -n "$quiet" ] || echo "  hooks:   settings.json criado"
+  elif command -v jq >/dev/null 2>&1; then
+    if diff -q <(jq -S '.hooks' "$settings" 2>/dev/null) <(jq -S '.hooks' "$HOOK_SNIPPET") >/dev/null 2>&1; then
+      [ -n "$quiet" ] || echo "  hooks:   já atualizados"
+    elif jq -e '.hooks' "$settings" >/dev/null 2>&1; then
+      warn "$settings já define 'hooks' diferente do esperado — NÃO foi alterado."
+      echo "       Compare com workflow/settings.hooks.json e mescle à mão." >&2
+    else
+      local tmp; tmp="$(mktemp)"
+      jq -s '.[0] * .[1]' "$settings" "$HOOK_SNIPPET" > "$tmp" && mv "$tmp" "$settings"
+      changed=1
+      [ -n "$quiet" ] || echo "  hooks:   mesclados em settings.json"
+    fi
+  else
+    warn "jq ausente e $settings já existe — mescle os hooks à mão"
+  fi
+
+  # 3. Escopo de usuário. Sem isto o alvo não enxerga agente nenhum.
+  if ! user_scope_ok; then
+    [ -n "$quiet" ] || echo "  equipe:  instalando em escopo de usuário..."
+    "$AI_REPO/agents/install.sh" --user >/dev/null 2>&1 \
+      && { changed=1; [ -n "$quiet" ] || echo "  equipe:  agentes e skills ligados em ~/.claude"; } \
+      || warn "./agents/install.sh --user falhou — rode à mão para ver o erro"
+  else
+    [ -n "$quiet" ] || echo "  equipe:  já disponível em ~/.claude"
+  fi
+
+  # 4. jq é o que torna os hooks reais. Sem ele eles falham em modo aberto.
+  command -v jq >/dev/null 2>&1 || warn "jq não instalado: os hooks não bloqueiam nada (sudo apt install jq)"
+
+  [ -n "$quiet" ] || { [ "$changed" = 0 ] && echo "  nada a mudar."; }
+  return 0
+}
+
+cmd_check() {
+  local name="${1:-}" target
+  [ -n "$name" ] || die "uso: ./workspace/go check <nome>"
+  target="$(project_path "$name")" || die "'$name' não está cadastrado"
+
+  bold "$name"
+  echo "  caminho:  $target"
+  [ -d "$target" ] || { echo "  ESTADO:   caminho não existe"; return 1; }
+  local kind; kind="$(project_kind "$target")"
+  case "$kind" in
+    workspace:*) echo "  tipo:     workspace com ${kind#*:} repositórios" ;;
+    repo)        echo "  tipo:     repositório git" ;;
+    sem-git)     echo "  tipo:     SEM GIT — artefatos não ficam versionados" ;;
+  esac
+  echo "  fiação:   $(wired_state "$target")"
+  echo "  toolkit:  $([ -L "$target/.claude/ai-toolkit" ] && readlink "$target/.claude/ai-toolkit" || echo 'ausente')"
+  echo "  hooks:    $([ -f "$target/.claude/settings.json" ] && grep -q 'ai-toolkit/workflow/hooks' "$target/.claude/settings.json" 2>/dev/null && echo 'apontando para o toolkit' || echo 'ausentes ou divergentes')"
+  echo "  calibra:  $([ -f "$target/.claude/toolbelt.md" ] && echo 'toolbelt.md existe' || echo 'AUSENTE — rode /setup na primeira sessão')"
+  echo "  fluxo:    $(sdlc_summary "$target")"
+  echo "  equipe:   $(user_scope_ok && echo 'disponível em ~/.claude' || echo 'AUSENTE — ./agents/install.sh --user')"
+  case "$kind" in
+    workspace:*)
+      echo "  membros:"
+      ws_members "$target" | while IFS= read -r m; do
+        printf '    %-38s %-12s %s\n' "$m" "$(ws_stack "$target/$m")" \
+          "$(git -C "$target/$m" log -1 --format='%cr' 2>/dev/null || echo '-')"
+      done ;;
+  esac
+}
+
+cmd_open() {
+  local name="$1"; shift
+  local target
+  target="$(project_path "$name")" || die "'$name' não está cadastrado. Veja: ./workspace/go"
+  [ -d "$target" ] || die "caminho cadastrado não existe: $target"
+
+  command -v claude >/dev/null 2>&1 || die "'claude' não está no PATH"
+
+  echo "fiando $name..."
+  cmd_wire "$name"
+
+  local first_run=""
+  [ -f "$target/.claude/toolbelt.md" ] || first_run=1
+
+  echo
+  bold "abrindo sessão em $target"
+  if [ -n "$first_run" ]; then
+    echo "PRIMEIRA VEZ AQUI — rode /setup antes de qualquer fluxo."
+    echo "Sem calibrar, a equipe chega sabendo o método e nada sobre este projeto."
+  fi
+  echo
+
+  cd "$target" || die "não consegui entrar em $target"
+  exec claude "$@"
+}
+
+# ------------------------------------------------------------------- rotas
+
+mkdir -p "$REGISTRY"
+
+case "${1:-}" in
+  ''|list|ls)  cmd_list ;;
+  add)         shift; cmd_add "$@" ;;
+  rm|remove)   shift; cmd_rm "$@" ;;
+  wire)        shift; cmd_wire "$@" ;;
+  check)       shift; cmd_check "$@" ;;
+  status)      cmd_list ;;
+  -h|--help)   sed -n '2,13p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' ;;
+  *)           cmd_open "$@" ;;
+esac

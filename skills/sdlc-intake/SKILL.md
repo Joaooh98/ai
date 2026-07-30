@@ -3,7 +3,7 @@ name: sdlc-intake
 description: Puxa trabalho do rastreador (Jira, Linear, GitHub, GitLab), escolhe a tarefa, traduz o ticket em objetivo com criterios de aceite e entrega ao fluxo. Tambem define como o status volta para o ticket. Use quando o trabalho comeca por um ticket, nao por voce digitando o objetivo.
 argument-hint: [chave do ticket, ou vazio para listar os de hoje]
 disable-model-invocation: true
-allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/tools/tracker.sh *) Bash(gh issue*) Bash(glab issue*) Bash(git *)
+allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/tracker.sh) Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/tracker.sh *) Bash(gh issue*) Bash(glab issue*) Bash(git *)
 ---
 
 # Entrada de trabalho pelo rastreador
@@ -16,7 +16,7 @@ ticket, com contexto, critérios e gente esperando resposta. Esta skill fecha as
 
 ## Ferramental detectado
 
-!`${CLAUDE_PROJECT_DIR}/tools/tracker.sh "${CLAUDE_PROJECT_DIR}"`
+!`${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/tracker.sh "${CLAUDE_PROJECT_DIR}"`
 
 ---
 

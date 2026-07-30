@@ -1,12 +1,12 @@
 ---
 name: sdlc-status
 description: Mostra o estado real do ciclo SDLC lido do disco - cobertura do plano, portoes pendentes, inconsistencias e proximo passo. Use para saber onde o trabalho parou, inclusive em sessao nova.
-allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/tools/sdlc-state.sh *) Bash(${CLAUDE_PROJECT_DIR}/tools/artifact-lint.sh *) Bash(git status*) Bash(git log*)
+allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/sdlc-state.sh) Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/sdlc-state.sh *) Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/artifact-lint.sh) Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/artifact-lint.sh *) Bash(git status*) Bash(git log*)
 ---
 
 # Status do ciclo
 
-!`${CLAUDE_PROJECT_DIR}/tools/sdlc-state.sh "${CLAUDE_PROJECT_DIR}"`
+!`${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/sdlc-state.sh "${CLAUDE_PROJECT_DIR}"`
 
 ## Análise
 

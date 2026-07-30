@@ -104,6 +104,27 @@ while IFS= read -r -d '' sk; do
   # arquivos de apoio — o conteúdo inteiro entra no contexto quando a skill ativa.
   lines="$(wc -l < "$sk" | tr -d ' ')"
   [ "$lines" -gt 500 ] && fail "$rel: $lines linhas (máx. 500 — mova referência para arquivo de apoio)"
+
+  # Toda injeção !`comando` precisa casar com algum padrão de allowed-tools.
+  # Sem isto a skill falha em runtime pedindo aprovação, e o erro só aparece no
+  # primeiro uso real — longe de quem escreveu. O caso clássico é o padrão
+  # `.../x.sh *`, que exige argumento, contra uma chamada sem nenhum.
+  allowed="$(printf '%s\n' "$front" | sed -n 's/^allowed-tools:[[:space:]]*//p')"
+  if [ -n "$allowed" ]; then
+    declare -a pats=()
+    while IFS= read -r p; do pats+=("$p"); done \
+      < <(printf '%s\n' "$allowed" | grep -oE 'Bash\([^)]*\)' | sed -E 's/^Bash\(//; s/\)$//')
+    while IFS= read -r call; do
+      cmd="${call#\!\`}"; cmd="${cmd%\`}"
+      matched=0
+      for pat in ${pats[@]+"${pats[@]}"}; do
+        # shellcheck disable=SC2053  — glob proposital: o padrão é um glob
+        [[ "$cmd" == $pat ]] && { matched=1; break; }
+      done
+      [ "$matched" -eq 0 ] && \
+        fail "$rel: a injeção \`$cmd\` não casa com nenhum padrão de allowed-tools"
+    done < <(grep -oE '!`[^`]+`' "$sk" 2>/dev/null || true)
+  fi
 done < <(find "$SKILL_DIR" -name 'SKILL.md' -print0 2>/dev/null | sort -z)
 
 # Scripts empacotados em skills rodam na injeção `!`comando``, antes do conteúdo
@@ -129,13 +150,30 @@ if [ -d "$HOOK_DIR" ]; then
   done < <(find "$HOOK_DIR" -name '*.sh' -print0 | sort -z)
 fi
 
+# --------------------------------------------------- validar tools e o launcher
+# Os agentes chamam tools/ a cada onda, e o operador chama workspace/go todo dia.
+# Erro de sintaxe aqui só apareceria em uso, longe de quem escreveu.
+tool_count=0
+while IFS= read -r -d '' f; do
+  # `_nome.sh` é helper carregado com source, não um tool que agente chama —
+  # validado igual, mas fora da contagem que a documentação afirma.
+  case "$(basename "$f")" in _*) ;; *) tool_count=$((tool_count + 1)) ;; esac
+  bash -n "$f" 2>/dev/null || fail "${f#"$REPO_ROOT"/}: erro de sintaxe"
+  [ -x "$f" ] || chmod +x "$f"
+done < <(find "$REPO_ROOT/tools" -name '*.sh' -print0 2>/dev/null | sort -z)
+
+if [ -f "$REPO_ROOT/workspace/go" ]; then
+  bash -n "$REPO_ROOT/workspace/go" 2>/dev/null || fail "workspace/go: erro de sintaxe"
+  [ -x "$REPO_ROOT/workspace/go" ] || chmod +x "$REPO_ROOT/workspace/go"
+fi
+
 if [ "$errors" -gt 0 ]; then
   echo "" >&2
   echo "validação falhou: $errors erro(s)" >&2
   exit 1
 fi
 
-echo "validação ok: $agent_count agentes, $skill_count skills, $hook_count hooks"
+echo "validação ok: $agent_count agentes, $skill_count skills, $hook_count hooks, $tool_count tools"
 [ "$CHECK_ONLY" -eq 1 ] && exit 0
 
 # ---------------------------------------------------------------- instalação
@@ -152,6 +190,14 @@ link() {  # link <origem> <destino>  — preserva o que não for symlink
 }
 
 mkdir -p "$BASE/agents" "$BASE/skills"
+
+# Âncora do toolkit. Skills e hooks referenciam scripts por
+# ${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/... — um único caminho que resolve
+# tanto aqui quanto em qualquer projeto alvo fiado por workspace/go. Sem isto,
+# só funcionaria no repo onde o toolkit está fisicamente.
+mkdir -p "$REPO_ROOT/.claude"
+ln -sfn "$REPO_ROOT" "$REPO_ROOT/.claude/ai-toolkit"
+echo "toolkit: âncora em .claude/ai-toolkit -> $REPO_ROOT"
 
 a=0
 while IFS= read -r f; do link "$f" "$BASE/agents/$(basename "$f")" && a=$((a + 1))

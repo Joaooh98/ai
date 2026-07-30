@@ -3,7 +3,7 @@ name: incident
 description: Resposta rapida a incidente ou problema em producao - classifica severidade, mitiga antes de diagnosticar, investiga a causa raiz sem chutar e fecha com postmortem. Use quando algo esta quebrado, degradado, ou um usuario reporta impacto.
 argument-hint: [sintoma observado]
 disable-model-invocation: true
-allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/tools/incident-evidence.sh *) Bash(git *)
+allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/incident-evidence.sh) Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/incident-evidence.sh *) Bash(git *)
 ---
 
 # Resposta a incidente
@@ -27,7 +27,7 @@ mais do que nunca.
 
 ## O que mudou (coletado agora)
 
-!`${CLAUDE_PROJECT_DIR}/tools/incident-evidence.sh 24`
+!`${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/incident-evidence.sh 24`
 
 ---
 

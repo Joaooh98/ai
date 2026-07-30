@@ -12,8 +12,26 @@
 #   detect-toolbelt.sh [diretorio-do-projeto]
 
 set -uo pipefail
+
+# Resolver o próprio caminho ANTES de trocar de diretório: ${BASH_SOURCE[0]} pode
+# ser relativo ao cwd de quem chamou, e o `cd` abaixo invalidaria o relativo.
+# `pwd -P` resolve o symlink que o instalador cria em ~/.claude/skills, chegando
+# ao caminho real dentro do repositório da oficina.
+_SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+
 PROJECT="${1:-${CLAUDE_PROJECT_DIR:-$(pwd)}}"
 cd "$PROJECT" 2>/dev/null || cd "$(pwd)"
+
+# Ausente o helper, seguimos sem ele: um toolbelt incompleto atrapalha menos que
+# um toolbelt que não carrega.
+WS_MEMBERS=""
+if [ -r "$_SELF/../../../tools/_workspace.sh" ]; then
+  # shellcheck source=/dev/null
+  . "$_SELF/../../../tools/_workspace.sh"
+  WS_MEMBERS="$(ws_members "$PROJECT")"
+fi
+WS_COUNT=0
+[ -n "$WS_MEMBERS" ] && WS_COUNT="$(printf '%s\n' "$WS_MEMBERS" | wc -l | tr -d ' ')"
 
 # ---------------------------------------------------------- override do projeto
 OVERRIDE="$PROJECT/.claude/toolbelt.md"
@@ -31,13 +49,27 @@ echo
 
 # ------------------------------------------------------------------ git hosting
 echo "**Git hosting**"
-remotes="$(git remote -v 2>/dev/null | awk '{print $2}' | sort -u)"
-if [ -z "$remotes" ]; then
-  echo "- sem remote git — trabalho é local"
+if [ "$WS_COUNT" -gt 0 ]; then
+  # Workspace: a raiz não é repositório, mas os membros são. Dizer "sem remote"
+  # aqui seria falso — e essa frase entra no contexto de todo agente.
+  echo "- este projeto é um **workspace**: $WS_COUNT repositórios, a raiz NÃO é repo git"
+  echo "- todo comando git precisa de \`-C <membro>\`: \`git -C micro-services/x log\`"
+  remotes="$(while IFS= read -r m; do
+               git -C "$PROJECT/$m" remote get-url origin 2>/dev/null
+             done <<< "$WS_MEMBERS" | sort -u)"
+  [ -z "$remotes" ] && echo "- nenhum membro tem remote — trabalho é local"
 else
-  while IFS= read -r url; do
-    [ -z "$url" ] && continue
-    host="$(printf '%s' "$url" | sed -E 's#^[a-z]+://##; s#^[^@]+@##; s#[:/].*$##')"
+  remotes="$(git remote -v 2>/dev/null | awk '{print $2}' | sort -u)"
+fi
+if [ -z "$remotes" ]; then
+  [ "$WS_COUNT" -eq 0 ] && echo "- sem remote git — trabalho é local"
+else
+  # Deduplica por HOST, não por URL: 17 membros no mesmo GitLab devem render uma
+  # linha de conselho, não dezessete.
+  hosts="$(printf '%s\n' "$remotes" \
+           | sed -E 's#^[a-z]+://##; s#^[^@]+@##; s#[:/].*$##' | sort -u)"
+  while IFS= read -r host; do
+    [ -z "$host" ] && continue
     case "$host" in
       github.com)
         if command -v gh >/dev/null 2>&1; then
@@ -56,7 +88,7 @@ else
       *)
         echo "- $host → host não reconhecido; use git local e pergunte ao usuário" ;;
     esac
-  done <<< "$remotes"
+  done <<< "$hosts"
 fi
 
 # CLIs presentes e hosts que eles conhecem (leitura de config, sem rede)
@@ -89,6 +121,26 @@ done
 echo "- autenticação NÃO foi verificada aqui (evita chamada de rede). Se um comando"
 echo "  falhar com 401/403, reporte em vez de insistir."
 echo
+
+# Os membros são o mapa do sistema: sem eles o agente vê pastas soltas em vez de
+# um projeto. É a informação mais cara de redescobrir a cada sessão.
+if [ "$WS_COUNT" -gt 0 ]; then
+  echo "**Membros do workspace** ($WS_COUNT)"
+  i=0
+  while IFS= read -r m; do
+    i=$((i + 1))
+    if [ "$i" -gt 30 ]; then
+      echo "- … e mais $((WS_COUNT - 30)). Lista completa: \`tools/repo-facts.sh\` na raiz"
+      break
+    fi
+    printf -- '- `%s` — %s\n' "$m" "$(ws_stack "$PROJECT/$m")"
+  done <<< "$WS_MEMBERS"
+  echo "- **isto é layout de repositório, não arquitetura.** Não conclua daqui fronteira"
+  echo "  de serviço, unidade de deploy nem dependência entre módulos: um repositório ou"
+  echo "  dezessete é história de time. A arquitetura se lê no código."
+  echo "- convenção de commit, branch e MR: \`tools/git-conventions.sh\`"
+  echo
+fi
 
 # ------------------------------------------------------------------ servidores MCP
 echo "**Servidores MCP configurados**"
@@ -124,7 +176,12 @@ for c in .gitlab-ci.yml Jenkinsfile docker-compose.yml compose.yaml Dockerfile v
 done
 [ -d .github/workflows ] && echo "- entrega: .github/workflows/"
 if [ "$found" -eq 0 ]; then
-  echo "- nenhum manifest na raiz — rode \`tools/repo-facts.sh <subdir>\` se for monorepo"
+  if [ "$WS_COUNT" -gt 0 ]; then
+    echo "- sem manifest na raiz, e é esperado: cada membro tem o seu."
+    echo "  Rode \`tools/repo-facts.sh <membro>\` antes de tocar em qualquer um."
+  else
+    echo "- nenhum manifest na raiz — rode \`tools/repo-facts.sh <subdir>\` se for monorepo"
+  fi
 fi
 
 exit 0

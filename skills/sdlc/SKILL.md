@@ -3,7 +3,7 @@ name: sdlc
 description: Entrada unica do fluxo de desenvolvimento em equipe. Le os artefatos existentes, descobre em que fase o trabalho esta e executa a proxima onda, parando no portao. Use para iniciar, continuar ou verificar qualquer trabalho nao trivial.
 argument-hint: [objetivo, ou vazio para continuar de onde parou]
 disable-model-invocation: true
-allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/tools/*.sh *) Bash(git *)
+allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/*.sh) Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/*.sh *) Bash(git *)
 ---
 
 # Fluxo SDLC
@@ -15,7 +15,7 @@ Você é o coordenador. Não faz o trabalho — despacha os especialistas, valid
 ## Passo 1 — Onde estamos
 
 ```bash
-!`${CLAUDE_PROJECT_DIR}/tools/sdlc-state.sh`
+!`${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/sdlc-state.sh "${CLAUDE_PROJECT_DIR}"`
 ```
 
 Leia a saída acima. Ela é a verdade sobre o estado, não a conversa.

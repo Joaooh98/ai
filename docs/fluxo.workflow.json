@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Como se usa",
+    "subtitle": "Do cadastro do projeto até produção — e o desvio quando algo quebra",
+    "output": "fluxo.html"
+  },
+  "lanes": [
+    {
+      "id": "operador",
+      "label": "Operador"
+    },
+    {
+      "id": "alvo",
+      "label": "Projeto alvo"
+    },
+    {
+      "id": "portao",
+      "label": "Portão"
+    },
+    {
+      "id": "emergencia",
+      "label": "Emergência",
+      "variant": "exception"
+    }
+  ],
+  "phases": [
+    {
+      "id": "entrada",
+      "label": "Entrada",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "calibrar",
+      "label": "Calibrar",
+      "fromCol": 2,
+      "toCol": 2
+    },
+    {
+      "id": "ciclo",
+      "label": "Uma onda por invocação",
+      "fromCol": 3,
+      "toCol": 5,
+      "variant": "emphasis"
+    }
+  ],
+  "groups": [
+    {
+      "id": "emerg",
+      "label": "mitigar ≠ corrigir",
+      "lane": "emergencia",
+      "fromCol": 0,
+      "toCol": 4,
+      "variant": "security"
+    }
+  ],
+  "mainPath": [
+    "add",
+    "open",
+    "setup",
+    "run",
+    "wave",
+    "gate"
+  ],
+  "nodes": [
+    {
+      "id": "add",
+      "lane": "operador",
+      "col": 0,
+      "type": "external",
+      "label": "go add",
+      "sublabel": "cadastra o caminho"
+    },
+    {
+      "id": "open",
+      "lane": "operador",
+      "col": 1,
+      "type": "frontend",
+      "label": "go <nome>",
+      "sublabel": "fia e abre lá"
+    },
+    {
+      "id": "run",
+      "lane": "operador",
+      "col": 3,
+      "type": "frontend",
+      "label": "/sdlc",
+      "sublabel": "o objetivo",
+      "tag": "lê o disco"
+    },
+    {
+      "id": "setup",
+      "lane": "alvo",
+      "col": 2,
+      "type": "security",
+      "label": "/setup",
+      "sublabel": "calibra a equipe",
+      "tag": "uma vez"
+    },
+    {
+      "id": "wave",
+      "lane": "alvo",
+      "col": 4,
+      "type": "backend",
+      "label": "uma onda",
+      "sublabel": "em paralelo"
+    },
+    {
+      "id": "prod",
+      "lane": "alvo",
+      "col": 5,
+      "type": "cloud",
+      "label": "produção",
+      "sublabel": "go / no-go"
+    },
+    {
+      "id": "gate",
+      "lane": "portao",
+      "col": 4,
+      "type": "security",
+      "label": "portão",
+      "sublabel": "artefato pronto?",
+      "tag": "para e reporta"
+    },
+    {
+      "id": "inc",
+      "lane": "emergencia",
+      "col": 0,
+      "type": "security",
+      "label": "/incident",
+      "sublabel": "o sintoma"
+    },
+    {
+      "id": "mit",
+      "lane": "emergencia",
+      "col": 2,
+      "type": "messagebus",
+      "label": "MITIGAR",
+      "sublabel": "reversível"
+    },
+    {
+      "id": "rca",
+      "lane": "emergencia",
+      "col": 4,
+      "type": "backend",
+      "label": "causa raiz",
+      "sublabel": "1 hipótese por vez"
+    }
+  ],
+  "edges": [
+    {
+      "from": "add",
+      "to": "open",
+      "variant": "default"
+    },
+    {
+      "from": "open",
+      "to": "setup",
+      "label": "primeira vez aqui",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "drop",
+      "labelSegment": 1
+    },
+    {
+      "from": "setup",
+      "to": "run",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "route": "drop"
+    },
+    {
+      "from": "run",
+      "to": "wave",
+      "label": "executa UMA onda",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "drop",
+      "labelSegment": 1,
+      "labelDy": 12
+    },
+    {
+      "from": "wave",
+      "to": "gate",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "drop"
+    },
+    {
+      "from": "gate",
+      "to": "run",
+      "label": "rode de novo",
+      "variant": "emphasis",
+      "role": "return",
+      "fromSide": "right",
+      "toSide": "right",
+      "route": "outside-right",
+      "labelDy": 50
+    },
+    {
+      "from": "gate",
+      "to": "prod",
+      "label": "última onda",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "route": "drop",
+      "labelSegment": 1
+    },
+    {
+      "from": "prod",
+      "to": "inc",
+      "label": "quebrou",
+      "variant": "security",
+      "role": "error",
+      "fromSide": "left",
+      "toSide": "top",
+      "route": "up-channel",
+      "labelSegment": 1
+    },
+    {
+      "from": "inc",
+      "to": "mit",
+      "variant": "security"
+    },
+    {
+      "from": "mit",
+      "to": "rca",
+      "label": "só então diagnosticar",
+      "variant": "default",
+      "labelDy": -22
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "O caminho normal",
+      "items": [
+        "./workspace/go add <caminho> — cadastra, uma vez",
+        "./workspace/go <nome> — fia e abre a sessão no projeto",
+        "/setup — calibra: detecta a stack e VERIFICA os comandos",
+        "/sdlc 'objetivo' — executa a próxima onda e para no portão",
+        "Rodou de novo, avança mais uma"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Quem sabe onde parou é o disco",
+      "items": [
+        "sdlc-state.sh lê docs/sdlc/ e diz a fase — não a memória da conversa",
+        "artifact-lint.sh sai com código 1 quando o artefato",
+        "é só o esqueleto do template: o portão é real, não sugestão",
+        "Bloqueado devolve ao agente dono com o defeito específico",
+        "/sdlc-status e /sdlc-gate <n> olham sem avançar"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Emergência inverte as prioridades",
+      "items": [
+        "No planejado, o portão protege a qualidade",
+        "No incidente, o relógio corre e o portão atrapalha",
+        "Mitigação é reversível e dispensa causa raiz",
+        "Correção exige causa raiz sempre",
+        "Confundir os dois é o que produz o segundo incidente"
+      ]
+    }
+  ]
+}

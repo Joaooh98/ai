@@ -10,8 +10,20 @@
 #   tools/calibrate.sh [diretorio-do-projeto]
 
 set -uo pipefail
+
+# Resolver o próprio caminho antes do `cd`, senão o relativo do source quebra.
+SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+# shellcheck source=/dev/null
+[ -r "$SELF_DIR/_workspace.sh" ] && . "$SELF_DIR/_workspace.sh"
+
 P="${1:-${CLAUDE_PROJECT_DIR:-$(pwd)}}"
 cd "$P" 2>/dev/null || { echo "diretório inacessível: $P" >&2; exit 1; }
+P="$(pwd)"
+
+WS_MEMBERS=""
+declare -F ws_members >/dev/null && WS_MEMBERS="$(ws_members "$P")"
+WS_COUNT=0
+[ -n "$WS_MEMBERS" ] && WS_COUNT="$(printf '%s\n' "$WS_MEMBERS" | wc -l | tr -d ' ')"
 
 has() { command -v "$1" >/dev/null 2>&1; }
 first_of() { for f in "$@"; do [ -f "$f" ] && { echo "$f"; return; }; done; }
@@ -30,7 +42,23 @@ echo
 MANIFEST="$(first_of package.json pom.xml build.gradle build.gradle.kts pyproject.toml \
   requirements.txt go.mod Cargo.toml composer.json Gemfile pubspec.yaml)"
 
-if [ -z "$MANIFEST" ]; then
+if [ -z "$MANIFEST" ] && [ -n "$WS_MEMBERS" ]; then
+  # Workspace: cada membro é um repositório com stack própria. Chamar isso de
+  # "monorepo" e listar três manifests ao acaso esconderia o que importa — que
+  # são sistemas independentes, com git e deploy próprios.
+  echo "- **Workspace**: a raiz não é repositório git, e há $WS_COUNT repositórios embaixo:"
+  while IFS= read -r m; do
+    printf -- '  - `%s` (%s)\n' "$m" "$(ws_stack "$P/$m")"
+  done <<< "$WS_MEMBERS"
+  echo "  Cada um tem histórico e dependências próprios: use \`git -C <membro>\`, porque"
+  echo "  a raiz não responde a comando git, e \`tools/repo-facts.sh <membro>\` antes de"
+  echo "  tocar em qualquer um."
+  echo
+  echo "  **Isto é layout, não arquitetura.** Estar em dezessete repositórios ou em um"
+  echo "  só é história e conveniência de time. Não conclua daqui fronteira de serviço,"
+  echo "  unidade de deploy nem contrato entre módulos — isso se descobre lendo o"
+  echo "  código, e é trabalho do project-analyst, não desta detecção."
+elif [ -z "$MANIFEST" ]; then
   sub="$(find . -maxdepth 3 -name 'package.json' -o -maxdepth 3 -name 'pom.xml' \
         -o -maxdepth 3 -name 'pyproject.toml' 2>/dev/null | grep -v node_modules | head -3)"
   if [ -n "$sub" ]; then
@@ -114,6 +142,20 @@ for c in .gitlab-ci.yml Jenkinsfile Dockerfile docker-compose.yml compose.yaml v
   [ -f "$c" ] && { echo "- \`$c\`"; found=1; }
 done
 [ "$found" -eq 0 ] && echo "- Nenhum pipeline detectado — deploy pode ser manual. Confirme com o usuário."
+
+# ------------------------------------------------------------ convenção de git
+# O histórico do git responde honestamente a UMA pergunta: como este time
+# versiona. Formato de commit, nomenclatura de branch e se MR é o caminho.
+# Nada além disso — layout de repositório não descreve arquitetura.
+echo
+echo "## Convenção de git"
+echo
+if [ -x "$SELF_DIR/git-conventions.sh" ]; then
+  "$SELF_DIR/git-conventions.sh" --resumo "$P" 2>/dev/null \
+    || echo "- Detecção de convenção falhou; rode \`tools/git-conventions.sh\` à mão."
+else
+  echo "- \`tools/git-conventions.sh\` não encontrado."
+fi
 
 # ------------------------------------------------------------------ a preencher
 echo

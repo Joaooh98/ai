@@ -84,7 +84,10 @@ o comandante é bloqueado se tentar escrever fora de `docs/incidents/`.
 
 ---
 
-## Roster (24 agentes)
+## Roster (27 agentes)
+
+24 do SDLC · 2 de incidente · 1 de integração externa. Distribuição de modelo: 12 opus, 14 sonnet,
+1 haiku.
 
 ### 00 — Orquestração
 | Agente | Modelo | Papel |
@@ -117,6 +120,11 @@ o comandante é bloqueado se tentar escrever fora de `docs/incidents/`.
 | `mobile-engineer` | sonnet | iOS/Android/RN/Flutter: ciclo de vida, offline, permissões, loja |
 | `data-engineer` | sonnet | Pipelines idempotentes, qualidade de dados, lineage, custo |
 | `ai-engineer` | sonnet | LLM/RAG/agentes com eval set, baseline, guardrails, custo e latência |
+| `integration-engineer` | sonnet | Fronteira com sistemas de terceiros: interface interna antes do SDK do fornecedor, falha externa como certeza |
+
+O `integration-engineer` aparece em **duas** ondas: na 02 desenha a interface interna, antes de
+qualquer linha colada na API do fornecedor; na 03 implementa o adapter. É o que impede que a forma
+do terceiro vaze para dentro do sistema e trave a troca depois.
 
 ### 04 — Quality
 | Agente | Modelo | Papel |
@@ -175,9 +183,13 @@ docs/sdlc/
 │                      ux-spec.md · threat-model.md
 ├── 03-build/          implementation-log.md · data-pipelines/ · ai/
 ├── 04-quality/        test-plan.md · review-*.md · security-audit.md · performance-*.md
-├── 05-delivery/       pipeline.md · observability.md · release-*.md · incidents/
+├── 05-delivery/       pipeline.md · observability.md · release-*.md
 └── 06-docs/           doc-status.md
 ```
+
+Incidente fica **fora** do `docs/sdlc/`, em `docs/incidents/<data>-<slug>/` — é o caminho que o
+hook impõe, e a separação existe porque incidente não é uma fase do ciclo planejado: nasce a
+qualquer momento e tem ciclo próprio.
 
 ---
 
@@ -185,16 +197,28 @@ docs/sdlc/
 
 Os agentes só são carregados pelo Claude Code a partir de `.claude/agents/` (projeto) ou
 `~/.claude/agents/` (todos os projetos). Esta pasta é a fonte versionada; o script cria os links —
-e também instala os comandos e hooks de [`workflow/`](../workflow/README.md).
+e também instala as skills de [`skills/`](../skills/README.md) e os hooks de
+[`workflow/`](../workflow/README.md).
 
 ```bash
-./agents/install.sh            # projeto: .claude/{agents,commands,settings.json}
-./agents/install.sh --user     # global: ~/.claude/{agents,commands} (sem hooks)
+./agents/install.sh            # projeto: .claude/{agents,skills,settings.json} + âncora ai-toolkit
+./agents/install.sh --user     # global: ~/.claude/{agents,skills}
 ./agents/install.sh --check    # só valida, não instala
-./agents/install.sh --no-hooks # agentes e comandos, sem tocar em settings.json
+./agents/install.sh --no-hooks # agentes e skills, sem tocar em settings.json
 ```
 
+Em qualquer modo o script cria a âncora `.claude/ai-toolkit` na raiz deste repositório — o caminho
+por onde skills e hooks alcançam `tools/` e `workflow/hooks/`.
+
 Depois de instalar, reinicie o Claude Code se `.claude/agents/` não existia antes.
+
+**Para trabalhar em outro projeto**, não instale à mão: cadastre e abra pelo
+[`workspace/`](../workspace/README.md), que fia a âncora, os hooks e o escopo de usuário de uma vez.
+
+```bash
+./workspace/go add /caminho/do/projeto
+./workspace/go <nome>
+```
 
 ## Uso
 
@@ -221,7 +245,7 @@ acionado, com exemplos.
 
 Nenhum agente declara `tools:`. Isso é deliberado: a documentação é explícita — usar `tools` como
 allowlist **remove todas as ferramentas MCP** do subagente. Na primeira versão desta biblioteca
-todos os 24 tinham allowlist, e o resultado era uma equipe cega para Figma, Playwright, Context7,
+todos tinham allowlist, e o resultado era uma equipe cega para Figma, Playwright, Context7,
 GitLab e toda a infraestrutura configurada na máquina.
 
 O modelo agora é **capacidade ampla, restrição por caminho**:
@@ -229,7 +253,7 @@ O modelo agora é **capacidade ampla, restrição por caminho**:
 | Camada | O que faz |
 |---|---|
 | Herança | Todo agente recebe as ferramentas built-in **e as MCP** da sessão |
-| `disallowedTools` | Só em `code-reviewer` e `security-auditor`: sem `Edit`/`NotebookEdit` — revisor não edita código |
+| `disallowedTools` | Em `code-reviewer`, `security-auditor` e `root-cause-analyst`: sem `Edit`/`NotebookEdit` — quem investiga ou revisa não altera o que está analisando |
 | Hook `guard-artifacts.sh` | Agentes de especificação só escrevem no diretório da própria fase; `MANIFEST.md` só aceita o `context-manager` |
 | Seção `Boundaries` | O limite de julgamento, para o que caminho nenhum expressa |
 
@@ -242,15 +266,15 @@ restringidos por caminho. Para eles o limite é o `Boundaries`.
 Duas skills vêm pré-carregadas no frontmatter, e é onde mora o que antes estava duplicado dentro
 de cada agente:
 
-**[`engineering-discipline`](../skills/practices/engineering-discipline/SKILL.md)** — nos 24.
+**[`engineering-discipline`](../skills/practices/engineering-discipline/SKILL.md)** — nos 27.
 Evidência antes de afirmação, ler antes de escrever, teste que falha primeiro, nunca enfraquecer
-o sinal, honestidade sobre limites. Existe porque a medição mostrou o custo de escrever a mesma
-regra 24 vezes: "rode antes de afirmar" aparecia em 6 agentes, "teste que falha primeiro" em 1.
+o sinal, honestidade sobre limites. Existe porque a medição mostrou o custo de repetir a mesma
+regra em cada agente: "rode antes de afirmar" aparecia em 6, "teste que falha primeiro" em 1.
 
-**[`mcp-toolbelt`](../skills/practices/mcp-toolbelt/SKILL.md)** — em 23 (fora o `context-manager`).
-Não declara quais ferramentas existem: roda uma detecção no carregamento (~25 ms) e injeta o
-ferramental real do projeto atual. Ajuste por projeto em `.claude/toolbelt.md`, que tem
-precedência sobre a detecção.
+**[`mcp-toolbelt`](../skills/practices/mcp-toolbelt/SKILL.md)** — em 26 (fora o `context-manager`,
+que só registra artefato e não fala com sistema externo). Não declara quais ferramentas existem:
+roda uma detecção no carregamento (~28 ms medidos neste repositório) e injeta o ferramental real do
+projeto atual. Ajuste por projeto em `.claude/toolbelt.md`, que tem precedência sobre a detecção.
 
 Mecanismo de detecção: [`mcp/README.md`](../mcp/README.md).
 Scripts locais que todo agente tem, com ou sem MCP: [`tools/README.md`](../tools/README.md).
@@ -259,12 +283,14 @@ Scripts locais que todo agente tem, com ou sem MCP: [`tools/README.md`](../tools
 
 Se for adicionar um agente novo, mantenha o mesmo formato:
 
-1. Frontmatter com `name`, `description` (com exemplos `<example>` de quando acionar), `tools`,
-   `model`, `color`.
+1. Frontmatter com `name`, `description` (com exemplos `<example>` de quando acionar), `model`,
+   `color` e `skills`.
 2. Corpo com: Mission · When you are engaged · Required inputs · Method · Standards ·
    Quality gate · Output contract · Handoff · Boundaries.
-3. `tools` mínimo necessário — agentes de análise e review são somente leitura.
-4. Toda saída vai para um caminho fixo em `docs/sdlc/`.
+3. **Não declare `tools:`** — allowlist remove todas as ferramentas MCP do subagente, que é
+   exatamente o erro que a versão anterior cometeu. Para tirar capacidade de escrita use
+   `disallowedTools`; para limitar por caminho, o hook.
+4. Toda saída vai para um caminho fixo em `docs/sdlc/` — ou `docs/incidents/`, no modo emergência.
 5. Corpo dos agentes em inglês (consistência com o ecossistema e com os agentes do capítulo 4 do
    MBA); documentação do repositório em português.
 

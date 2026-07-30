@@ -2,7 +2,7 @@
 
 Os agentes **herdam todas as ferramentas MCP** disponíveis na sessão. Isso não era verdade na
 primeira versão: cada agente declarava `tools:` como allowlist, e a documentação é explícita —
-usar `tools` como allowlist remove todas as ferramentas MCP do subagente. Os 24 especialistas
+usar `tools` como allowlist remove todas as ferramentas MCP do subagente. Os especialistas
 eram cegos para a infraestrutura.
 
 A segunda versão corrigiu isso, mas cometeu outro erro: eu escrevi uma matriz fixa de
@@ -31,8 +31,8 @@ A skill roda a detecção com `` !`comando` `` — sintaxe que executa **antes**
 ao agente, substituindo o placeholder pela saída real. O agente recebe o estado do projeto em que
 está, não o de quando a skill foi escrita.
 
-Custo medido: **~25 ms**. O script não faz chamada de rede nem health check justamente por rodar a
-cada invocação de agente.
+Custo medido: **~28 ms** neste repositório. O script não faz chamada de rede nem health check
+justamente por rodar a cada invocação de agente.
 
 ---
 
@@ -62,8 +62,11 @@ Crie `.claude/toolbelt.md` na raiz do projeto:
 - Deploy é manual via pipeline aprovado por outra equipe — nunca dispare.
 ```
 
-O conteúdo é injetado **acima** da detecção, com precedência declarada. Versione o arquivo: quem
-clonar o repositório recebe o mesmo contexto.
+O conteúdo é injetado **acima** da detecção, com precedência declarada. Versione o arquivo **no
+projeto que ele descreve**, não aqui: quem clonar aquele repositório recebe o mesmo contexto.
+
+É o `/setup` que grava esse arquivo, e é a ausência dele que o `workspace/go` usa para avisar que
+um projeto ainda não foi calibrado.
 
 Regra de tamanho: cada linha é carregada em toda invocação de agente. Fato que muda comportamento,
 sim; histórico e justificativa, não.

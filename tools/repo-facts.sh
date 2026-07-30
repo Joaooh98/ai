@@ -5,13 +5,51 @@
 # Só lê. Não instala, não builda, não acessa a rede.
 #
 #   tools/repo-facts.sh [diretorio]
+#
+# Num workspace (raiz sem git, com repositórios embaixo) abre com o mapa do
+# sistema — quem são os membros, stack, remote e atividade — e segue com os fatos
+# da raiz. Num repositório comum, comportamento de sempre.
 
 set -uo pipefail
+
+SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+# shellcheck source=/dev/null
+[ -r "$SELF_DIR/_workspace.sh" ] && . "$SELF_DIR/_workspace.sh"
+
 ROOT="${1:-$(pwd)}"
 cd "$ROOT" || exit 1
+ROOT="$(pwd)"
 
 hr() { printf '\n=== %s ===\n' "$1"; }
 show() { [ -f "$1" ] && printf -- '- %s\n' "$1"; }
+
+# --------------------------------------------------------------- mapa do sistema
+MEMBERS=""
+declare -F ws_members >/dev/null && MEMBERS="$(ws_members "$ROOT")"
+
+if [ -n "$MEMBERS" ]; then
+  total="$(printf '%s\n' "$MEMBERS" | wc -l | tr -d ' ')"
+  hr "WORKSPACE — $total REPOSITÓRIOS"
+  echo "A raiz NÃO é repositório git. Inventário do que existe embaixo:"
+  echo
+  printf '  %-38s %-12s %-14s %s\n' "MEMBRO" "STACK" "ATIVIDADE" "REMOTE"
+  while IFS= read -r m; do
+    printf '  %-38s %-12s %-14s %s\n' \
+      "$m" \
+      "$(ws_stack "$ROOT/$m")" \
+      "$(git -C "$ROOT/$m" log -1 --format='%cr' 2>/dev/null || echo '-')" \
+      "$(git -C "$ROOT/$m" remote get-url origin 2>/dev/null || echo '(sem remote)')"
+  done <<< "$MEMBERS"
+  echo
+  echo "  Perfil completo de um repositório:  tools/repo-facts.sh $ROOT/<membro>"
+  echo "  Convenção de commit, branch e MR:   tools/git-conventions.sh"
+  echo
+  echo "  LIMITE DESTA DETECÇÃO: a tabela acima é layout de repositório, e layout"
+  echo "  não é arquitetura. Estar separado em dezessete repositórios ou junto em"
+  echo "  um só é história e conveniência de time — não implica fronteira de"
+  echo "  serviço, unidade de deploy nem dependência entre módulos."
+  echo "  Quem chama quem, e por qual contrato, se descobre lendo o código."
+fi
 
 hr "MANIFESTS"
 for m in package.json pom.xml build.gradle build.gradle.kts requirements.txt pyproject.toml \

@@ -3,7 +3,7 @@ name: setup
 description: Calibra a equipe de agentes para ESTE projeto - detecta stack e capacidades, VERIFICA que os comandos funcionam de verdade, e grava o contexto que todo agente passa a carregar. Rode uma vez depois de instalar, e de novo quando a stack mudar.
 argument-hint: [nada]
 disable-model-invocation: true
-allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/tools/*.sh *) Bash(git *)
+allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/*.sh) Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/*.sh *) Bash(git *)
 ---
 
 # Calibrar a equipe para este projeto
@@ -18,7 +18,7 @@ produz o palpite plausível: o comando de teste errado, a convenção ignorada, 
 
 ## Detecção
 
-!`${CLAUDE_PROJECT_DIR}/tools/calibrate.sh "${CLAUDE_PROJECT_DIR}"`
+!`${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/calibrate.sh "${CLAUDE_PROJECT_DIR}"`
 
 ---
 

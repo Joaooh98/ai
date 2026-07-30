@@ -35,7 +35,7 @@ phase_line() {
   if [ -f "$sdlc/00-orchestration/plan.md" ]; then
     printf '\nPlano de execução: docs/sdlc/00-orchestration/plan.md\n'
   else
-    printf '\nSem plano de execução ainda. Use /sdlc-init para criar um.\n'
+    printf '\nSem plano de execução ainda. Use /sdlc "objetivo" para criar um.\n'
   fi
 
   ledger="$sdlc/00-orchestration/artifact-ledger.tsv"
