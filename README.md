@@ -13,6 +13,7 @@ secrets/    vault local: as credenciais saem do disco e o agente não tem o que 
 workspace/  os projetos onde você trabalha — cadastro e abertura de sessão
 mcp/        como a equipe detecta o ferramental do projeto, em vez de assumir
 docs/       dois diagramas interativos: como o repo é feito e como se usa
+ideas/      o caderno da oficina: o que está pensado, em obra, e o que foi descartado
 prompts/    material do MBA + biblioteca de prompts versionada (PT e EN)
 ```
 
