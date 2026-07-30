@@ -89,10 +89,30 @@ tools/meta-check.sh         # portões 3 e 4 — o projeto está dentro do que d
 Os itens marcados acima verificam **conteúdo**, e é aí que entra o julgamento. Passar nas duas
 automáticas não aprova o portão; reprovar em qualquer uma reprova.
 
-**Sobre `meta-check.sh`:** ele lê relatório, nunca executa build ou teste. Se o relatório de
-cobertura não existe, ou é mais antigo que o código, ele devolve *não verificável* — e não
-verificável bloqueia, pela regra geral no topo deste arquivo. Rode a suíte **antes** de avaliar o
-portão; avaliar com número velho é aprovar com evidência que não descreve este código.
+**Sobre `meta-check.sh`:** ele lê relatório, nunca executa build ou teste. Rode a suíte **antes**
+de avaliar o portão; avaliar com número velho é aprovar com evidência que não descreve este código.
+
+### Bloqueio de meta não é tudo a mesma coisa
+
+Exit 1 tem quatro causas com **donos diferentes**. Tratar todas como "defeito de código" devolve
+trabalho ao agente errado e queima uma onda sem consertar nada. A saída do script já traz a linha
+`AÇÃO:` de cada caso — siga-a em vez de deduzir:
+
+| O que o script diz | Isto é | Para onde vai |
+|---|---|---|
+| **FORA DA META** | defeito de qualidade real | agente dono da métrica: cobertura → `test-engineer`, latência → `performance-engineer`, achado aberto → quem implementou |
+| **SEM FERRAMENTA** | lacuna de calibração | instalar a ferramenta e rodar `/setup`. **Não** mexa no código |
+| **NÃO VERIFICÁVEL** | a suíte não rodou nesta onda | rode o comando que gera o relatório e reavalie. Persistindo, o caminho ou o extrator em `.claude/meta.tsv` está errado |
+| **DESATUALIZADA** | mediu antes da última mudança | rode a suíte de novo e reavalie |
+
+Quando **nenhuma** meta está fora e o bloqueio é só de medição, o script diz isso em voz alta:
+*"o bloqueio é de medição, resolva antes de devolver trabalho a qualquer agente"*. Nesse caso o
+portão está bloqueado e **ninguém tem defeito para corrigir** — a ação é medir.
+
+O que continua valendo: **não afrouxe a meta para o portão passar.** A meta foi decidida no
+`/setup`, com dono registrado na coluna `origem`. Mudá-la é decisão do time fora do portão, não
+manobra para destravar uma entrega.
 
 Projeto sem `.claude/meta.tsv` faz `meta-check.sh` sair com 0 e avisar que não está configurado.
 Isso **não** é aprovação: é a ausência do critério. Registre como lacuna e rode `/setup`.
+Exit 2 é arquivo de metas malformado — problema de configuração, não de código.

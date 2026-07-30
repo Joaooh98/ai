@@ -192,7 +192,12 @@ extrai() {
       ;;
     json:*)
       # json:<caminho jq>, ex.: json:.metrics.p95
-      command -v jq >/dev/null 2>&1 || return 0
+      #
+      # Ferramenta ausente devolve SENTINELA, não vazio. Vazio seria reportado
+      # como "o relatório não tem o número" e mandaria o fluxo consertar o
+      # relatório — quando o conserto é instalar o jq. Diagnóstico errado custa
+      # uma onda inteira.
+      command -v jq >/dev/null 2>&1 || { printf '__FALTA__jq'; return 0; }
       jq -r "${extr#json:} // empty" "$arquivo" 2>/dev/null | head -1
       ;;
     regex:*)
@@ -239,7 +244,7 @@ compara() {
 }
 
 # ------------------------------------------------------------- classificar
-declare -a OK=() FALHOU=() AVISOU=() NVERIF=() VELHO=() MELHOROU=()
+declare -a OK=() FALHOU=() AVISOU=() NVERIF=() VELHO=() MELHOROU=() SEMFERR=()
 declare -A ATUAL=()
 blocker_ruim=0
 
@@ -299,6 +304,16 @@ while [ "$i" -lt "${#M_ID[@]}" ]; do
         atual=$((atual + n))
       done ;;
     *) atual="$(extrai "$extr" "${arquivos[0]}")" ;;
+  esac
+
+  # Ferramenta ausente é lacuna de CALIBRAÇÃO, não defeito de código. Separar as
+  # duas é o que impede o fluxo de devolver ao test-engineer um problema que se
+  # resolve com apt install.
+  case "${atual:-}" in
+    __FALTA__*)
+      SEMFERR+=("$sev|$id|$nome|${atual#__FALTA__} não está instalado — sem ele o extrator '$extr' não roda|$orig")
+      [ "$sev" = "blocker" ] && blocker_ruim=$((blocker_ruim + 1))
+      i=$((i + 1)); continue ;;
   esac
 
   # Toda comparação daqui pra frente é numérica, feita em awk. Awk comparando
@@ -376,8 +391,8 @@ fi
 # ------------------------------------------------------------------ resumo
 if [ "$RESUMO" -eq 1 ]; then
   printf 'metas    %s (%s)\n' "${META#"$ROOT"/}" "${#M_ID[@]} declarada(s)"
-  printf 'atende   %s ok · %s falhou · %s não verificável · %s desatualizada\n' \
-         "${#OK[@]}" "${#FALHOU[@]}" "${#NVERIF[@]}" "${#VELHO[@]}"
+  printf 'atende   %s ok · %s falhou · %s sem ferramenta · %s não verificável · %s desatualizada\n' \
+         "${#OK[@]}" "${#FALHOU[@]}" "${#SEMFERR[@]}" "${#NVERIF[@]}" "${#VELHO[@]}"
   [ "$blocker_ruim" -gt 0 ] && printf 'PORTÃO   BLOQUEADO — %s meta(s) blocker fora\n' "$blocker_ruim"
   [ "$blocker_ruim" -eq 0 ] && printf 'PORTÃO   liberado pelas metas\n'
   [ "$blocker_ruim" -gt 0 ] && exit 1
@@ -393,13 +408,28 @@ else
 fi
 printf '\n'
 
+# Cada bloqueio sai com a AÇÃO que o resolve. Sem isso o fluxo recebe "exit 1" e
+# devolve tudo ao mesmo agente — inclusive o que não é defeito de código. As
+# quatro causas abaixo têm donos diferentes, e confundi-las custa uma onda.
 if [ "${#FALHOU[@]}" -gt 0 ]; then
   printf '=== FORA DA META — bloqueia o portão ===\n'
   for e in "${FALHOU[@]}"; do
     IFS='|' read -r sev id nome detalhe orig <<<"$e"
     printf '  [%s] %-8s %s\n           %s\n           origem: %s\n' "$sev" "$id" "$nome" "$detalhe" "$orig"
   done
-  printf '\n'
+  printf '  AÇÃO: defeito de qualidade real. Devolva ao agente dono da métrica\n'
+  printf '        (cobertura → test-engineer · latência → performance-engineer ·\n'
+  printf '        achado aberto → quem implementou). NÃO afrouxe a meta para passar.\n\n'
+fi
+
+if [ "${#SEMFERR[@]}" -gt 0 ]; then
+  printf '=== SEM FERRAMENTA — não é defeito de código ===\n'
+  for e in "${SEMFERR[@]}"; do
+    IFS='|' read -r sev id nome detalhe orig <<<"$e"
+    printf '  [%s] %-8s %s\n           %s\n' "$sev" "$id" "$nome" "$detalhe"
+  done
+  printf '  AÇÃO: lacuna de calibração. Instale a ferramenta e rode /setup —\n'
+  printf '        não devolva isto a um agente de build nem mexa no código.\n\n'
 fi
 
 if [ "${#NVERIF[@]}" -gt 0 ]; then
@@ -408,7 +438,9 @@ if [ "${#NVERIF[@]}" -gt 0 ]; then
     IFS='|' read -r sev id nome detalhe orig <<<"$e"
     printf '  [%s] %-8s %s\n           %s\n' "$sev" "$id" "$nome" "$detalhe"
   done
-  printf '\n'
+  printf '  AÇÃO: relatório ausente é quase sempre "a suíte ainda não rodou nesta\n'
+  printf '        onda" — rode o comando que gera a fonte e avalie o portão de novo.\n'
+  printf '        Persistindo, o extrator ou o caminho em .claude/meta.tsv está errado.\n\n'
 fi
 
 if [ "${#VELHO[@]}" -gt 0 ]; then
@@ -417,7 +449,8 @@ if [ "${#VELHO[@]}" -gt 0 ]; then
     IFS='|' read -r sev id nome detalhe orig <<<"$e"
     printf '  [%s] %-8s %s\n           %s\n' "$sev" "$id" "$nome" "$detalhe"
   done
-  printf '\n'
+  printf '  AÇÃO: rode a suíte de novo e reavalie. O código mudou depois da medição;\n'
+  printf '        aprovar com este número é aprovar com evidência de outro código.\n\n'
 fi
 
 if [ "${#AVISOU[@]}" -gt 0 ]; then
@@ -447,11 +480,18 @@ if [ "${#MELHOROU[@]}" -gt 0 ]; then
   printf '\n'
 fi
 
-printf '%s meta(s): %s ok, %s fora, %s não verificável, %s desatualizada\n' \
-       "${#M_ID[@]}" "${#OK[@]}" "${#FALHOU[@]}" "${#NVERIF[@]}" "${#VELHO[@]}"
+printf '%s meta(s): %s ok, %s fora, %s sem ferramenta, %s não verificável, %s desatualizada\n' \
+       "${#M_ID[@]}" "${#OK[@]}" "${#FALHOU[@]}" "${#SEMFERR[@]}" "${#NVERIF[@]}" "${#VELHO[@]}"
 
 if [ "$blocker_ruim" -gt 0 ]; then
-  printf '\nPORTÃO BLOQUEADO — %s meta(s) blocker fora, não verificável ou desatualizada.\n' "$blocker_ruim"
+  printf '\nPORTÃO BLOQUEADO — %s meta(s) blocker fora, sem ferramenta, não verificável ou desatualizada.\n' "$blocker_ruim"
+  # Bloqueio por causa que NÃO é defeito de código merece destaque: é o caso em
+  # que devolver ao agente de build queima uma onda sem consertar nada.
+  nao_e_codigo=$(( ${#SEMFERR[@]} + ${#NVERIF[@]} + ${#VELHO[@]} ))
+  if [ "${#FALHOU[@]}" -eq 0 ] && [ "$nao_e_codigo" -gt 0 ]; then
+    printf 'NENHUMA meta foi reprovada por qualidade — o bloqueio é de medição.\n'
+    printf 'Resolva a medição antes de devolver trabalho a qualquer agente.\n'
+  fi
   exit 1
 fi
 

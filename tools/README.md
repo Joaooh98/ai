@@ -98,6 +98,22 @@ O campo `fonte` aceita glob, porque review é um arquivo por item de trabalho. G
 nada é **não verificável**, nunca zero: "ninguém escreveu o review" não pode passar como "review
 sem blocker".
 
+### Todo bloqueio sai com a ação que o resolve
+
+Exit 1 tem quatro causas com donos diferentes, e a saída separa as quatro com uma linha `AÇÃO:`:
+
+| Seção | É | Ação |
+|---|---|---|
+| `FORA DA META` | defeito de qualidade real | devolver ao agente dono da métrica |
+| `SEM FERRAMENTA` | lacuna de calibração | instalar a ferramenta e rodar `/setup` — não mexer no código |
+| `NÃO VERIFICÁVEL` | a suíte não rodou nesta onda | gerar o relatório e reavaliar |
+| `DESATUALIZADA` | mediu antes da última mudança | rodar a suíte de novo |
+
+A distinção existe porque um fluxo automatizado que recebe só "exit 1" devolve tudo ao mesmo
+agente — inclusive `jq` não instalado, que nenhum agente de build conserta. Quando o bloqueio é
+**só** de medição, o script afirma isso explicitamente: ninguém tem defeito para corrigir, a ação
+é medir.
+
 ## Por que separar de MCP
 
 MCP resolve acesso a **sistemas externos** (GitLab, Figma, VPS, documentação). Estes scripts
