@@ -7,7 +7,7 @@ desenvolvimento em agentes** montada a partir da curadoria dos melhores reposit�
 ```
 agents/     27 agentes — 24 do SDLC + 2 de incidente + 1 de integração externa
 skills/     16 skills — os fluxos, a entrada por ticket e a disciplina da equipe
-workflow/   3 hooks que impõem as fronteiras e registram o que acontece
+workflow/   4 hooks que impõem as fronteiras e registram o que acontece
 tools/      9 scripts de apoio somente-leitura chamados pelos agentes
 workspace/  os projetos onde você trabalha — cadastro e abertura de sessão
 mcp/        como a equipe detecta o ferramental do projeto, em vez de assumir

@@ -167,6 +167,13 @@ if [ -f "$REPO_ROOT/workspace/go" ]; then
   [ -x "$REPO_ROOT/workspace/go" ] || chmod +x "$REPO_ROOT/workspace/go"
 fi
 
+# hooks-sync.sh não mora em workflow/hooks/ (não é hook), mas é chamado tanto
+# por este instalador quanto pelo workspace/go — erro aqui trava as duas fiações.
+if [ -f "$REPO_ROOT/workflow/hooks-sync.sh" ]; then
+  bash -n "$REPO_ROOT/workflow/hooks-sync.sh" 2>/dev/null || fail "workflow/hooks-sync.sh: erro de sintaxe"
+  [ -x "$REPO_ROOT/workflow/hooks-sync.sh" ] || chmod +x "$REPO_ROOT/workflow/hooks-sync.sh"
+fi
+
 if [ "$errors" -gt 0 ]; then
   echo "" >&2
   echo "validação falhou: $errors erro(s)" >&2
@@ -217,22 +224,16 @@ if [ "$WITH_HOOKS" -eq 1 ]; then
     SETTINGS="$BASE/settings.json"
     SNIPPET="$REPO_ROOT/workflow/settings.hooks.json"
 
-    if [ ! -f "$SETTINGS" ]; then
-      mkdir -p "$BASE"; cp "$SNIPPET" "$SETTINGS"
-      echo "hooks: $SETTINGS criado"
-    elif command -v jq >/dev/null 2>&1; then
-      if diff -q <(jq -S '.hooks' "$SETTINGS" 2>/dev/null) <(jq -S '.hooks' "$SNIPPET") >/dev/null 2>&1; then
-        echo "hooks: $SETTINGS já está atualizado"
-      elif jq -e '.hooks' "$SETTINGS" >/dev/null 2>&1; then
-        echo "hooks: $SETTINGS define 'hooks' DIFERENTE do esperado — não foi alterado."
-        echo "       Compare com workflow/settings.hooks.json e mescle à mão."
-      else
-        tmp="$(mktemp)"; jq -s '.[0] * .[1]' "$SETTINGS" "$SNIPPET" > "$tmp" && mv "$tmp" "$SETTINGS"
-        echo "hooks: mesclados em $SETTINGS"
-      fi
-    else
-      echo "hooks: jq ausente e $SETTINGS já existe — mescle à mão"
-    fi
+    mkdir -p "$BASE"
+    case "$("$REPO_ROOT/workflow/hooks-sync.sh" "$SETTINGS" "$SNIPPET")" in
+      criado)        echo "hooks: $SETTINGS criado" ;;
+      ja-atualizado) echo "hooks: $SETTINGS já está atualizado" ;;
+      atualizado)    echo "hooks: $SETTINGS atualizado para a versão atual do toolkit" ;;
+      mesclado)      echo "hooks: mesclados em $SETTINGS" ;;
+      divergente)    echo "hooks: $SETTINGS define hooks que não são do toolkit — não foi alterado."
+                     echo "       Compare com workflow/settings.hooks.json e mescle à mão." ;;
+      sem-jq)        echo "hooks: jq ausente e $SETTINGS já existe — mescle à mão" ;;
+    esac
 
     command -v jq >/dev/null 2>&1 || {
       echo "AVISO  jq não instalado: os hooks falham em modo aberto (não bloqueiam)."

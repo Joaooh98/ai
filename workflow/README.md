@@ -9,7 +9,7 @@ regras que o sistema aplica sozinho, sem depender de o modelo obedecer.
 
 ---
 
-## Os três hooks
+## Os quatro hooks
 
 ### `guard-artifacts.sh` — PreToolUse (Write, Edit, NotebookEdit)
 
@@ -46,6 +46,36 @@ Toda escrita sob `docs/sdlc/` vira linha em `docs/sdlc/00-orchestration/artifact
 deduplicada por (agente, caminho). É a evidência bruta de quem produziu o quê; o `MANIFEST.md` é
 a versão curada. Divergiram? O ledger está certo. Nunca bloqueia.
 
+### `guard-publish.sh` — PreToolUse (Bash)
+
+**O problema:** o repositório é para **código desenvolvido**. Plano, PRD, ADR, modelo de ameaças,
+MANIFEST, ledger e registro de incidente são material de trabalho — ficam no disco, ao lado do
+código, e não são publicados. Só que "não commite os artefatos" é exatamente o tipo de regra que
+sobrevive à primeira sessão e morre na quinta: o agente que acabou de escrever um plano tem todo
+incentivo para versioná-lo, e um `git add -A` leva o diretório inteiro junto sem ninguém decidir.
+
+**A solução:** lê o comando do `Bash` e nega quando ele publicaria `docs/sdlc/` ou `docs/incidents/`.
+
+| Comando | Decisão |
+|---|---|
+| `git add .` · `git add -A` · `git add docs` com artefato pendente | **nega** |
+| `git add src/Foo.java` com artefato pendente ao lado | permite |
+| `git commit` com artefato no índice | **nega** |
+| `git commit -am` arrastando artefato já versionado | **nega** |
+| `git commit --amend` · `git commit -m` sem artefato no índice | permite |
+| `git push` com commit inédito que toca artefato | **nega** |
+| `git status`, `git diff`, qualquer comando não-git | permite |
+
+Metade da tabela é sobre o que **passa**. Guarda que dá falso positivo é guarda que alguém desliga
+no primeiro dia ruim — por isso `git add` só é barrado na forma abrangente, e `--amend` não é
+confundido com `-a`.
+
+A mensagem de negação diz o que fazer: tirar do índice, pôr no `.gitignore`, desfazer o commit, ou
+abrir exceção. **Exceção por projeto:** crie `<projeto>/.claude/allow-planning-in-repo`.
+
+Teste: `bash workflow/tests/guard-publish.test.sh` — monta repositórios descartáveis e verifica cada
+decisão da tabela, inclusive os casos que devem passar.
+
 ### `sdlc-context.sh` — SessionStart
 
 Injeta o estado do fluxo no início da sessão: artefatos por fase, se há plano, últimos registros.
@@ -57,13 +87,26 @@ Silencioso quando o projeto não tem `docs/sdlc/`.
 
 | Arquivo | Escopo | Versionar |
 |---|---|---|
-| `.claude/settings.json` | Time — os três hooks acima | sim |
+| `.claude/settings.json` | Time — os quatro hooks acima | sim |
 | `.claude/settings.local.json` | Pessoal — seus hooks e permissões | não (gitignored) |
 
-O instalador cria `settings.json` se não existir. Se existir com `hooks` **diferente** do
-esperado, ele **não altera nada** e pede a mesclagem manual — configuração alheia não é
-sobrescrita em silêncio. Se for idêntico, avisa que já está atualizado. O `workspace/go` aplica a
-mesma regra ao fiar um projeto alvo.
+Quem sincroniza é `workflow/hooks-sync.sh`, chamado tanto por `agents/install.sh` quanto por
+`workspace/go`. Um lugar só, para as duas fiações não divergirem.
+
+| Estado do `settings.json` do alvo | O que acontece |
+|---|---|
+| não existe | snippet copiado inteiro |
+| `hooks` idêntico ao snippet | nada |
+| sem bloco `hooks` | snippet acrescentado, resto preservado |
+| `hooks` diferente, mas **todo comando aponta para `ai-toolkit/workflow/hooks/`** | substituído pelo snippet |
+| `hooks` diferente com **algum comando de fora** do toolkit | **nada é tocado**, avisa e pede mesclagem manual |
+
+A quarta linha é o que faz um hook novo chegar aos projetos já fiados. Sem ela, "diferente do
+esperado" trata **desatualizado** e **customizado** como o mesmo caso — e só um dos dois é seguro
+de substituir. O resultado era um toolkit que nunca conseguia entregar um hook novo a lugar
+nenhum: todo projeto congelava na versão do dia em que foi fiado.
+
+A quinta linha continua valendo: configuração alheia não é sobrescrita em silêncio.
 
 ## Como os hooks alcançam este repositório
 
@@ -71,14 +114,14 @@ mesma regra ao fiar um projeto alvo.
 `.claude/ai-toolkit` é um link para a raiz deste repositório, criado pelo `install.sh` aqui e pelo
 `workspace/go` em cada projeto alvo.
 
-Os três scripts são **portáveis por construção**: cada um resolve o projeto por
+Os quatro scripts são **portáveis por construção**: cada um resolve o projeto por
 `${CLAUDE_PROJECT_DIR}` (ou o `cwd` da entrada) em vez do próprio caminho. Por isso um hook que
 mora aqui guarda corretamente uma sessão rodando em outro repositório — o ledger e o
 `guard.tsv` nascem no projeto alvo, não neste.
 
 ## Dependência: `jq`
 
-Os três precisam de `jq`. Sem ele **falham em modo aberto** — não bloqueiam e não registram, mas
+Os quatro precisam de `jq`. Sem ele **falham em modo aberto** — não bloqueiam e não registram, mas
 também não travam a sessão. `sudo apt install jq`.
 
 ## Testando
