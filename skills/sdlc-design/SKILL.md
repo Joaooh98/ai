@@ -52,6 +52,11 @@ tools/artifact-lint.sh 02
 Atenção especial à **contradição entre artefatos**: contrato expondo campo que o modelo de dados
 não tem, tela consumindo endpoint que não existe. É blocker, e volta para os dois agentes.
 
+## Registro
+
+Reporte cada artefato ao `context-manager` — `Task(subagent_type: "context-manager")`, esse nome
+exato. Você não escreve `MANIFEST.md` (regra 6 do roteador `sdlc`).
+
 ## Saída
 
 Decisões estruturais · ADRs criados · veredito do portão.

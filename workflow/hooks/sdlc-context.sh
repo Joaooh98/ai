@@ -38,6 +38,11 @@ phase_line() {
     printf '\nSem plano de execução ainda. Use /sdlc "objetivo" para criar um.\n'
   fi
 
+  # A propriedade do MANIFEST vive numa skill que a sessão pode nunca carregar.
+  # Sem ela aqui, o coordenador descobre a regra sendo bloqueado pelo hook —
+  # tarde demais, e uma vez por tentativa.
+  printf '\nMANIFEST.md tem escritor único: só o agente context-manager. Para registrar um artefato, despache Task(subagent_type: "context-manager") — esse nome exato, apelido é negado pelo hook. Nunca abra docs/sdlc/00-orchestration/MANIFEST.md com Write ou Edit. O artifact-ledger.tsv ao lado é automático.\n'
+
   ledger="$sdlc/00-orchestration/artifact-ledger.tsv"
   if [ -f "$ledger" ] && [ "$(wc -l < "$ledger")" -gt 1 ]; then
     printf 'Últimos artefatos registrados:\n'

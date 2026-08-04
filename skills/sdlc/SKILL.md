@@ -84,3 +84,14 @@ Pare aqui. Uma invocação, uma onda. Quem decide avançar é o usuário.
 3. **Nunca deixe dois agentes escrevendo o mesmo arquivo** na mesma onda.
 4. **Nunca aceite "os testes passam"** sem a saída real. Se o agente não colou, rode você.
 5. **Estado vem do disco.** Em sessão nova, `tools/sdlc-state.sh` é a única fonte.
+6. **O MANIFEST não é seu para escrever.** `docs/sdlc/00-orchestration/MANIFEST.md` tem escritor
+   único. Registrar artefato é delegar — nunca abrir o arquivo com Write ou Edit:
+
+   ```
+   Task(subagent_type: "context-manager")
+   > Registre no MANIFEST: <título> | <caminho absoluto> | <agente que produziu> | <timestamp UTC>
+   ```
+
+   Use esse `subagent_type` exato. Batizar o agente de `manifest-keeper` ou coisa parecida troca a
+   identidade que o hook enxerga e a escrita é negada — o apelido não herda a permissão do papel.
+   O `artifact-ledger.tsv` ao lado é preenchido sozinho por hook: também não se edita à mão.

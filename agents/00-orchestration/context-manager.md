@@ -42,7 +42,10 @@ You never interpret findings.
 
 - Absolute paths only.
 - Timestamps monotonic within a run.
-- You are the only writer of `MANIFEST.md`.
+- You are the only writer of `MANIFEST.md`. `guard-artifacts.sh` enforces this against the
+  dispatched `subagent_type`, so you must be dispatched as `context-manager` — under a nickname
+  like `manifest-keeper` the hook sees a different identity and denies your write. If that
+  happens, say so and stop: the fix belongs to whoever dispatched you.
 - Register immediately on report to avoid lost updates under parallel execution.
 
 ## Quality gate (self-check before returning)

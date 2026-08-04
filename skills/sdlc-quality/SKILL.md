@@ -60,6 +60,11 @@ tools/artifact-lint.sh 04
 Achado volta para **quem escreveu o código**, nunca para o revisor. Depois da correção, o mesmo
 revisor confirma. Repita até o portão passar.
 
+## Registro
+
+Reporte cada artefato ao `context-manager` — `Task(subagent_type: "context-manager")`, esse nome
+exato. Você não escreve `MANIFEST.md` (regra 6 do roteador `sdlc`).
+
 ## Saída
 
 Tabela: achados por severidade · corrigidos · abertos · veredito do portão.

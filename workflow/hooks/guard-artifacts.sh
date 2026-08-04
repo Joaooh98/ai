@@ -54,8 +54,10 @@ deny() {
 # ---------------------------------------------------------------------------
 case "$path" in
   */docs/sdlc/00-orchestration/MANIFEST.md)
+    # A mensagem precisa dizer o próximo passo, não só o veto: negação sem saída
+    # faz o agente tentar de novo, e o log vira uma fila de tentativas idênticas.
     [ "$agent" = "context-manager" ] || \
-      deny "MANIFEST.md só pode ser escrito pelo context-manager. Reporte o artefato a ele em vez de editar o registro diretamente."
+      deny "MANIFEST.md tem escritor único. Não tente de novo por outro caminho — delegue: Task(subagent_type: \"context-manager\") com título, caminho absoluto, agente produtor e timestamp UTC, e siga o trabalho. Se você achava que ERA o registrador: foi despachado como \"$agent\", e só a identidade context-manager escreve aqui — quem despachou precisa usar esse subagent_type em vez de um apelido."
     ;;
 esac
 

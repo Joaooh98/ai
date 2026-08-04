@@ -48,6 +48,11 @@ Dê ao agente, explicitamente:
 Agente disse "os testes passam" sem colar saída? **Rode você.** Essa é a falha mais comum e a
 mais cara: ela contamina o portão 3 inteiro.
 
+## Registro
+
+Reporte cada artefato ao `context-manager` — `Task(subagent_type: "context-manager")`, esse nome
+exato. Você não escreve `MANIFEST.md` (regra 6 do roteador `sdlc`).
+
 ## Saída
 
 Arquivos alterados · critérios cobertos · resultado real dos testes · desvios do design ·
