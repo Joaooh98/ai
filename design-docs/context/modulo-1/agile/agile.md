@@ -1,0 +1,23 @@
+## Manifesto Ágil e reação ao excesso anterior
+O Manifesto Ágil surgiu em 2001 como uma resposta à insatisfação com processos de desenvolvimento excessivamente pesados. Retomando o contexto de forte formalização visto antes, a crítica não era à existência de método, mas ao fato de o processo e seus artefatos frequentemente dominarem o trabalho a ponto de afastá-lo do objetivo principal: entregar software útil. Agile marca essa virada porque recoloca a entrega de valor em posição central. A mudança relevante não é “parar de documentar”, mas deixar de tratar a documentação como produto principal.
+
+## “Software em funcionamento” mais importante que documentação abrangente
+A frase “software em funcionamento é mais importante que documentação abrangente” estabelece uma prioridade, não uma proibição. Ela afirma que documentação só faz sentido quando sustenta entendimento, implementação, evolução e operação do sistema, em vez de consumir energia apenas para satisfazer o processo. Quando um time passa a usar essa lógica, a pergunta deixa de ser “quanto documento conseguimos produzir?” e passa a ser “qual documentação realmente ajuda o software a funcionar e evoluir?”. Isso reposiciona a documentação como meio de engenharia, não como fim em si mesma.
+
+## Mudança de propósito da documentação
+Antes dessa virada, era comum a documentação ganhar peso semelhante ou até superior ao do próprio software, como se o projeto estivesse representado principalmente nos artefatos. O problema desse arranjo é que o cliente precisa de um sistema utilizável, enquanto documentos extensos, por si só, não entregam comportamento executável. A documentação continua necessária, mas com outro propósito: registrar contexto, decisões e alinhamentos que aumentam a capacidade de construir e manter o produto. Documentar o suficiente passa a ser mais importante do que documentar tudo.
+
+## Crítica à burocracia documental
+A crítica ágil atinge a burocracia documental quando a produção de artefatos vira pré-condição excessiva para avançar, mesmo sem ganho proporcional de clareza ou qualidade. Nessa situação, o time gasta esforço mantendo documentos grandes, abrangentes e formais que nem sempre ajudam a decidir melhor ou implementar mais rápido. O efeito prático é transformar documentação em fricção operacional. A objeção, portanto, é ao excesso sem propósito, não ao registro técnico útil.
+
+## Risco dos extremos
+A reação ao excesso anterior produziu dois extremos problemáticos. De um lado, equipes permaneceram presas à ideia de que só é possível desenvolver com documentação extensa, múltiplas fases rígidas e forte formalização; de outro, surgiu a interpretação equivocada de que documentação seria sempre desperdício. Os dois lados falham porque confundem forma com finalidade. Sem equilíbrio, ou o processo sufoca a entrega, ou o conhecimento do projeto fica implícito demais para sustentar continuidade.
+
+## Documentação com propósito
+Retomando o cenário do projeto documentado, o critério agora não é maximizar volume, mas manter informação suficiente para apoiar software em funcionamento. Documentação com propósito é a que ajuda o time a implementar, alinhar decisões, reduzir ambiguidades e preservar contexto relevante sem competir com o produto pelo centro do processo. Isso exige proporcionalidade: cada registro precisa justificar seu custo pela utilidade que gera. Quando esse princípio é seguido, a documentação deixa de ser peso burocrático e vira suporte real à engenharia.
+
+## Mudanças de processo e evolução da engenharia de software
+A engenharia de software muda quando muda a forma de organizar trabalho, feedback e tomada de decisão. Agile foi um marco porque alterou a relação entre planejamento, execução e adaptação, afetando diretamente o papel da documentação dentro do fluxo. Processos diferentes produzem necessidades documentais diferentes: quanto mais iterativo e adaptativo o desenvolvimento, mais a documentação precisa ser útil, atualizável e conectada ao trabalho real. A evolução do processo, portanto, redefine também o que vale a pena registrar.
+
+## Inteligência artificial como novo fator de transformação
+A inteligência artificial adiciona uma nova camada a essa transformação porque muda novamente a economia da documentação. Se antes o debate era apenas entre excesso e ausência, agora documentos úteis também funcionam como contexto operacional para ferramentas capazes de apoiar implementação, análise e manutenção. Isso reforça a necessidade de registros claros e proporcionais, não de burocracia. O princípio continua o mesmo: documentar para fazer o software funcionar melhor, agora também em um ambiente em que pessoas e sistemas usam esse contexto.
