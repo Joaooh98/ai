@@ -1,7 +1,7 @@
 # Plano — Adoção de Skills da Comunidade
 
 > **Status:** planejamento, nada instalado
-> **Data da pesquisa e auditoria:** 2026-08-01
+> **Pesquisa e auditoria:** 2026-08-01 · **2ª rodada (graphify):** 2026-08-10
 > **Escopo:** avaliar as melhores skills de desenvolvimento de software criadas pela
 > comunidade, validar a segurança delas, e definir o que (e como) incorporar a este repositório.
 
@@ -50,8 +50,24 @@ de cada repositório (quais skills vêm dentro, não só a descrição).
 | [muratcankoylan/Agent-Skills-for-Context-Engineering](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering) | 17.5k | Arquitetura multi-agente e gestão de contexto |
 | [agentskills/agentskills](https://github.com/agentskills/agentskills) | 23.6k | **Especificação** do formato Agent Skills — útil para escrever as nossas de forma portável |
 | [vercel-labs/skills](https://github.com/vercel-labs/skills) | 27.5k | A CLI `npx skills` — virou o padrão de instalação em 70+ agentes |
+| [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) | 105k | Skill `/graphify`: transforma o repositório num **grafo de conhecimento consultável** (AST via tree-sitter, sem embeddings, sem vector store). Ver §2.4 |
 
-### 2.4 Onde garimpar depois
+### 2.4 Nota de método — uma lacuna na busca
+
+A pesquisa inicial usou busca por palavra-chave em nome e descrição (`"claude skills"`,
+`"agent skills"`, `"claude code skills software engineering"`), ordenada por estrelas.
+Esse método **não encontra ferramenta cuja identidade primária é outra coisa**, mesmo que
+ela publique uma skill.
+
+O `Graphify-Labs/graphify` (105k ⭐, Apache-2.0, topics `claude-code` e `skills`) passou
+batido exatamente por isso: apresenta-se como *knowledge graph*, não como coleção de skills.
+Foi apontado depois, auditado, e está incluído aqui.
+
+**Correção de método para a próxima rodada:** buscar também por *capacidade* — busca de
+código, análise de dependência, migração, observabilidade — e por topic do GitHub
+(`topic:claude-code`, `topic:skills`), não só por nome.
+
+### 2.5 Onde garimpar depois
 
 `VoltAgent/awesome-agent-skills` (29k, 1000+ skills) · `ComposioHQ/awesome-claude-skills` (71k) ·
 `davepoon/buildwithclaude` (hub de skills + agents + hooks) ·
@@ -84,6 +100,7 @@ a nunca tratar conteúdo de DOM como instrução).
 | OthmanAdi/planning-with-files | 🟡 Médio | Superfície de hooks bem ampla |
 | vercel-labs/skills (CLI) | 🟡 Médio | Endpoint de terceiro no caminho de install |
 | SawyerHood/dev-browser | 🟠 Atenção | Baixa binário nativo **sem verificação de integridade** |
+| Graphify-Labs/graphify | 🟢 Baixo | Python, superfície maior — mas auditado limpo. Ver §3.3 |
 
 ### 3.2 Achados
 
@@ -122,6 +139,43 @@ porta alta aleatória, chave por sessão, timeout de idle. `0.0.0.0` só via fla
 **A6 — Licenças.** MIT em 6 repositórios. `anthropics/skills` e `vercel-labs/agent-skills`
 **não declaram licença** (sem arquivo LICENSE, sem SPDX na API). Relevante se formos
 redistribuir ou derivar conteúdo deles aqui.
+
+### 3.3 Auditoria específica — graphify
+
+Avaliado separadamente por ser o único candidato com **código executável de verdade**
+(Python, 21 MB) em vez de markdown, e por vir de empresa YC (S26) com plataforma
+comercial paga — combinação onde o README não serve como evidência.
+
+O `README` claima *"nothing leaves your machine"* e *"no telemetry, no usage tracking,
+no analytics"*. **Ambas as afirmações se confirmaram no código:**
+
+| Verificação | Resultado |
+|---|---|
+| SDK de telemetria | Nenhum. O único hit com "telemetry" é um comentário declarando a postura |
+| Upload do grafo para fora | Nenhum `requests.post` / `httpx.post` / `urlopen` no pacote |
+| `app.graphify.com` no código | **1 ocorrência, dentro de um `print()`** — linha de marketing impressa no terminal após o install. Zero chamada de rede |
+| Log de queries | **OFF por padrão**, confirmado em `querylog.py`. Exige `GRAPHIFY_QUERY_LOG_ENABLE=1` explícito |
+| `SECURITY.md` | Declara modelo de segurança real: ferramenta local, sem chamada de rede durante análise, só no `ingest` iniciado pelo usuário |
+
+**Domínios encontrados e por quê:** `api.anthropic.com`, `api.openai.com`,
+`generativelanguage.googleapis.com`, `api.deepseek.com`, `api.moonshot.ai`, Azure —
+todos são o **provider LLM que você escolhe e configura com a sua chave**, usados apenas
+no passo semântico opcional sobre docs/PDF/imagem. Parsing de código é 100% local via
+tree-sitter, sem LLM. `unpkg.com`/`d3js.org`/`cdn.jsdelivr.net` são bibliotecas do
+`graph.html` de visualização. `localhost` é Ollama.
+
+**Comportamento a saber (não é falha):** o `graphify install` escreve em
+`~/.claude/skills/graphify/` e registra uma seção no `CLAUDE.md` do projeto. O código de
+remoção é cuidadoso — casa o H1 exato `# graphify` e nunca um `##`/`###` do usuário, com
+referência à issue #2062 onde isso foi corrigido. Sinal de maturidade, mas fica o registro
+de que **ele edita o seu CLAUDE.md**.
+
+**Ressalvas não-técnicas:** versão 0.3.x (pré-1.0, API pode mudar) e o incentivo comercial
+de funilar para a plataforma hospedada. Nenhum dos dois é problema de segurança — são
+considerações de estabilidade e dependência.
+
+**Veredito:** 🟢 risco baixo. Saiu **mais limpo que vários dos 8 originais** — tem política
+de segurança declarada, log desligado por padrão e nenhuma coleta.
 
 ---
 
@@ -200,8 +254,24 @@ repositórios são markdown e scripts em texto puro, integralmente auditáveis �
 | dev-browser | `skills/verify-live` + claude-in-chrome | **Não adotar.** Já coberto, e evita o binário sem checksum. |
 | planning-with-files | `docs/sdlc/` (artefatos em disco) | **Avaliar.** Já persistimos, mas a recuperação de sessão deles é mais dura. |
 | agentskills (spec) | — | **Ler.** Referência para portabilidade das nossas skills. |
+| graphify (grafo do código) | `agents/project-analyst` (hoje: grep e leitura) | **Adotar — candidato mais forte.** Ver §5.1. |
 
-### 5.1 O risco que mais importa não é de segurança
+### 5.1 Por que graphify é o candidato de maior valor
+
+É o único da lista que resolve um problema que **não temos solução nenhuma** hoje, em vez
+de competir com algo que já fizemos:
+
+- O `project-analyst` mapeia stack e convenções **grepando e lendo arquivo por arquivo**.
+  Um grafo consultável troca isso por travessia dirigida.
+- O `business-analyst` tem como caso de uso declarado *"reverse-engineer as regras já
+  enterradas em código legado"* — que é literalmente para isso que a ferramenta existe.
+- O `sdlc-discovery` em repositório desconhecido é hoje a fase mais cara em tokens.
+
+E o custo de contexto é **zero**: diferente de superpowers e addyosmani, graphify não
+injeta metodologia opinativa que disputa autoridade com o nosso SDLC (§5.2). É uma
+ferramenta que o agente chama, não um fluxo que compete com o nosso.
+
+### 5.2 O risco que mais importa não é de segurança
 
 As auditorias vieram limpas. O risco real de adotar `superpowers` ou `addyosmani` é de
 **governança de contexto**: são metodologias opinativas que entram direto no prompt e vão
@@ -239,6 +309,23 @@ Preenche lacuna real: hoje o `sdlc-build` roteia para engenheiro genérico.
 - [ ] Adaptar o `sdlc-build` para rotear ao especialista de stack quando existir
 - **Critério de aceite:** um item de trabalho em Quarkus é roteado para o especialista Java,
   não para o engenheiro genérico, e o roteamento aparece no artefato da onda 03.
+
+### Fase 1B — Piloto do graphify (maior valor esperado)
+
+Auditado 🟢 (§3.3). Roda em paralelo à Fase 1 — não há dependência entre elas.
+
+- [ ] Instalar isolado: `uv tool install graphifyy` e `graphify install --project` num
+      projeto só, **não global**, para conter o blast radius
+- [ ] Rodar `/graphify .` sobre um projeto real do `workspace/` e comparar o custo em
+      tokens de uma pergunta de arquitetura **com** o grafo versus o `project-analyst`
+      grepando hoje
+- [ ] Verificar o que foi escrito no `CLAUDE.md` do projeto após o install (§3.3) e decidir
+      se fica versionado ou entra no `.gitignore`
+- [ ] Definir `GRAPHIFY_QUERY_LOG_DISABLE=1` no ambiente — o log já é off por padrão,
+      mas explícito é melhor que implícito
+- [ ] Se aprovado: ligar ao `agents/project-analyst` e ao `sdlc-discovery`
+- **Critério de aceite:** medida real de tokens/tempo nas duas abordagens sobre o mesmo
+  repositório e a mesma pergunta. Adotar só se o ganho for demonstrável — sem número, não passa.
 
 ### Fase 2 — Importar conceitos (não código) de superpowers e addyosmani
 
@@ -351,9 +438,21 @@ seja documentação, npm registry, GitHub ou localhost. Qualquer hit real nos pa
 
 ## Anexo B — Como esta auditoria foi feita
 
-- 8 repositórios clonados com `--depth 1` (~70 MB) em diretório descartável
+**1ª rodada — 8 repositórios (2026-08-01)**
+
+- Clone `--depth 1` (~70 MB) em diretório descartável
 - 10 varreduras por padrões de risco, com inspeção manual de todo hit não trivial
 - Leitura direta do código de: `sdd-cache-post.sh` (addyosmani), `postinstall.js` (dev-browser),
   `blob.ts` (vercel-labs/skills), `hooks.json` (superpowers e addyosmani),
   `start-server.sh` (superpowers), `daemon.ts` (dev-browser)
-- Nada foi instalado; o repositório não foi modificado durante a auditoria
+
+**2ª rodada — graphify (2026-08-10)**
+
+- Mesmo checklist do Anexo A, aplicado ao ser apontado que faltava na 1ª rodada
+- Leitura direta de: `querylog.py` (default do log), `install.py` (o que escreve e onde,
+  incluindo a manipulação do `CLAUDE.md`), `SECURITY.md`, e o contexto exato da única
+  ocorrência de `app.graphify.com`
+- Serviu também como validação do checklist: ele pegou um repositório que a busca por
+  palavra-chave tinha deixado passar (§2.4)
+
+Nada foi instalado em nenhuma das rodadas; o repositório não foi modificado durante as auditorias.
