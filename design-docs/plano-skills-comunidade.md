@@ -284,6 +284,37 @@ causar problema.
 
 ## 6. Plano de implementação
 
+### 6.0 Princípio de instalação — a oficina absorve, o projeto não recebe nada
+
+Este repositório é a **oficina**: ele manipula outros projetos, e nenhum trabalho de produto
+acontece aqui. A fiação real, lida do `workspace/go` e do `agents/install.sh`, é:
+
+| Onde | O quê | Como |
+|---|---|---|
+| `~/.claude/skills/` e `~/.claude/agents/` | A equipe inteira | `./agents/install.sh --user` cria symlinks para as fontes versionadas em `agents/` e `skills/` |
+| `<projeto>/.claude/ai-toolkit` | Symlink para este repo | Criado pelo `go`, dá acesso a `workflow/hooks` e `tools/` |
+| `<projeto>/.claude/settings.json` | Aponta os hooks para o toolkit | Criado pelo `go` |
+| `<projeto>/.claude/toolbelt.md` | Calibração daquele projeto | Gerado pelo `/setup` na primeira sessão |
+
+**A regra que decorre disso, e que vale para toda skill de terceiro:**
+
+> Skill de terceiro entra **versionada na oficina** (`skills/` ou `agents/`) ou **em escopo de
+> usuário** (`~/.claude/`). Nunca no repositório do projeto-alvo.
+
+Três razões, todas concretas:
+
+1. **O projeto-alvo é código de terceiro.** Regra já vigente: repositório só recebe código —
+   análise, relatório e ferramental ficam fora. Instalar skill lá dentro é sujar repositório
+   que não é nosso para sujar.
+2. **Não escala.** Instalar por projeto significa repetir a instalação a cada `go add`, e
+   divergir silenciosamente entre projetos.
+3. **Perde o portão de validação.** O `install.sh` já valida nome duplicado de agente e skill,
+   e exige que toda referência `skills:` no frontmatter resolva. Instalação ad-hoc pula isso.
+
+**Consequência para os artefatos gerados:** qualquer saída que uma ferramenta de terceiro
+produzir dentro do projeto (ex.: `graphify-out/`) precisa respeitar o contrato de `docs/sdlc/`
+ou entrar no `.gitignore` do projeto. Ela não pode aparecer no diff que vai virar MR.
+
 ### Fase 0 — Guarda-corpos (antes de instalar qualquer coisa)
 
 - [ ] Adicionar `.claude/sdd-cache/` ao `.gitignore` (achado A3)
@@ -300,32 +331,55 @@ causar problema.
 Alvo: `Jeffallan/claude-skills` — 100% markdown, sem hooks, sem executáveis (risco 🟢).
 Preenche lacuna real: hoje o `sdlc-build` roteia para engenheiro genérico.
 
+Modo de adoção, conforme §6.0: **absorver na oficina**, não instalar ad-hoc. As skills
+escolhidas viram arquivos versionados em `agents/` ou `skills/` deste repo, com a origem
+citada no frontmatter, e são distribuídas pelo `install.sh --user` como todo o resto.
+
 - [ ] Selecionar **apenas** as skills do stack real dos projetos em `workspace/`
       (candidatas: `java-architect`, `spring-boot-engineer`, `typescript-pro`,
       `nextjs-developer`, `react-expert`, `postgres-pro`, `sql-pro`, `kubernetes-specialist`,
-      `terraform-engineer`, `playwright-expert`, `security-reviewer`) — não as 66
-- [ ] Verificar conflito de nome com `agents/` existentes (ex.: já temos `api-designer`,
-      `code-reviewer`, `devops-engineer`, `quarkus-senior-developer`)
+      `terraform-engineer`, `playwright-expert`) — não as 66
+- [ ] **Resolver colisão de nomes antes de copiar qualquer arquivo.** O `install.sh` falha
+      com nome duplicado, e há colisão direta: o Jeffallan tem `api-designer`,
+      `code-reviewer` e `devops-engineer` — os três já existem em `agents/`. O
+      `security-reviewer` dele colide em papel com o nosso `security-auditor`. Decidir caso
+      a caso: **fundir** o conteúdo no nosso agente existente, ou **renomear** com sufixo de
+      stack (`java-architect` não colide; `api-designer` teria de virar outra coisa ou ser
+      absorvido). Copiar sem resolver quebra a instalação da equipe inteira.
+- [ ] Rodar `./agents/install.sh --check` após cada absorção — ele valida duplicidade e
+      referências `skills:` do frontmatter
 - [ ] Adaptar o `sdlc-build` para rotear ao especialista de stack quando existir
-- **Critério de aceite:** um item de trabalho em Quarkus é roteado para o especialista Java,
-  não para o engenheiro genérico, e o roteamento aparece no artefato da onda 03.
+- **Critério de aceite:** `install.sh --check` passa, e um item de trabalho em Quarkus é
+  roteado para o especialista Java — não para o engenheiro genérico — com o roteamento
+  visível no artefato da onda 03.
 
 ### Fase 1B — Piloto do graphify (maior valor esperado)
 
 Auditado 🟢 (§3.3). Roda em paralelo à Fase 1 — não há dependência entre elas.
 
-- [ ] Instalar isolado: `uv tool install graphifyy` e `graphify install --project` num
-      projeto só, **não global**, para conter o blast radius
-- [ ] Rodar `/graphify .` sobre um projeto real do `workspace/` e comparar o custo em
-      tokens de uma pergunta de arquitetura **com** o grafo versus o `project-analyst`
-      grepando hoje
-- [ ] Verificar o que foi escrito no `CLAUDE.md` do projeto após o install (§3.3) e decidir
-      se fica versionado ou entra no `.gitignore`
+**Correção sobre a versão anterior deste plano:** a primeira redação mandava usar
+`graphify install --project` "para conter o blast radius". Está errado para esta arquitetura.
+O `--project` escreve no `.claude/` e no `CLAUDE.md` do **projeto-alvo** — exatamente o que
+§6.0 proíbe: sujar repositório de terceiro, não escalar, e exigir reinstalação a cada
+`go add`. O certo é o **escopo de usuário**, o mesmo lugar onde o `install.sh --user` já
+coloca a equipe.
+
+- [ ] `uv tool install graphifyy` e `graphify install` em **escopo de usuário**
+      (`~/.claude/skills/graphify/`) — sem `--project`, o repositório do projeto não recebe nada
+- [ ] Confirmar que nenhum `CLAUDE.md` de projeto foi tocado após o install (§3.3 mostra que
+      ele mexe nesse arquivo no modo `--project`)
+- [ ] Garantir que `graphify-out/` **não entre no diff** do projeto-alvo: `.gitignore` local
+      ou saída redirecionada para fora da árvore
 - [ ] Definir `GRAPHIFY_QUERY_LOG_DISABLE=1` no ambiente — o log já é off por padrão,
       mas explícito é melhor que implícito
-- [ ] Se aprovado: ligar ao `agents/project-analyst` e ao `sdlc-discovery`
+- [ ] Rodar `/graphify .` numa sessão aberta pelo `go` sobre um projeto real e comparar o
+      custo em tokens de uma pergunta de arquitetura **com** o grafo versus o
+      `project-analyst` grepando hoje
+- [ ] Se aprovado: ligar ao `agents/project-analyst` e ao `sdlc-discovery`, e registrar a
+      dependência no `mcp/README.md` — a equipe precisa saber que a ferramenta existe
 - **Critério de aceite:** medida real de tokens/tempo nas duas abordagens sobre o mesmo
-  repositório e a mesma pergunta. Adotar só se o ganho for demonstrável — sem número, não passa.
+  repositório e a mesma pergunta, **e** `git status` limpo no projeto-alvo depois do uso.
+  Adotar só se o ganho for demonstrável — sem número, não passa.
 
 ### Fase 2 — Importar conceitos (não código) de superpowers e addyosmani
 
@@ -376,6 +430,11 @@ O commit auditado hoje está limpo. O risco é o commit de amanhã, em repositó
 - ❌ Instalar `dev-browser` (`verify-live` + claude-in-chrome já cobrem, e evita o
       binário sem checksum — achado A1)
 - ❌ Instalar as 66 skills do Jeffallan de uma vez (poluição de contexto)
+- ❌ **Instalar qualquer skill de terceiro dentro do repositório do projeto-alvo** (§6.0).
+      A oficina distribui via `~/.claude/`; o projeto recebe só o symlink `ai-toolkit` que
+      o `go` já cria.
+- ❌ Copiar skill de terceiro para `agents/`/`skills/` sem rodar `install.sh --check` —
+      nome duplicado quebra a instalação da equipe inteira
 
 ---
 
