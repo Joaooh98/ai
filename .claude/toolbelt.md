@@ -9,6 +9,9 @@ de agente.
   `./agents/install.sh --check`.
 - Trabalho de produto **não** acontece aqui. Os projetos ficam cadastrados em `workspace/projects/`
   e a sessão abre dentro deles via `./workspace/go <nome>`.
+- `workspace/go` é script de terminal do operador, **não** é skill. Dentro do Claude o comando é
+  a skill `/workspace` (listar, check, wire, add, rm); abrir sessão em outro projeto é sempre
+  `./workspace/go <nome>` num terminal.
 - Skills e hooks referenciam scripts por `${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/…`, nunca por
   caminho relativo à raiz — a âncora é o que faz o mesmo texto funcionar aqui e no projeto alvo.
 - Remote é GitHub (`Joaooh98/ai`) — use `gh`, não `glab`.

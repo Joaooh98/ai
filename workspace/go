@@ -316,6 +316,17 @@ cmd_open() {
   target="$(project_path "$name")" || die "'$name' não está cadastrado. Veja: ./workspace/go"
   [ -d "$target" ] || die "caminho cadastrado não existe: $target"
 
+  # Dentro de uma sessão do Claude (ou sem terminal) não existe como abrir outra
+  # sessão interativa — o exec claude aninhado trava sem erro. Fia e devolve o
+  # comando para o operador rodar num terminal de verdade.
+  if [ -n "${CLAUDECODE:-}" ] || [ ! -t 0 ] || [ ! -t 1 ]; then
+    echo "fiando $name..."
+    cmd_wire "$name"
+    echo
+    echo "Sessão interativa não abre daqui. No terminal:  ./workspace/go $name"
+    return 0
+  fi
+
   command -v claude >/dev/null 2>&1 || die "'claude' não está no PATH"
 
   echo "fiando $name..."
