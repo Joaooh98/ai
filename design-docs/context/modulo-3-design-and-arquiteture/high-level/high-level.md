@@ -1,0 +1,26 @@
+## High Level Design como desenho arquitetural
+High Level Design organiza a solução no nível em que a arquitetura precisa fazer sentido como sistema, não como código. Ele responde perguntas sobre estrutura, componentes, módulos, comunicação, tecnologias adotadas e padrões principais, permitindo enxergar como a solução se sustenta antes de entrar em detalhes de implementação. A utilidade prática desse documento está em alinhar a visão técnica ampla entre pessoas que precisam decidir, revisar ou decompor o trabalho. A metáfora mais útil é tratá-lo como o terreno arquitetural onde as features precisam caber.
+
+## Perguntas que o HLD precisa responder
+Um HLD bom não tenta dizer linha por linha como construir; ele esclarece como o sistema é organizado e como suas partes se conectam. Isso inclui identificar componentes relevantes, descrever os fluxos principais e explicitar como os módulos se comunicam entre si. Também entram aqui as tecnologias e os padrões adotados, porque essas escolhas moldam restrições e possibilidades para os documentos mais detalhados. O valor do HLD está menos em exaustão e mais em remover ambiguidade estrutural.
+
+## Uso de C4 no nível de containers
+O diagrama C4 no nível de containers é uma forma adequada de representar o HLD porque mostra os principais serviços, APIs e relações entre blocos executáveis da solução. Esse nível não detalha classes nem contratos completos, mas já permite visualizar responsabilidades, fronteiras e fluxos de comunicação. Quando bem usado, ele transforma uma descrição abstrata em uma arquitetura legível, suficiente para discutir composição do sistema e dependências relevantes. É o ponto em que a solução deixa de ser apenas intenção e passa a ter forma arquitetural.
+
+## Seções típicas do documento
+O HLD costuma começar pelo objetivo do documento ou da feature, mas esse objetivo já aparece antes no PRD e aqui ganha recorte técnico. A partir daí, entram arquitetura geral, principais componentes, responsabilidades, fluxo das requisições, modelo de dados em alto nível e interfaces públicas expostas pelos módulos. Essas seções existem para responder o que precisa ser construído do ponto de vista estrutural, sem cair em especificação detalhada de implementação. Os nomes das seções podem variar; o importante é cobrir as perguntas arquiteturais certas.
+
+## Interfaces públicas em alto nível
+Interfaces públicas entram no HLD para deixar claro o que cada módulo ou serviço expõe para o restante do sistema, mesmo sem detalhar todos os contratos. Isso é importante porque a arquitetura depende das fronteiras entre partes do sistema, e essas fronteiras aparecem justamente nas interfaces. Em alto nível, basta identificar quais pontos de integração existem e qual papel cumprem. O detalhamento fino fica para documentos mais próximos da implementação.
+
+## Preocupações transversais: segurança, escalabilidade, disponibilidade e observabilidade
+Segurança, escalabilidade, disponibilidade e observabilidade aparecem no HLD porque afetam a arquitetura desde o início, e não apenas na fase de implementação. Se um sistema precisa crescer, resistir a falhas, proteger acesso ou ser monitorável, isso influencia componentes, fluxos e padrões de comunicação escolhidos. Essas preocupações não exigem ainda a definição completa de mecanismos e configurações, mas precisam estar registradas como direcionadores arquiteturais. Ignorá-las no alto nível costuma empurrar problemas estruturais para tarde demais.
+
+## Riscos e leitura do documento
+Riscos já fazem parte da cadeia de documentação, mas no HLD eles aparecem conectados à forma da solução. O documento ajuda líderes e arquitetos a entender o que será desenvolvido com detalhe suficiente para orientar decisões posteriores, inclusive a decomposição em um Feature Design Doc quando necessário. Ele não entrega instruções executáveis para implementação direta, mas oferece base para que alguém refine a solução em um nível mais baixo. Esse limite é intencional: clareza arquitetural sem confundir visão geral com especificação detalhada.
+
+## Fronteira entre HLD e documentos mais detalhados
+Retomando a distinção de níveis de abstração já estabelecida, o HLD não substitui o documento de feature quando a solução exige detalhamento operacional. Dizer apenas que haverá autenticação pode ser suficiente em um cenário simples, especialmente quando o framework já resolve quase tudo; em um cenário mais complexo, o HLD deixa claro que existe uma preocupação arquitetural, mas o detalhamento precisa descer para outro artefato. A fronteira correta depende do contexto da mudança e da complexidade envolvida. O erro comum é tentar fazer o HLD virar especificação completa ou, no extremo oposto, deixá-lo genérico demais para orientar qualquer decisão.
+
+## Adaptação ao contexto
+Não existe conjunto obrigatório e universal de seções para todo HLD. O documento funciona melhor como guideline adaptável: muitos artefatos compartilham uma espinha dorsal parecida, mas cada contexto pode exigir seções extras, ênfases diferentes ou até nomenclaturas distintas. Essa flexibilidade é parte do próprio papel do HLD, porque a arquitetura precisa refletir o problema real, não obedecer rigidamente a um template. Um bom documento preserva a cobertura das decisões essenciais e ajusta a forma ao contexto do sistema.

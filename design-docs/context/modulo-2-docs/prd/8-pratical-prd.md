@@ -33,3 +33,6 @@ Agentes de IA trabalham melhor quando o contexto está organizado em campos prev
 
 ## Quando vale usar Markdown e quando vale usar JSON
 Markdown continua sendo a forma mais prática para leitura, edição e discussão entre pessoas. JSON passa a valer mais quando o documento precisa ser consumido por agentes, filtrado programaticamente ou transformado em entrada padronizada para outras etapas. A escolha, portanto, não é exclusiva: manter as duas saídas preserva legibilidade para humanos e estrutura para sistemas.
+
+
+https://devfullcycle.notion.site/PRD-de-Feature-2941423c03888001a8a3e4e27e9b3add
