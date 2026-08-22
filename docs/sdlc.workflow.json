@@ -1,0 +1,206 @@
+{
+ "schema_version": 1,
+ "diagram_type": "workflow",
+ "meta": {
+  "title": "Fluxo /sdlc",
+  "subtitle": "Uma invocação, uma onda, um portão — o estado vem do disco",
+  "output": "sdlc.html"
+ },
+ "lanes": [
+  {
+   "id": "voce",
+   "label": "Você"
+  },
+  {
+   "id": "orq",
+   "label": "Orquestração"
+  },
+  {
+   "id": "equipe",
+   "label": "Equipe de agentes"
+  },
+  {
+   "id": "portao",
+   "label": "Portão de qualidade"
+  },
+  {
+   "id": "reprova",
+   "label": "Reprovação",
+   "variant": "exception"
+  }
+ ],
+ "phases": [
+  {
+   "id": "entrada",
+   "label": "Entrada",
+   "fromCol": 0,
+   "toCol": 0
+  },
+  {
+   "id": "execucao",
+   "label": "Execução da onda",
+   "fromCol": 1,
+   "toCol": 2,
+   "variant": "emphasis"
+  },
+  {
+   "id": "veredito",
+   "label": "Veredito",
+   "fromCol": 3,
+   "toCol": 4
+  }
+ ],
+ "nodes": [
+  {
+   "id": "objetivo",
+   "lane": "voce",
+   "col": 0,
+   "type": "external",
+   "label": "/sdlc \"...\"",
+   "sublabel": "o objetivo"
+  },
+  {
+   "id": "orquestra",
+   "lane": "orq",
+   "col": 1,
+   "type": "database",
+   "label": "lê o disco",
+   "sublabel": "sdlc-state.sh → skill da fase",
+   "tag": "fonte da verdade"
+  },
+  {
+   "id": "espec",
+   "lane": "equipe",
+   "col": 2,
+   "type": "frontend",
+   "label": "especialistas",
+   "sublabel": "em paralelo",
+   "tag": "27 agentes"
+  },
+  {
+   "id": "gate",
+   "lane": "portao",
+   "col": 3,
+   "type": "security",
+   "label": "portão",
+   "sublabel": "artifact-lint + meta-check",
+   "tag": "exit 1 = reprova"
+  },
+  {
+   "id": "report",
+   "lane": "voce",
+   "col": 4,
+   "type": "cloud",
+   "label": "report",
+   "sublabel": "veredito + próximo passo"
+  },
+  {
+   "id": "bloq",
+   "lane": "reprova",
+   "col": 2,
+   "type": "messagebus",
+   "label": "bloqueado",
+   "sublabel": "defeito → agente dono"
+  }
+ ],
+ "mainPath": [
+  "objetivo",
+  "orquestra",
+  "espec",
+  "gate",
+  "report"
+ ],
+ "edges": [
+  {
+   "from": "objetivo",
+   "to": "orquestra",
+   "variant": "emphasis",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "route": "drop"
+  },
+  {
+   "from": "orquestra",
+   "to": "espec",
+   "label": "delega",
+   "variant": "emphasis",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "route": "drop",
+   "labelSegment": 1,
+   "labelDy": 11
+  },
+  {
+   "from": "espec",
+   "to": "gate",
+   "label": "onda completa",
+   "variant": "emphasis",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "route": "drop",
+   "labelSegment": 1,
+   "labelDy": 11
+  },
+  {
+   "from": "gate",
+   "to": "report",
+   "label": "aprovado",
+   "variant": "emphasis",
+   "fromSide": "top",
+   "toSide": "bottom",
+   "route": "drop",
+   "labelSegment": 1
+  },
+  {
+   "from": "gate",
+   "to": "bloq",
+   "label": "reprovado",
+   "variant": "security",
+   "role": "error",
+   "route": "bottom-channel",
+   "labelSegment": 1
+  },
+  {
+   "from": "bloq",
+   "to": "objetivo",
+   "label": "corrigido, rode de novo",
+   "variant": "default",
+   "role": "return",
+   "route": "return-left",
+   "labelSegment": 1
+  }
+ ],
+ "cards": [
+  {
+   "dot": "cyan",
+   "title": "O que garante",
+   "items": [
+    "Nenhuma fase avança sem portão avaliado",
+    "Estado lido do disco, não da memória da conversa",
+    "Um dono por artefato, imposto por hook e não por convenção",
+    "Sessão nova continua exatamente de onde parou"
+   ]
+  },
+  {
+   "dot": "amber",
+   "title": "O portão é real, não sugestão",
+   "items": [
+    "artifact-lint.sh — artefato ausente, incompleto ou só esqueleto reprova",
+    "meta-check.sh — número fora da meta declarada pelo projeto reprova",
+    "Relatório mais velho que o código é não verificável, e bloqueia igual",
+    "Contradição entre artefatos é blocker, e volta para os dois agentes"
+   ]
+  },
+  {
+   "dot": "emerald",
+   "title": "Bloqueio de meta tem quatro donos",
+   "items": [
+    "FORA DA META — defeito real, volta ao agente dono da métrica",
+    "SEM FERRAMENTA — falta calibração: instale e rode /setup",
+    "NÃO VERIFICÁVEL — a suíte não rodou nesta onda: gere o relatório",
+    "DESATUALIZADA — mediu antes da última mudança: rode de novo",
+    "Só o primeiro é defeito de código. Confundir queima uma onda"
+   ]
+  }
+ ]
+}

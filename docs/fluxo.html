@@ -616,7 +616,7 @@
         <rect x="254" y="209" width="92" height="68" rx="6" class="c-mask"/>
         <rect x="254" y="209" width="92" height="68" rx="6" class="c-security" stroke-width="1.5"/>
         <text x="300" y="230" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">/setup</text>
-        <text x="300" y="247" class="t-muted" font-size="8" text-anchor="middle">calibra a equipe</text>
+        <text x="300" y="247" class="t-muted" font-size="8" text-anchor="middle">stack · MCP · meta</text>
         <text x="300" y="265" class="t-security" font-size="7" text-anchor="middle">uma vez</text>
 
         <rect x="454" y="217" width="92" height="52" rx="6" class="c-mask"/>
@@ -632,7 +632,7 @@
         <rect x="454" y="333" width="92" height="68" rx="6" class="c-mask"/>
         <rect x="454" y="333" width="92" height="68" rx="6" class="c-security" stroke-width="1.5"/>
         <text x="500" y="354" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">portão</text>
-        <text x="500" y="371" class="t-muted" font-size="8" text-anchor="middle">artefato pronto?</text>
+        <text x="500" y="371" class="t-muted" font-size="8" text-anchor="middle">artefato + meta</text>
         <text x="500" y="389" class="t-security" font-size="7" text-anchor="middle">para e reporta</text>
 
         <rect x="42" y="465" width="92" height="52" rx="6" class="c-mask"/>
@@ -693,9 +693,9 @@
         <ul>
           <li>&bull; ./workspace/go add &lt;caminho&gt; — cadastra, uma vez</li>
           <li>&bull; ./workspace/go &lt;nome&gt; — fia e abre a sessão no projeto</li>
-          <li>&bull; /setup — calibra: detecta a stack e VERIFICA os comandos</li>
+          <li>&bull; /setup — detecta a stack, VERIFICA os comandos, e pergunta:</li>
+          <li>&bull;    quais servidores MCP entram, e qual é a meta de qualidade</li>
           <li>&bull; /sdlc &#39;objetivo&#39; — executa a próxima onda e para no portão</li>
-          <li>&bull; Rodou de novo, avança mais uma</li>
         </ul>
       </div>
 
@@ -706,10 +706,24 @@
         </div>
         <ul>
           <li>&bull; sdlc-state.sh lê docs/sdlc/ e diz a fase — não a memória da conversa</li>
-          <li>&bull; artifact-lint.sh sai com código 1 quando o artefato</li>
-          <li>&bull; é só o esqueleto do template: o portão é real, não sugestão</li>
-          <li>&bull; Bloqueado devolve ao agente dono com o defeito específico</li>
+          <li>&bull; artifact-lint.sh reprova o artefato que é só o esqueleto do template</li>
+          <li>&bull; meta-check.sh reprova o número fora da meta que o projeto declarou</li>
+          <li>&bull; Os dois saem com código 1: o portão é real, não sugestão</li>
           <li>&bull; /sdlc-status e /sdlc-gate &lt;n&gt; olham sem avançar</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>Bloqueio de meta tem quatro donos</h3>
+        </div>
+        <ul>
+          <li>&bull; FORA DA META — defeito real, volta ao agente dono da métrica</li>
+          <li>&bull; SEM FERRAMENTA — falta calibração, instale e rode /setup</li>
+          <li>&bull; NÃO VERIFICÁVEL — a suíte não rodou nesta onda, gere o relatório</li>
+          <li>&bull; DESATUALIZADA — mediu antes da última mudança, rode de novo</li>
+          <li>&bull; Só o primeiro é defeito de código; confundir queima uma onda</li>
         </ul>
       </div>
 

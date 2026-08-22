@@ -24,3 +24,6 @@ workspace/projects/*.md
 # Rascunho de ferramenta: snapshots e logs do Playwright MCP.
 # São saída de sessão, não conteúdo do repositório.
 .playwright-mcp/
+
+# Cache local do CLI Quarkus. Estado de ferramenta, nao conteudo do repositorio.
+.quarkus/

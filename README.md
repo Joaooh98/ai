@@ -11,7 +11,7 @@ workflow/     3 hooks que impõem as fronteiras e registram o que acontece
 tools/        11 scripts de apoio somente-leitura chamados pelos agentes
 workspace/    os projetos onde você trabalha — cadastro e abertura de sessão
 mcp/          como a equipe detecta o ferramental do projeto, em vez de assumir
-docs/         dois diagramas interativos: como o repo é feito e como se usa
+docs/         três diagramas interativos: como o repo é feito, como se usa, e a onda por dentro
 plans/        decidido e ainda não construído — com a medição que sustenta a decisão
 prompts/      material do MBA + biblioteca de prompts versionada (PT e EN)
 design-docs/  ensaios de contexto do MBA: documentação como ativo, e RUP
@@ -23,9 +23,21 @@ ficam onde o código está.
 **Este repositório é a oficina.** Nenhum trabalho de produto acontece aqui dentro — os projetos
 ficam cadastrados em `workspace/` e a sessão abre dentro deles.
 
-**Ver antes de ler:** [`docs/arquitetura.html`](docs/arquitetura.html) mostra como o repositório é
-feito, [`docs/fluxo.html`](docs/fluxo.html) mostra como se usa. Tema claro/escuro e exportação.
-Abra com `xdg-open docs/fluxo.html`.
+**Ver antes de ler.** Três diagramas, cada um começando onde o anterior para — tema claro/escuro
+e exportação em todos:
+
+| Diagrama | Responde |
+|---|---|
+| [`docs/arquitetura.html`](docs/arquitetura.html) | **Onde as peças moram** — o que fica na oficina, o que fica no projeto alvo, e a âncora que liga os dois |
+| [`docs/fluxo.html`](docs/fluxo.html) | **A jornada do operador** — do cadastro do projeto até produção, com o portão e o desvio de emergência |
+| [`docs/sdlc.html`](docs/sdlc.html) | **Uma invocação por dentro** — ler o disco, despachar a onda, avaliar o portão, e o caminho da reprovação |
+
+```bash
+xdg-open docs/fluxo.html
+```
+
+Os `.html` são **derivados**: a fonte é o `.json` ao lado. Mexeu na estrutura da equipe, regere —
+o procedimento está em [`docs/README.md`](docs/README.md).
 
 ---
 
@@ -231,7 +243,7 @@ Detalhes, curadoria e roster completo: [`agents/README.md`](agents/README.md).
 
 ```mermaid
 flowchart LR
-    SETUP(["/setup — uma vez, calibra a equipe para o projeto"]) -.-> A
+    SETUP(["/setup — uma vez: calibra a stack,<br/>habilita MCP, fixa a meta de qualidade"]) -.-> A
 
     subgraph PLAN["1 · TRABALHO PLANEJADO — o portão protege a qualidade"]
         direction TB
@@ -239,7 +251,7 @@ flowchart LR
         A --> B{"em que fase<br/>os artefatos estão?"}
         B --> C["executa UMA onda<br/>agentes em paralelo"]
         C --> V["/verify-live<br/>sobe e verifica no navegador<br/>(onda de qualidade)"]
-        V --> D{"portão"}
+        V --> D{"portão<br/>artefato + meta"}
         D -->|bloqueado| F["devolve ao agente dono<br/>com o defeito específico"]
         D -->|aprovado| E["para e reporta<br/>+ report-back ao ticket"]
         F -. "corrigido, rode de novo" .-> A

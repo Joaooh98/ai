@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="archify 2.11.0">
-  <title>Repositório ai — a oficina e o alvo Diagram</title>
+  <title>Fluxo /sdlc Diagram</title>
   <script>
     // Resolve the theme before first paint so light-preference users don't
     // see a dark flash. The toolbar script below re-applies with UI state.
@@ -525,14 +525,14 @@
     <div class="header">
       <div class="header-row">
         <div class="pulse-dot"></div>
-        <h1>Repositório ai — a oficina e o alvo</h1>
+        <h1>Fluxo /sdlc</h1>
       </div>
-      <p class="subtitle">Onde a equipe mora, e como ela alcança o projeto em que você trabalha</p>
+      <p class="subtitle">Uma invocação, uma onda, um portão — o estado vem do disco</p>
     </div>
 
     <!-- Main Diagram -->
     <div class="diagram-container">
-      <svg viewBox="0 0 1200 708" role="img" aria-label="Repositório ai — a oficina e o alvo — Onde a equipe mora, e como ela alcança o projeto em que você trabalha (architecture diagram)">
+      <svg viewBox="0 0 720 776" role="img" aria-label="Fluxo /sdlc — Uma invocação, uma onda, um portão — o estado vem do disco (workflow diagram)">
         <!-- Definitions -->
         <defs>
           <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -555,137 +555,104 @@
         <!-- Background Grid -->
         <rect width="100%" height="100%" fill="url(#grid)" />
 
-        <!-- Boundaries (behind everything) -->
-        <rect x="210" y="30" width="510" height="480" rx="12" class="c-region" stroke-width="1"/>
-        <text x="218" y="48" class="t-cloud" font-size="9" font-weight="600">Repositório ai — a oficina (nenhum trabalho de produto acontece aqui)</text>
+        <!-- Swimlanes -->
+        <rect x="40" y="52" width="640" height="104" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="74" class="t-dim" font-size="10" font-weight="600">01 / Você</text>
 
-        <rect x="760" y="270" width="400" height="370" rx="12" class="c-region" stroke-width="1"/>
-        <text x="768" y="288" class="t-cloud" font-size="9" font-weight="600">Projeto alvo — onde o trabalho acontece</text>
+        <rect x="40" y="176" width="640" height="104" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="198" class="t-dim" font-size="10" font-weight="600">02 / Orquestração</text>
 
-        <!-- Connection paths (before components for correct z-order) -->
-        <path d="M 160 330 L 240 330" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path d="M 305 360 L 305 430" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
-        <path d="M 240 330 L 240 372 Q 240 380 232 380 L 108 380 Q 100 380 100 388 L 100 430" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
-        <path d="M 370 330 L 790 330" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path d="M 855 300 L 780.5 300 Q 772.5 300 772.5 292 L 772.5 198 Q 772.5 190 764.5 190 L 690 190" class="a-security" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
-        <path d="M 855 360 L 855 430" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path d="M 920 460 L 984.5 460 Q 992.5 460 992.5 452 L 992.5 368 Q 992.5 360 1000.5 360 L 1065 360" class="a-security" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+        <rect x="40" y="300" width="640" height="104" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="322" class="t-dim" font-size="10" font-weight="600">03 / Equipe de agentes</text>
 
-        <!-- Components -->
-        <rect x="40" y="300" width="120" height="60" rx="6" class="c-mask"/>
-        <rect x="40" y="300" width="120" height="60" rx="6" class="c-external" stroke-width="1.5"/>
-        <text x="100" y="328" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Operador</text>
-        <text x="100" y="344" class="t-muted" font-size="9" text-anchor="middle">você</text>
+        <rect x="40" y="424" width="640" height="104" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="446" class="t-dim" font-size="10" font-weight="600">04 / Portão de qualidade</text>
 
-        <rect x="40" y="430" width="120" height="60" rx="6" class="c-mask"/>
-        <rect x="40" y="430" width="120" height="60" rx="6" class="c-cloud" stroke-width="1.5"/>
-        <text x="100" y="458" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">~/.claude</text>
-        <text x="100" y="474" class="t-muted" font-size="9" text-anchor="middle">escopo de usuário</text>
-        <text x="100" y="482" class="t-cloud" font-size="7" text-anchor="middle">27 agentes + 16 skills</text>
+        <rect x="40" y="548" width="640" height="104" rx="10" class="c-lane" stroke-width="1"/>
+        <rect x="46" y="554" width="628" height="92" rx="8" class="c-security-group" stroke-width="1"/>
+        <text x="54" y="570" class="t-security" font-size="10" font-weight="600">EX / Reprovação</text>
 
-        <rect x="240" y="300" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="240" y="300" width="130" height="60" rx="6" class="c-backend" stroke-width="1.5"/>
-        <text x="305" y="328" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">workspace/go</text>
-        <text x="305" y="344" class="t-muted" font-size="9" text-anchor="middle">cadastro + fiação</text>
-        <text x="305" y="352" class="t-backend" font-size="7" text-anchor="middle">o único comando</text>
+        <!-- Phase headers -->
+        <line x1="42" y1="35" x2="134" y2="35" class="a-default" stroke-width="1.1"/>
+        <rect x="42" y="27" width="92" height="16" rx="4" class="c-mask"/>
+        <text x="88" y="39" class="t-muted" font-size="8" font-weight="600" text-anchor="middle">Entrada</text>
+        <line x1="174" y1="35" x2="346" y2="35" class="a-emphasis" stroke-width="1.1"/>
+        <rect x="174" y="27" width="172" height="16" rx="4" class="c-mask"/>
+        <text x="260" y="39" class="t-backend" font-size="8" font-weight="600" text-anchor="middle">Execução da onda</text>
+        <line x1="384" y1="35" x2="546" y2="35" class="a-default" stroke-width="1.1"/>
+        <rect x="384" y="27" width="162" height="16" rx="4" class="c-mask"/>
+        <text x="465" y="39" class="t-muted" font-size="8" font-weight="600" text-anchor="middle">Veredito</text>
 
-        <rect x="240" y="430" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="240" y="430" width="130" height="60" rx="6" class="c-database" stroke-width="1.5"/>
-        <text x="305" y="458" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">projects/</text>
-        <text x="305" y="474" class="t-muted" font-size="9" text-anchor="middle">cadastro local</text>
+        <!-- Workflow groups -->
 
-        <rect x="390" y="60" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="390" y="60" width="130" height="60" rx="6" class="c-frontend" stroke-width="1.5"/>
-        <text x="455" y="88" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">agents/</text>
-        <text x="455" y="104" class="t-muted" font-size="9" text-anchor="middle">27 especialistas</text>
 
-        <rect x="390" y="160" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="390" y="160" width="130" height="60" rx="6" class="c-backend" stroke-width="1.5"/>
-        <text x="455" y="188" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">skills/</text>
-        <text x="455" y="204" class="t-muted" font-size="9" text-anchor="middle">16 procedimentos</text>
+        <!-- Edge paths -->
+        <path d="M 88 145 L 88 166 L 220 166 L 220 209" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path d="M 220 277 L 220 290 L 300 290 L 300 333" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path d="M 300 401 L 300 414 L 430 414 L 430 457" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path d="M 430 457 L 430 290 L 500 290 L 500 145" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path d="M 384 491 L 384 673 L 346 673 L 346 615" class="a-security" stroke-width="1.4" marker-end="url(#arrowhead-security)"/>
+        <path d="M 254 615 L 14 615 L 14 119 L 134 119" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
 
-        <rect x="560" y="60" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="560" y="60" width="130" height="60" rx="6" class="c-database" stroke-width="1.5"/>
-        <text x="625" y="88" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">tools/</text>
-        <text x="625" y="104" class="t-muted" font-size="9" text-anchor="middle">11 scripts, só leitura</text>
+        <!-- Nodes -->
+        <rect x="42" y="93" width="92" height="52" rx="6" class="c-mask"/>
+        <rect x="42" y="93" width="92" height="52" rx="6" class="c-external" stroke-width="1.5"/>
+        <text x="88" y="114" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">/sdlc &quot;...&quot;</text>
+        <text x="88" y="131" class="t-muted" font-size="8" text-anchor="middle">o objetivo</text>
 
-        <rect x="560" y="160" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="560" y="160" width="130" height="60" rx="6" class="c-security" stroke-width="1.5"/>
-        <text x="625" y="188" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">workflow/hooks/</text>
-        <text x="625" y="204" class="t-muted" font-size="9" text-anchor="middle">3 fronteiras</text>
+        <rect x="174" y="209" width="92" height="68" rx="6" class="c-mask"/>
+        <rect x="174" y="209" width="92" height="68" rx="6" class="c-database" stroke-width="1.5"/>
+        <text x="220" y="230" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">lê o disco</text>
+        <text x="220" y="247" class="t-muted" font-size="8" text-anchor="middle">sdlc-state.sh → skill da fase</text>
+        <text x="220" y="265" class="t-database" font-size="7" text-anchor="middle">fonte da verdade</text>
 
-        <rect x="790" y="300" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="790" y="300" width="130" height="60" rx="6" class="c-messagebus" stroke-width="1.5"/>
-        <text x="855" y="328" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">ai-toolkit</text>
-        <text x="855" y="344" class="t-muted" font-size="9" text-anchor="middle">link → a oficina</text>
-        <text x="855" y="352" class="t-messagebus" font-size="7" text-anchor="middle">a âncora</text>
+        <rect x="254" y="333" width="92" height="68" rx="6" class="c-mask"/>
+        <rect x="254" y="333" width="92" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+        <text x="300" y="354" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">especialistas</text>
+        <text x="300" y="371" class="t-muted" font-size="8" text-anchor="middle">em paralelo</text>
+        <text x="300" y="389" class="t-frontend" font-size="7" text-anchor="middle">27 agentes</text>
 
-        <rect x="790" y="430" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="790" y="430" width="130" height="60" rx="6" class="c-security" stroke-width="1.5"/>
-        <text x="855" y="458" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">settings.json</text>
-        <text x="855" y="474" class="t-muted" font-size="9" text-anchor="middle">hooks fiados</text>
+        <rect x="384" y="457" width="92" height="68" rx="6" class="c-mask"/>
+        <rect x="384" y="457" width="92" height="68" rx="6" class="c-security" stroke-width="1.5"/>
+        <text x="430" y="478" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">portão</text>
+        <text x="430" y="495" class="t-muted" font-size="8" text-anchor="middle">artifact-lint + meta-check</text>
+        <text x="430" y="513" class="t-security" font-size="7" text-anchor="middle">exit 1 = reprova</text>
 
-        <rect x="1000" y="300" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="1000" y="300" width="130" height="60" rx="6" class="c-database" stroke-width="1.5"/>
-        <text x="1065" y="328" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">docs/sdlc/</text>
-        <text x="1065" y="344" class="t-muted" font-size="9" text-anchor="middle">os artefatos</text>
+        <rect x="454" y="93" width="92" height="52" rx="6" class="c-mask"/>
+        <rect x="454" y="93" width="92" height="52" rx="6" class="c-cloud" stroke-width="1.5"/>
+        <text x="500" y="114" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">report</text>
+        <text x="500" y="131" class="t-muted" font-size="8" text-anchor="middle">veredito + próximo passo</text>
 
-        <rect x="1000" y="430" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="1000" y="430" width="130" height="60" rx="6" class="c-cloud" stroke-width="1.5"/>
-        <text x="1065" y="458" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">toolbelt.md</text>
-        <text x="1065" y="474" class="t-muted" font-size="9" text-anchor="middle">calibração do /setup</text>
+        <rect x="254" y="589" width="92" height="52" rx="6" class="c-mask"/>
+        <rect x="254" y="589" width="92" height="52" rx="6" class="c-messagebus" stroke-width="1.5"/>
+        <text x="300" y="610" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">bloqueado</text>
+        <text x="300" y="627" class="t-muted" font-size="8" text-anchor="middle">defeito → agente dono</text>
 
-        <rect x="390" y="260" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="390" y="260" width="130" height="60" rx="6" class="c-cloud" stroke-width="1.5"/>
-        <text x="455" y="288" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">mcp/</text>
-        <text x="455" y="304" class="t-muted" font-size="9" text-anchor="middle">catálogo avaliado</text>
-        <text x="455" y="312" class="t-cloud" font-size="7" text-anchor="middle">comando + ressalva</text>
+        <!-- Edge labels -->
 
-        <rect x="560" y="260" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="560" y="260" width="130" height="60" rx="6" class="c-external" stroke-width="1.5"/>
-        <text x="625" y="288" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">plans/</text>
-        <text x="625" y="304" class="t-muted" font-size="9" text-anchor="middle">decidido, não construído</text>
-
-        <rect x="790" y="560" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="790" y="560" width="130" height="60" rx="6" class="c-cloud" stroke-width="1.5"/>
-        <text x="855" y="588" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">.mcp.json</text>
-        <text x="855" y="604" class="t-muted" font-size="9" text-anchor="middle">MCP de escopo projeto</text>
-
-        <rect x="1000" y="560" width="130" height="60" rx="6" class="c-mask"/>
-        <rect x="1000" y="560" width="130" height="60" rx="6" class="c-security" stroke-width="1.5"/>
-        <text x="1065" y="588" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">meta.tsv</text>
-        <text x="1065" y="604" class="t-muted" font-size="9" text-anchor="middle">a meta do portão</text>
-
-        <!-- Connection labels -->
-        <rect x="151.8" y="286" width="96.39999999999999" height="14" rx="3" class="c-mask"/>
-        <text x="200" y="296" class="t-backend" font-size="8" text-anchor="middle">./workspace/go crm</text>
-
-        <rect x="131.4" y="360" width="77.2" height="14" rx="3" class="c-mask"/>
-        <text x="170" y="370" class="t-messagebus" font-size="8" text-anchor="middle">install --user</text>
-        <rect x="522.2" y="324" width="115.6" height="14" rx="3" class="c-mask"/>
-        <text x="580" y="334" class="t-backend" font-size="8" text-anchor="middle">fia e abre a sessão lá</text>
-        <rect x="712.3" y="225" width="120.39999999999999" height="14" rx="3" class="c-mask"/>
-        <text x="772.5" y="235" class="t-security" font-size="8" text-anchor="middle">resolve tools/ e hooks/</text>
-
-        <rect x="927.5" y="390" width="130" height="14" rx="3" class="c-mask"/>
-        <text x="992.5" y="400" class="t-security" font-size="8" text-anchor="middle">guarda quem escreve o quê</text>
+        <rect x="240.6" y="281" width="38.8" height="14" rx="3" class="c-mask"/>
+        <text x="260" y="291" class="t-backend" font-size="8" text-anchor="middle">delega</text>
+        <rect x="328.8" y="405" width="72.4" height="14" rx="3" class="c-mask"/>
+        <text x="365" y="415" class="t-backend" font-size="8" text-anchor="middle">onda completa</text>
+        <rect x="440.8" y="270" width="48.4" height="14" rx="3" class="c-mask"/>
+        <text x="465" y="280" class="t-backend" font-size="8" text-anchor="middle">aprovado</text>
+        <rect x="338.4" y="653" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
+        <text x="365" y="663" class="t-security" font-size="8" text-anchor="middle">reprovado</text>
+        <rect x="-46.199999999999996" y="347" width="120.39999999999999" height="14" rx="3" class="c-mask"/>
+        <text x="14" y="357" class="t-muted" font-size="8" text-anchor="middle">corrigido, rode de novo</text>
 
         <!-- Legend -->
-        <text x="40" y="679" class="t-primary" font-size="9" font-weight="600">Legend</text>
-        <rect x="40" y="684" width="14" height="9" rx="2" class="c-external" stroke-width="1"/>
-        <text x="60" y="692" class="t-muted" font-size="8">External</text>
-        <rect x="138" y="684" width="14" height="9" rx="2" class="c-cloud" stroke-width="1"/>
-        <text x="158" y="692" class="t-muted" font-size="8">Cloud</text>
-        <rect x="221" y="684" width="14" height="9" rx="2" class="c-backend" stroke-width="1"/>
-        <text x="241" y="692" class="t-muted" font-size="8">Backend</text>
-        <rect x="314" y="684" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
-        <text x="334" y="692" class="t-muted" font-size="8">Database</text>
-        <rect x="412" y="684" width="14" height="9" rx="2" class="c-frontend" stroke-width="1"/>
-        <text x="432" y="692" class="t-muted" font-size="8">Frontend</text>
-        <rect x="510" y="684" width="14" height="9" rx="2" class="c-security" stroke-width="1"/>
-        <text x="530" y="692" class="t-muted" font-size="8">Security</text>
-        <rect x="608" y="684" width="14" height="9" rx="2" class="c-messagebus" stroke-width="1"/>
-        <text x="628" y="692" class="t-muted" font-size="8">Message bus</text>
+        <text x="175" y="676" class="t-primary" font-size="10" font-weight="600">Legend</text>
+        <rect x="175" y="688" width="14" height="9" rx="2" class="c-frontend" stroke-width="1"/>
+        <text x="195" y="696" class="t-muted" font-size="7">User UI</text>
+        <rect x="260" y="688" width="14" height="9" rx="2" class="c-backend" stroke-width="1"/>
+        <text x="280" y="696" class="t-muted" font-size="7">Agent logic</text>
+        <rect x="370" y="688" width="14" height="9" rx="2" class="c-security" stroke-width="1"/>
+        <text x="390" y="696" class="t-muted" font-size="7">Policy</text>
+        <rect x="455" y="688" width="14" height="9" rx="2" class="c-messagebus" stroke-width="1"/>
+        <text x="475" y="696" class="t-muted" font-size="7">Tool action</text>
+        <rect x="565" y="688" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
+        <text x="585" y="696" class="t-muted" font-size="7">Context / trace</text>
       </svg>
     </div>
 
@@ -694,49 +661,47 @@
       <div class="card">
         <div class="card-header">
           <div class="card-dot cyan"></div>
-          <h3>A oficina</h3>
+          <h3>O que garante</h3>
         </div>
         <ul>
-          <li>&bull; agents/ — 27 especialistas, nenhum preso a linguagem</li>
-          <li>&bull; skills/ — 16 procedimentos, o método escrito uma vez</li>
-          <li>&bull; tools/ — 11 scripts determinísticos, somente leitura</li>
-          <li>&bull; mcp/ — catálogo do que já foi avaliado: comando e ressalva</li>
-          <li>&bull; plans/ — decidido com medição, ainda não construído</li>
-          <li>&bull; workflow/hooks/ — as fronteiras que o modelo não escolhe obedecer</li>
+          <li>&bull; Nenhuma fase avança sem portão avaliado</li>
+          <li>&bull; Estado lido do disco, não da memória da conversa</li>
+          <li>&bull; Um dono por artefato, imposto por hook e não por convenção</li>
+          <li>&bull; Sessão nova continua exatamente de onde parou</li>
         </ul>
       </div>
 
       <div class="card">
         <div class="card-header">
           <div class="card-dot amber"></div>
-          <h3>A âncora — o mecanismo central</h3>
+          <h3>O portão é real, não sugestão</h3>
         </div>
         <ul>
-          <li>&bull; Skills e hooks referenciam scripts por um caminho só:</li>
-          <li>&bull; ${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/…</li>
-          <li>&bull; workspace/go cria esse link em cada projeto alvo</li>
-          <li>&bull; É o que faz o mesmo texto de skill funcionar nos dois lugares</li>
+          <li>&bull; artifact-lint.sh — artefato ausente, incompleto ou só esqueleto reprova</li>
+          <li>&bull; meta-check.sh — número fora da meta declarada pelo projeto reprova</li>
+          <li>&bull; Relatório mais velho que o código é não verificável, e bloqueia igual</li>
+          <li>&bull; Contradição entre artefatos é blocker, e volta para os dois agentes</li>
         </ul>
       </div>
 
       <div class="card">
         <div class="card-header">
           <div class="card-dot emerald"></div>
-          <h3>O que o /setup grava no alvo</h3>
+          <h3>Bloqueio de meta tem quatro donos</h3>
         </div>
         <ul>
-          <li>&bull; docs/sdlc/ — os artefatos, ao lado do código que descrevem</li>
-          <li>&bull; .claude/toolbelt.md — a calibração, carregada em toda invocação</li>
-          <li>&bull; .claude/meta.tsv — o número que os portões 3 e 4 conferem</li>
-          <li>&bull; .mcp.json — MCP de escopo projeto; conector de conta é invisível</li>
-          <li>&bull; .claude/settings.json — os hooks apontando para a âncora</li>
+          <li>&bull; FORA DA META — defeito real, volta ao agente dono da métrica</li>
+          <li>&bull; SEM FERRAMENTA — falta calibração: instale e rode /setup</li>
+          <li>&bull; NÃO VERIFICÁVEL — a suíte não rodou nesta onda: gere o relatório</li>
+          <li>&bull; DESATUALIZADA — mediu antes da última mudança: rode de novo</li>
+          <li>&bull; Só o primeiro é defeito de código. Confundir queima uma onda</li>
         </ul>
       </div>
     </div>
 
     <!-- Footer -->
     <p class="footer">
-      Architecture diagram &bull; Built with Archify<span class="no-print"> &bull; Press <kbd>T</kbd> for theme and <kbd>E</kbd> for export</span>
+      Workflow diagram &bull; Built with Archify<span class="no-print"> &bull; Press <kbd>T</kbd> for theme and <kbd>E</kbd> for export</span>
     </p>
   </div>
 
