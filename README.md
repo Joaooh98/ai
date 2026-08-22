@@ -1,8 +1,43 @@
 # AI — Repositório de Desenvolvimento
 
-Repositório pessoal de engenharia com IA, construído ao longo do MBA em IA. Duas frentes:
-o **material do curso** (prompt engineering, evaluation, versionamento) e uma **equipe de
-desenvolvimento em agentes** montada a partir da curadoria dos melhores repositórios do ecossistema.
+Uma **equipe de 27 agentes** que executa um ciclo de desenvolvimento disciplinado **dentro do seu
+projeto**, uma onda por vez, parando num portão que sabe reprovar.
+
+## O que isto resolve
+
+Um agente de IA trabalhando sozinho **afirma**. Ele não mente por má-fé: ele conclui a partir do
+que alcançou, e o que ele alcançou quase nunca é suficiente. Quatro exemplos medidos **nos seus
+próprios projetos**, não hipotéticos:
+
+| A afirmação | Por que ela sai errada aqui |
+|---|---|
+| *"os testes passam"* | `crm-api` **não tem JaCoCo** e `crm_pro` só tem Playwright e2e. Não existe relatório de cobertura para ler |
+| *"nada mais usa isso"* | `grep "sendMessage(" src/main` em `crm-api` devolve **10 acertos, 5 deles símbolos homônimos** — e omite o `RecordingMessagingProvider` em `src/test`, que quebra a compilação |
+| *"essa é a API da biblioteca"* | seus 12 serviços Java rodam **6 versões diferentes de Quarkus** (3.4.2 → 3.33.1). Uma resposta de memória está errada para pelo menos cinco delas |
+| *"o orçamento de performance foi atendido"* | o portão pedia isso *"quando existir"* — e nunca existia, porque nada declarava o número |
+
+O trabalho **parece** terminado. Você descobre que não estava em produção.
+
+**O que esta oficina faz é uma coisa só: transformar cada afirmação em consulta.**
+
+| Em vez de | O mecanismo |
+|---|---|
+| o agente lembrar o que ficou combinado | **artefato em caminho fixo** — a saída de um agente *é* o arquivo que o próximo lê |
+| o agente dizer que está pronto | **portão com exit code** — `artifact-lint.sh` e `meta-check.sh` saem com 1, e 1 reprova |
+| pedir que o agente respeite fronteiras | **hook em runtime** — um agente de especificação é *impedido* de escrever código, e a negação vai para o log |
+| supor o comando de teste do projeto | **toolbelt calibrado** — o `/setup` **executa** o comando e grava o resultado real |
+| aceitar um número afirmado | **meta lida de relatório** — o número vem da rodada que rodou, e relatório velho bloqueia |
+
+O preço é honesto: **é mais lento que pedir o código direto.** Uma invocação executa uma onda e
+para. É esse o negócio — você troca velocidade por saber, a cada passo, o que foi conferido.
+
+**Comece por aqui:** [`docs/porque.html`](docs/porque.html) mostra o mesmo pedido percorrendo os
+dois caminhos, com e sem a equipe.
+
+---
+
+O repositório também guarda o **material do MBA** (prompt engineering, evaluation, versionamento)
+em `prompts/` e `design-docs/` — frente separada, que não é usada em runtime pelos agentes.
 
 ```
 agents/       27 agentes — 24 do SDLC + 2 de incidente + 1 de integração externa
@@ -11,7 +46,7 @@ workflow/     3 hooks que impõem as fronteiras e registram o que acontece
 tools/        11 scripts de apoio somente-leitura chamados pelos agentes
 workspace/    os projetos onde você trabalha — cadastro e abertura de sessão
 mcp/          como a equipe detecta o ferramental do projeto, em vez de assumir
-docs/         três diagramas interativos: como o repo é feito, como se usa, e a onda por dentro
+docs/         quatro diagramas interativos: por que existe, como se usa, a onda, e onde mora
 plans/        decidido e ainda não construído — com a medição que sustenta a decisão
 prompts/      material do MBA + biblioteca de prompts versionada (PT e EN)
 design-docs/  ensaios de contexto do MBA: documentação como ativo, e RUP
@@ -26,14 +61,18 @@ ficam cadastrados em `workspace/` e a sessão abre dentro deles.
 **Ver antes de ler.** Três diagramas, cada um começando onde o anterior para — tema claro/escuro
 e exportação em todos:
 
-| Diagrama | Responde |
-|---|---|
-| [`docs/arquitetura.html`](docs/arquitetura.html) | **Onde as peças moram** — o que fica na oficina, o que fica no projeto alvo, e a âncora que liga os dois |
-| [`docs/fluxo.html`](docs/fluxo.html) | **A jornada do operador** — do cadastro do projeto até produção, com o portão e o desvio de emergência |
-| [`docs/sdlc.html`](docs/sdlc.html) | **Uma invocação por dentro** — ler o disco, despachar a onda, avaliar o portão, e o caminho da reprovação |
+| # | Diagrama | Responde |
+|---|---|---|
+| 1 | [`docs/porque.html`](docs/porque.html) | **Por que existe** — o mesmo pedido com e sem a equipe, e onde a diferença aparece |
+| 2 | [`docs/fluxo.html`](docs/fluxo.html) | **Como se usa** — do cadastro do projeto até produção, com o portão e o desvio de emergência |
+| 3 | [`docs/sdlc.html`](docs/sdlc.html) | **Uma invocação por dentro** — ler o disco, despachar a onda, avaliar o portão, e o caminho da reprovação |
+| 4 | [`docs/arquitetura.html`](docs/arquitetura.html) | **Onde as peças moram** — o que fica na oficina, o que fica no projeto alvo, e a âncora que liga os dois |
+
+Leia nessa ordem. O primeiro responde *por quê*, o último responde *onde* — e olhar o *onde*
+antes do *porquê* é exatamente o que faz o repositório parecer um monte de pasta sem propósito.
 
 ```bash
-xdg-open docs/fluxo.html
+xdg-open docs/porque.html
 ```
 
 Os `.html` são **derivados**: a fonte é o `.json` ao lado. Mexeu na estrutura da equipe, regere —

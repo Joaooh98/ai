@@ -1,0 +1,168 @@
+{
+ "schema_version": 1,
+ "diagram_type": "workflow",
+ "meta": {
+  "title": "Por que esta oficina existe",
+  "subtitle": "O mesmo pedido, com e sem a equipe — a diferença está em quem confere",
+  "output": "porque.html"
+ },
+ "lanes": [
+  {
+   "id": "sozinho",
+   "label": "Agente sozinho",
+   "variant": "exception"
+  },
+  {
+   "id": "pedido",
+   "label": "O pedido"
+  },
+  {
+   "id": "oficina",
+   "label": "Com a oficina"
+  }
+ ],
+ "phases": [
+  {
+   "id": "entrada",
+   "label": "Você pede",
+   "fromCol": 0,
+   "toCol": 0
+  },
+  {
+   "id": "trabalho",
+   "label": "O trabalho",
+   "fromCol": 1,
+   "toCol": 1
+  },
+  {
+   "id": "fim",
+   "label": "O resultado",
+   "fromCol": 3,
+   "toCol": 3,
+   "variant": "emphasis"
+  }
+ ],
+ "nodes": [
+  {
+   "id": "ped",
+   "lane": "pedido",
+   "col": 0,
+   "type": "external",
+   "label": "o pedido",
+   "sublabel": "pausar plano"
+  },
+  {
+   "id": "s1",
+   "lane": "sozinho",
+   "col": 1,
+   "type": "external",
+   "label": "faz e afirma",
+   "sublabel": "\"testes ok\"",
+   "tag": "ninguém conferiu"
+  },
+  {
+   "id": "s2",
+   "lane": "sozinho",
+   "col": 3,
+   "type": "messagebus",
+   "label": "quebra depois",
+   "sublabel": "não há suíte"
+  },
+  {
+   "id": "o1",
+   "lane": "oficina",
+   "col": 1,
+   "type": "backend",
+   "label": "faz e prova",
+   "sublabel": "artefato + teste",
+   "tag": "27 agentes"
+  },
+  {
+   "id": "o2",
+   "lane": "oficina",
+   "col": 3,
+   "type": "security",
+   "label": "portão decide",
+   "sublabel": "exit 0 ou 1",
+   "tag": "script, não frase"
+  }
+ ],
+ "mainPath": [
+  "ped",
+  "o1",
+  "o2"
+ ],
+ "edges": [
+  {
+   "from": "ped",
+   "to": "s1",
+   "label": "sem processo",
+   "variant": "security",
+   "role": "error",
+   "fromSide": "top",
+   "toSide": "bottom",
+   "route": "up-channel",
+   "labelSegment": 1
+  },
+  {
+   "from": "s1",
+   "to": "s2",
+   "label": "parecia pronto",
+   "variant": "security",
+   "role": "error",
+   "labelSegment": 1
+  },
+  {
+   "from": "ped",
+   "to": "o1",
+   "label": "/sdlc",
+   "variant": "emphasis",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "route": "drop",
+   "labelSegment": 1
+  },
+  {
+   "from": "o1",
+   "to": "o2",
+   "label": "onda completa",
+   "variant": "emphasis",
+   "labelSegment": 1
+  }
+ ],
+ "cards": [
+  {
+   "dot": "rose",
+   "title": "O problema: o agente afirma",
+   "items": [
+    "\"os testes passam\" — quando não existe suíte nenhuma",
+    "\"nada mais usa isso\" — a partir de um grep que não vê injeção",
+    "\"o requisito está pronto\" — lendo a prosa que ele mesmo escreveu",
+    "\"cobertura está boa\" — sem relatório algum na mão",
+    "O trabalho parece terminado. Você descobre que não em produção"
+   ]
+  },
+  {
+   "dot": "cyan",
+   "title": "A solução: cada afirmação vira consulta",
+   "items": [
+    "Artefato em caminho fixo — a saída de um agente É a entrada do próximo",
+    "Portão com exit code — 'pronto' é um script saindo 0, não uma frase",
+    "Hook em runtime — a fronteira é imposta, não pedida",
+    "Toolbelt detectado — o comando de teste foi executado, não suposto",
+    "Meta lida de relatório — o número veio da rodada, não do agente"
+   ]
+  },
+  {
+   "dot": "amber",
+   "title": "O preço, dito na cara",
+   "items": [
+    "Uma invocação executa UMA onda e para no portão",
+    "É mais lento que pedir o código direto — de propósito",
+    "Portão reprovado devolve trabalho ao agente dono",
+    "Sem /setup, a equipe não sabe nada do seu projeto",
+    "Sem meta declarada, os itens numéricos do portão passam sempre"
+   ]
+  }
+ ]
+}

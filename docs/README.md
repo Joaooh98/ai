@@ -1,16 +1,17 @@
 # Diagramas
 
-Três diagramas interativos, gerados pela skill `archify` a partir dos `.json` ao lado. Cada
+Quatro diagramas interativos, gerados pela skill `archify` a partir dos `.json` ao lado. Cada
 `.html` é autocontido: abre direto no navegador, sem servidor e sem rede.
 
-| Diagrama | Responde | Fonte |
-|---|---|---|
-| [`arquitetura.html`](arquitetura.html) | **Como o repositório é feito** — o que mora na oficina, o que fica no projeto alvo, e a âncora que liga os dois | `arquitetura.architecture.json` |
-| [`fluxo.html`](fluxo.html) | **Como se usa** — do cadastro do projeto até produção, com o portão e o desvio de emergência | `fluxo.workflow.json` |
-| [`sdlc.html`](sdlc.html) | **O que acontece dentro de uma invocação** — ler o disco, despachar a onda, avaliar o portão, e o caminho da reprovação | `sdlc.workflow.json` |
+**Leia nesta ordem.** Cada um responde uma pergunta, e a ordem importa: quem começa pela
+arquitetura vê um monte de pasta sem entender para que serve.
 
-Os três começam onde o anterior para: a arquitetura mostra **onde as peças moram**, o fluxo mostra
-**a jornada do operador**, e o `/sdlc` abre **uma única invocação** por dentro.
+| # | Diagrama | Pergunta que responde | Fonte |
+|---|---|---|---|
+| 1 | [`porque.html`](porque.html) | **Por quê?** O mesmo pedido percorrendo os dois caminhos — com e sem a equipe | `porque.workflow.json` |
+| 2 | [`fluxo.html`](fluxo.html) | **Como eu uso?** Do cadastro do projeto até produção, com o portão e o desvio de emergência | `fluxo.workflow.json` |
+| 3 | [`sdlc.html`](sdlc.html) | **O que acontece quando eu digito `/sdlc`?** Ler o disco, despachar a onda, avaliar o portão | `sdlc.workflow.json` |
+| 4 | [`arquitetura.html`](arquitetura.html) | **Onde isso tudo mora?** O que fica na oficina, o que fica no projeto alvo, e a âncora | `arquitetura.architecture.json` |
 
 ## A regra: o `.html` é derivado, o `.json` é a fonte
 
@@ -27,9 +28,10 @@ porque é lido como verdade.** O arquivo foi apagado e substituído por `sdlc.wo
 Abrir:
 
 ```bash
-xdg-open docs/arquitetura.html
+xdg-open docs/porque.html
 xdg-open docs/fluxo.html
 xdg-open docs/sdlc.html
+xdg-open docs/arquitetura.html
 ```
 
 ## O que dá para fazer neles
@@ -44,9 +46,10 @@ A fonte é o `.json`; o `.html` é derivado. Editou a estrutura da equipe, reger
 
 ```bash
 ARCHIFY=~/.claude/skills/archify
-node $ARCHIFY/bin/archify.mjs render architecture docs/arquitetura.architecture.json docs/arquitetura.html
+node $ARCHIFY/bin/archify.mjs render workflow     docs/porque.workflow.json          docs/porque.html
 node $ARCHIFY/bin/archify.mjs render workflow     docs/fluxo.workflow.json           docs/fluxo.html
 node $ARCHIFY/bin/archify.mjs render workflow     docs/sdlc.workflow.json            docs/sdlc.html
+node $ARCHIFY/bin/archify.mjs render architecture docs/arquitetura.architecture.json docs/arquitetura.html
 ```
 
 O renderer **falha** em vez de gerar um diagrama ruim: sobreposição de nó, label mais largo que a
