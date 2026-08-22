@@ -53,6 +53,9 @@ echo "== caminhos citados em crase =="
 for f in $DOCS; do
   # `plans/` descreve o que ainda não existe — é o propósito da pasta.
   case "$f" in ./plans/*) continue ;; esac
+  # Sem esta linha, `$d` carrega o valor do último documento do laço ANTERIOR e
+  # todo caminho relativo é resolvido contra a pasta errada — em silêncio.
+  d=$(dirname "$f")
   while IFS= read -r p; do
     p="${p%/}"
     alvo "$p" && continue
@@ -65,6 +68,45 @@ for f in $DOCS; do
     esac
     [ -e "$p" ] || falha "  caminho inexistente  $f -> $p"
   done < <(grep -oE '`(agents|skills|tools|workflow|workspace|mcp|docs|design-docs|plans)/[A-Za-z0-9_./*-]*`' "$f" 2>/dev/null | tr -d '`' | sort -u)
+
+  # Caminho RELATIVO ao próprio documento. O README de uma pasta descreve o que
+  # está dentro dela e escreve `context/intro/resum.md`, sem o prefixo da pasta —
+  # a checagem acima, ancorada em pasta de topo, passa direto por isso. Foi assim
+  # que uma reestruturação de `design-docs/` deixou cinco linhas mentindo sem o
+  # lint reclamar.
+  #
+  # Só conta como afirmação de caminho quando o PRIMEIRO segmento existe como
+  # diretório ao lado do documento. Sem essa âncora, qualquer `a/b` em prosa
+  # viraria falso positivo.
+  while IFS= read -r p; do
+    p="${p%/}"
+    alvo "$p" && continue
+    # `./algo` é invocação de comando a partir da RAIZ do repositório, não
+    # caminho relativo ao documento que a cita.
+    base="$d"
+    case "$p" in ./*) base="." ;; esac
+    [ -d "$base/${p%%/*}" ] || continue
+    grep -qF "$p" <(grep -iE 'não existe|nao existe|removid|apagad' "$f") && continue
+    case "$p" in
+      *'*'*) ( cd "$base" && compgen -G "$p" >/dev/null 2>&1 ) \
+               || falha "  glob relativo sem correspondência  $f -> $p"
+             continue ;;
+    esac
+    [ -e "$base/$p" ] || falha "  caminho relativo inexistente  $f -> $p"
+  done < <(grep -oE '`[A-Za-z0-9_.*-]+/[A-Za-z0-9_./*-]*`' "$f" 2>/dev/null | tr -d '`' | sort -u)
+
+  # Bloco de código costuma listar a estrutura da pasta, uma linha por arquivo,
+  # sem crase nenhuma. É exatamente onde o índice de um README envelhece.
+  while IFS= read -r p; do
+    p="${p%/}"
+    alvo "$p" && continue
+    base="$d"
+    case "$p" in ./*) base="." ;; esac
+    [ -d "$base/${p%%/*}" ] || continue
+    [ -e "$base/$p" ] || falha "  caminho em bloco de código inexistente  $f -> $p"
+  done < <(awk '/^```/{fence=!fence; next} fence' "$f" 2>/dev/null \
+           | grep -oE '^[[:space:]]*[A-Za-z0-9_.-]+/[A-Za-z0-9_./-]*' \
+           | tr -d ' ' | grep -vE '\*' | sort -u)
 done
 
 echo "== contagens declaradas =="

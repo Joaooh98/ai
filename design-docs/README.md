@@ -5,26 +5,35 @@ descreve como a oficina funciona nem é lido por agente em runtime. É o racioc�
 trás de decisões que aparecem implementadas em `skills/` e `workflow/`.
 
 ```
-context/intro/resum.md   documentação como ativo de engenharia
-context/rup/resum.md     Rational Unified Process — disciplinas e iterações
+context/modulo-1/   por que documentar, e o que já se tentou antes
+context/modulo-2/   documentação na era da IA, taxonomia e PRD
 ```
 
-## `context/intro` — documentação como ativo
+## Módulo 1 — o problema
 
-Por que documentação burocrática fracassa, e o que muda quando o consumidor do documento passa a
-ser também um modelo. A tese central: documento existe para servir ao fluxo de trabalho, não para
-cumprir formalidade — e contexto registrado cedo vira insumo reutilizável durante todo o ciclo.
+| Texto | Tese |
+|---|---|
+| `context/modulo-1/intro/resum.md` | Documentação é ativo de engenharia: contexto registrado deixa de depender de pessoas específicas |
+| `context/modulo-1/rup/resum.md` | RUP organizou o trabalho em disciplinas com ciclos menores e pontos de revisão, sem abrir mão de controle sobre artefatos |
+| `context/modulo-1/agile/agile.md` | O Manifesto Ágil reagiu ao excesso de processo — a virada não foi parar de documentar, foi parar de tratar o documento como produto principal |
+| `context/modulo-1/known-problems/known-problems.md` | Documentação desatualizada é mais perigosa que ausente: transmite confiança falsa e vira risco operacional |
 
-É a origem direta do contrato de artefatos do fluxo SDLC: cada agente escreve num caminho fixo, e
-a saída de um é a entrada do próximo.
+O último é o que mais aparece implementado aqui. `tools/docs-lint.sh` existe por causa dele, e a
+regra "item não verificável bloqueia o portão" é a mesma tese aplicada a artefato de ciclo.
 
-## `context/rup` — RUP
+## Módulo 2 — a resposta
 
-Como o RUP organizou o desenvolvimento em disciplinas com ciclos menores e pontos de revisão, sem
-abrir mão de controle sobre artefatos. É o antecedente das ondas e dos portões em `skills/sdlc/`.
+| Texto | Tese |
+|---|---|
+| `context/modulo-2/documentation-in-the-age-AI/docs-in-the-age-AI.md` | Documentação passa a ser lida por modelo, o que a aproxima do papel do teste automatizado |
+| `context/modulo-2/type-docs/type-docs.md` | Taxonomia: produto, design/arquitetura, infraestrutura, operação, conhecimento — cada categoria responde a uma pergunta diferente |
+| `context/modulo-2/prd/` | Oito partes sobre PRD: seções, visão de alto nível, casos de uso e dois exemplos práticos |
+
+A taxonomia do `type-docs` é a origem direta da árvore de `docs/sdlc/` no projeto alvo: uma pasta
+por pergunta, e nenhum documento misturando objetivos incompatíveis.
 
 ## Estado
 
-As imagens em `context/*/img/` **não estão referenciadas** por nenhum dos dois textos. Ou entram
-no corpo do ensaio, ou saem do repositório — arquivo que ninguém alcança é peso morto que ninguém
-percebe estar desatualizado.
+As **17 imagens** em `context/modulo-*/*/img/` não estão referenciadas por nenhum dos textos.
+Ou entram no corpo do ensaio, ou saem do repositório — arquivo que ninguém alcança é peso morto
+que ninguém percebe estar desatualizado.
