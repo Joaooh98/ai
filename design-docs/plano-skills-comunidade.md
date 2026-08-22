@@ -1,7 +1,8 @@
 # Plano — Adoção de Skills da Comunidade
 
-> **Status:** planejamento, nada instalado
+> **Status:** Fases 0 e 1 implementadas · Fase 1B preparada, não executada
 > **Pesquisa e auditoria:** 2026-08-01 · **2ª rodada (graphify):** 2026-08-10
+> **Execução:** 2026-08-22 — ver §8
 > **Escopo:** avaliar as melhores skills de desenvolvimento de software criadas pela
 > comunidade, validar a segurança delas, e definir o que (e como) incorporar a este repositório.
 
@@ -440,12 +441,93 @@ O commit auditado hoje está limpo. O risco é o commit de amanhã, em repositó
 
 ## 7. Decisões pendentes
 
-1. **Fase 1 depende do stack real** — precisa da lista de projetos ativos em `workspace/`
-   para escolher os especialistas certos.
+1. ~~**Fase 1 depende do stack real**~~ — **resolvida em 2026-08-22.** Stack detectada nos
+   5 projetos cadastrados; ver §8.1.
 2. **`planning-with-files`** — vale a superfície de hooks dele, dado que `docs/sdlc/` já
    persiste artefatos? Decisão adiada até a Fase 2 mostrar se há lacuna de recuperação
    de sessão.
 3. **Publicar nosso SDLC no formato aberto** (Fase 4) — decisão de produto, não técnica.
+
+---
+
+## 8. Registro de execução
+
+### 8.1 Stack real dos projetos cadastrados — fecha a pendência nº 1
+
+Detectada em 2026-08-22 varrendo os 5 projetos de `workspace/projects/` por marcador de
+build. Os cadastros guardam só nome e caminho; a stack se descobre no projeto.
+
+| Projeto | Tipo | Stack |
+|---|---|---|
+| `smart` | workspace multi-repo | ~14 serviços Quarkus (`dafe-*`, `solve-card-api`), Next.js 14, React 18, React Native 0.77 (`dafepay-app`) |
+| `smaug-system` | repo | 10 APIs Quarkus (`tenancy`, `pdv`, `amm`, `conect`, `cms`, `docs`, `report`, `deploy`, `ai`, `gateway`) |
+| `crm` | repo | `crm-api` Quarkus + `crm_pro` Next.js 15 / React 19 |
+| `societario` | sem-git | `societario-api` Quarkus + `societario-frontend` |
+| `solve-card-invoice-canceled` | worktree | Quarkus (worktree de `solve-card-api`) |
+
+**O número que decidiu a seleção: 13 `pom.xml` com Quarkus, 0 com Spring Boot.**
+
+### 8.2 O que foi implementado
+
+**Fase 0 — guarda-corpos.** `graphify-out/` e `.claude/sdd-cache/` no `.gitignore`, com o
+motivo escrito: repositório recebe código, não artefato de análise. A política de instalação
+está na §6.0.
+
+**Fase 1 — especialistas por stack.** Quatro skills absorvidas de `Jeffallan/claude-skills`
+(MIT, autoria preservada no frontmatter) em `skills/stack/`, com `references/` completo:
+
+| Skill | Evidência que justificou |
+|---|---|
+| `typescript-pro` | Base TS em todo o frontend |
+| `react-expert` | React 18 e 19 em 5 frontends |
+| `nextjs-developer` | Next.js 14 e 15 |
+| `react-native-expert` | RN 0.77 no `dafepay-app` — só havia o `mobile-engineer` genérico |
+
+Ligadas pelo frontmatter `skills:` dos agentes que as usam — `frontend-engineer` recebeu as
+três de web, `mobile-engineer` recebeu `typescript-pro` e `react-native-expert`. Nenhum agente
+novo foi criado, então **as colisões de nome documentadas na Fase 1 não chegaram a ocorrer**:
+absorver como skill em vez de agente as evita por construção.
+
+Validado com `./agents/install.sh --check` a cada passo: **27 agentes, 20 skills** (eram 16),
+3 hooks, 9 tools. O `--check` também confirma que as referências `skills:` novas resolvem.
+
+**Descartada:** `spring-boot-engineer`, pelo motivo da §8.1. E `java-architect` ficou de fora
+por redundância com `quarkus-senior-developer` e `fullstack-quarkus-expert`, ambos mais
+específicos para esta base.
+
+### 8.3 Fase 1B (graphify) — preparada, não executada
+
+Dois motivos, ambos de segurança operacional e não de mérito:
+
+1. **Outra sessão trabalhando neste repositório ao mesmo tempo.** O `graphify install` escreve
+   em `~/.claude/skills/`, que é espaço compartilhado entre sessões. Mexer nele com outra
+   sessão viva é a definição de conflito.
+2. **Sem `uv` nem `pipx` na máquina** (só Python 3.10 do sistema). Instalar com `pip` no
+   ambiente global é footprint maior do que este plano autoriza.
+
+Pelo mesmo motivo, **`install.sh --user` não foi executado**: rodado a partir de um worktree,
+ele repontaria os symlinks de `~/.claude/` da equipe global para o worktree, quebrando a outra
+sessão. Só `--check` foi usado, que valida sem escrever.
+
+**Para executar quando a outra sessão terminar**, a partir do checkout principal:
+
+```bash
+# 1. o instalador de Python, se ainda não houver
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 2. a ferramenta, e a skill em escopo de usuário — sem --project (§6.0)
+uv tool install graphifyy
+graphify install
+
+# 3. o log já é off por padrão; explícito é melhor
+export GRAPHIFY_QUERY_LOG_DISABLE=1
+
+# 4. medir, que é o critério de aceite da fase
+./workspace/go smaug-system     # e, na sessão: /graphify .
+```
+
+Critério de aceite continua o da Fase 1B: ganho medido em tokens contra o `project-analyst`
+grepando, **e** `git status` limpo no projeto-alvo depois do uso.
 
 ---
 
