@@ -125,7 +125,7 @@
    "id": "anchor",
    "type": "messagebus",
    "label": "ai-toolkit",
-   "sublabel": "link → a oficina",
+   "sublabel": "link → .toolkit/",
    "pos": [
     790,
     300
@@ -337,8 +337,10 @@
    "items": [
     "Skills e hooks referenciam scripts por um caminho só:",
     "${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/…",
-    "workspace/go cria esse link em cada projeto alvo",
-    "É o que faz o mesmo texto de skill funcionar nos dois lugares"
+    "A âncora aponta para .toolkit/, NÃO para a raiz da oficina:",
+    "a raiz tem .claude/ dentro, e apontar para ela aninharia",
+    ".claude dentro de .claude sem fim",
+    "O .claude do SEU projeto e o da oficina coexistem"
    ]
   },
   {

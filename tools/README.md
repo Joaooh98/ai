@@ -126,6 +126,12 @@ tendo os onze — é o piso de capacidade da equipe, não um extra.
 ## Como as skills os alcançam
 
 Skills referenciam estes scripts por `${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/…`. A âncora
-`.claude/ai-toolkit` aponta para a raiz deste repositório e é criada pelo `install.sh` aqui e pelo
-`workspace/go` em cada projeto alvo — um caminho só, que resolve nos dois lugares. Chamados
-direto do shell, os caminhos relativos acima continuam valendo.
+`.claude/ai-toolkit` aponta para **`.toolkit/`** deste repositório e é criada pelo `install.sh`
+aqui e pelo `workspace/go` em cada projeto alvo — um caminho só, que resolve nos dois lugares.
+Chamados direto do shell, os caminhos relativos acima continuam valendo.
+
+`.toolkit/` é uma pasta de symlinks (`tools`, `workflow`, `skills`, `mcp`) que existe por um
+motivo só: a âncora **não pode** apontar para a raiz do repositório, porque a raiz contém um
+`.claude/` que contém a própria âncora — e isso aninha `.claude` dentro de `.claude` sem fim.
+Medido antes da correção: `find -L .claude -name SKILL.md` devolvia 85 resultados num repositório
+com 16 skills.

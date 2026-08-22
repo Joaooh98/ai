@@ -425,6 +425,18 @@ Seis mecanismos, e nenhum deles é "o prompt é bom":
    e os hooks, que resolvem o projeto por variável de ambiente e não pelo próprio caminho, gravam
    o ledger no projeto alvo.
 
+   A âncora aponta para **`.toolkit/`**, não para a raiz desta oficina. A raiz tem um `.claude/`
+   dentro, e esse `.claude/` tem a própria âncora: apontar para a raiz encadearia
+   `.claude/ai-toolkit/.claude/ai-toolkit/…` sem fim. Não era teoria — com a âncora na raiz,
+   `find -L .claude -name SKILL.md` devolvia **85** resultados num repositório com **16** skills.
+   `.toolkit/` expõe só `tools/`, `workflow/`, `skills/` e `mcp/`, e não contém `.claude/`.
+
+   **O `.claude/` do seu projeto e o desta oficina coexistem, e nenhum enxerga o outro.** A
+   instalação nunca substitui o que já existe: reaproveita o `.claude/` do projeto, mescla os
+   hooks no `settings.json` (e recusa, avisando, se já houver um bloco `hooks` diferente), e
+   instala os 27 agentes em **escopo de usuário** (`~/.claude`) — então `.claude/agents/` e
+   `.claude/skills/` do seu projeto ficam intactos.
+
 ---
 
 ## O que está decidido e ainda não existe

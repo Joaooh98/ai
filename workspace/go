@@ -226,19 +226,41 @@ cmd_wire() {
 
   # 1. Âncora do toolkit. Todo caminho que a equipe usa passa por aqui, então o
   #    mesmo texto de skill funciona neste repo e em qualquer projeto alvo.
+  #
+  #    A âncora aponta para `.toolkit/` da oficina, NUNCA para a raiz dela. A
+  #    raiz contém um `.claude/`, e esse `.claude/` contém a própria âncora:
+  #    apontar para a raiz aninharia `.claude` dentro de `.claude` sem fim, e
+  #    qualquer busca que siga symlink veria cada arquivo repetido. O `.claude/`
+  #    do SEU projeto e o da oficina passam a coexistir sem se enxergar.
+  local surface="$AI_REPO/.toolkit"
+  if [ ! -d "$surface" ]; then
+    [ -n "$quiet" ] || echo "  toolkit: criando superfície em $surface"
+    mkdir -p "$surface"
+    local sdir
+    for sdir in tools workflow skills mcp; do
+      ln -sfn "$AI_REPO/$sdir" "$surface/$sdir"
+    done
+    changed=1
+  fi
+
   mkdir -p "$target/.claude"
   local link="$target/.claude/ai-toolkit"
   if [ -L "$link" ]; then
-    if [ "$(readlink "$link")" != "$AI_REPO" ]; then
-      ln -sfn "$AI_REPO" "$link"; changed=1
-      [ -n "$quiet" ] || echo "  toolkit: link reapontado para $AI_REPO"
+    local atual; atual="$(readlink "$link")"
+    if [ "$atual" = "$AI_REPO" ]; then
+      # Instalação antiga: apontava para a raiz e aninhava .claude. Migra sozinha.
+      ln -sfn "$surface" "$link"; changed=1
+      [ -n "$quiet" ] || echo "  toolkit: âncora migrada da raiz para .toolkit/ (fim do .claude aninhado)"
+    elif [ "$atual" != "$surface" ]; then
+      ln -sfn "$surface" "$link"; changed=1
+      [ -n "$quiet" ] || echo "  toolkit: link reapontado para $surface"
     else
       [ -n "$quiet" ] || echo "  toolkit: já apontava certo"
     fi
   elif [ -e "$link" ]; then
     die "$link existe e não é link simbólico — remova à mão antes de fiar"
   else
-    ln -s "$AI_REPO" "$link"; changed=1
+    ln -s "$surface" "$link"; changed=1
     [ -n "$quiet" ] || echo "  toolkit: link criado"
   fi
 

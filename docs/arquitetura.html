@@ -617,7 +617,7 @@
         <rect x="790" y="300" width="130" height="60" rx="6" class="c-mask"/>
         <rect x="790" y="300" width="130" height="60" rx="6" class="c-messagebus" stroke-width="1.5"/>
         <text x="855" y="328" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">ai-toolkit</text>
-        <text x="855" y="344" class="t-muted" font-size="9" text-anchor="middle">link → a oficina</text>
+        <text x="855" y="344" class="t-muted" font-size="9" text-anchor="middle">link → .toolkit/</text>
         <text x="855" y="352" class="t-messagebus" font-size="7" text-anchor="middle">a âncora</text>
 
         <rect x="790" y="430" width="130" height="60" rx="6" class="c-mask"/>
@@ -714,8 +714,10 @@
         <ul>
           <li>&bull; Skills e hooks referenciam scripts por um caminho só:</li>
           <li>&bull; ${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/…</li>
-          <li>&bull; workspace/go cria esse link em cada projeto alvo</li>
-          <li>&bull; É o que faz o mesmo texto de skill funcionar nos dois lugares</li>
+          <li>&bull; A âncora aponta para .toolkit/, NÃO para a raiz da oficina:</li>
+          <li>&bull; a raiz tem .claude/ dentro, e apontar para ela aninharia</li>
+          <li>&bull; .claude dentro de .claude sem fim</li>
+          <li>&bull; O .claude do SEU projeto e o da oficina coexistem</li>
         </ul>
       </div>
 

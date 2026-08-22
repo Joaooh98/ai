@@ -195,9 +195,23 @@ mkdir -p "$BASE/agents" "$BASE/skills"
 # ${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/... — um único caminho que resolve
 # tanto aqui quanto em qualquer projeto alvo fiado por workspace/go. Sem isto,
 # só funcionaria no repo onde o toolkit está fisicamente.
+#
+# A âncora aponta para `.toolkit/`, NÃO para a raiz do repositório. A raiz tem
+# um `.claude/` dentro, e esse `.claude/` tem a própria âncora — apontar para a
+# raiz criaria `.claude/ai-toolkit/.claude/ai-toolkit/.claude/…` sem fim.
+# Não é teoria: com a âncora na raiz, `find -L .claude -name SKILL.md` devolvia
+# 85 resultados num repositório com 16 skills. Todo indexador, backup ou busca
+# que siga symlink via o mesmo arquivo cinco vezes.
+#
+# `.toolkit/` expõe só o que a âncora precisa alcançar, e não contém `.claude/`.
+mkdir -p "$REPO_ROOT/.toolkit"
+for surface in tools workflow skills mcp; do
+  ln -sfn "$REPO_ROOT/$surface" "$REPO_ROOT/.toolkit/$surface"
+done
 mkdir -p "$REPO_ROOT/.claude"
-ln -sfn "$REPO_ROOT" "$REPO_ROOT/.claude/ai-toolkit"
-echo "toolkit: âncora em .claude/ai-toolkit -> $REPO_ROOT"
+ln -sfn "$REPO_ROOT/.toolkit" "$REPO_ROOT/.claude/ai-toolkit"
+echo "toolkit: superfície em .toolkit/ (tools, workflow, skills, mcp)"
+echo "toolkit: âncora em .claude/ai-toolkit -> $REPO_ROOT/.toolkit"
 
 a=0
 while IFS= read -r f; do link "$f" "$BASE/agents/$(basename "$f")" && a=$((a + 1))

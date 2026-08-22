@@ -4,8 +4,13 @@
 .claude/skills/
 .claude/commands/
 
-# Âncora do toolkit — link para a raiz deste repo, recriado por install.sh
+# Âncora do toolkit — link para .toolkit/, recriada por install.sh e workspace/go
 .claude/ai-toolkit
+
+# Superfície do toolkit: só symlinks para tools/, workflow/, skills/ e mcp/,
+# gerada por install.sh. Existe para a âncora não apontar para a raiz — a raiz
+# tem .claude/ dentro, e apontar para ela aninharia .claude sem fim.
+.toolkit/
 
 # Cadastro de projetos do operador: caminhos absolutos desta máquina.
 # Só o modelo é versionado. Detalhes em workspace/README.md.
