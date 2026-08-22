@@ -65,7 +65,7 @@
    "col": 1,
    "type": "database",
    "label": "lê o disco",
-   "sublabel": "sdlc-state.sh → skill da fase",
+   "sublabel": "sdlc-state.sh",
    "tag": "fonte da verdade"
   },
   {
@@ -83,7 +83,7 @@
    "col": 3,
    "type": "security",
    "label": "portão",
-   "sublabel": "artifact-lint + meta-check",
+   "sublabel": "lint + meta",
    "tag": "exit 1 = reprova"
   },
   {
@@ -92,7 +92,7 @@
    "col": 4,
    "type": "cloud",
    "label": "report",
-   "sublabel": "veredito + próximo passo"
+   "sublabel": "próximo passo"
   },
   {
    "id": "bloq",
@@ -100,7 +100,7 @@
    "col": 2,
    "type": "messagebus",
    "label": "bloqueado",
-   "sublabel": "defeito → agente dono"
+   "sublabel": "→ agente dono"
   }
  ],
  "mainPath": [
@@ -163,11 +163,11 @@
   {
    "from": "bloq",
    "to": "objetivo",
-   "label": "corrigido, rode de novo",
+   "label": "rode de novo",
    "variant": "default",
    "role": "return",
    "route": "return-left",
-   "labelSegment": 1
+   "labelSegment": 0
   }
  ],
  "cards": [
