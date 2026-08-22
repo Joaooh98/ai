@@ -133,6 +133,72 @@ for cli in gh glab docker kubectl terraform; do
   has "$cli" && echo "- CLI disponível: \`$cli\`"
 done
 
+# ------------------------------------------------------ MCP sugerido por stack
+# A detecção diz o que EXISTE. Esta seção diz o que PODERIA existir, cruzando os
+# sinais deste projeto com `mcp/catalog.tsv` — o que a equipe já avaliou.
+#
+# Ela NÃO instala nada. Perguntar do zero ("quer um servidor de documentação?")
+# chega vazio: quem responde precisa saber qual existe, se cobre a stack e qual
+# comando instala. A sugestão transforma isso numa pergunta respondível — e quem
+# decide continua sendo o usuário, no /setup.
+CATALOG="$SELF_DIR/../mcp/catalog.tsv"
+echo
+echo "## MCP sugerido para esta stack"
+echo
+if [ ! -f "$CATALOG" ]; then
+  echo "- Catálogo ausente (\`mcp/catalog.tsv\`) — sem sugestão. A detecção segue valendo."
+else
+  # Sinais = manifests presentes. Em workspace, também nos membros: um monorepo de
+  # 11 serviços Java não tem pom.xml na raiz, e sem olhar os membros a sugestão
+  # sairia vazia justamente onde ela mais vale.
+  sinais=""
+  for m in package.json pom.xml build.gradle build.gradle.kts requirements.txt \
+           pyproject.toml go.mod Cargo.toml composer.json tsconfig.json; do
+    [ -f "$m" ] && sinais="$sinais $m"
+  done
+  if [ -n "$WS_MEMBERS" ]; then
+    while IFS= read -r mem; do
+      [ -z "$mem" ] && continue
+      for m in package.json pom.xml build.gradle build.gradle.kts tsconfig.json \
+               pyproject.toml go.mod; do
+        [ -f "$mem/$m" ] && sinais="$sinais $m"
+      done
+    done <<< "$WS_MEMBERS"
+  fi
+
+  if [ -z "$sinais" ]; then
+    echo "- Nenhum manifest reconhecido — sem sinal para casar com o catálogo."
+  else
+    hoje_s=$(date +%s)
+    sugeriu=0
+    while IFS=$'\t' read -r cid cnome ctipo ccmd ccobre cverif cressalva; do
+      case "$cid" in ''|'#'*|id) continue ;; esac
+      [ -z "${ccobre:-}" ] && continue
+      printf '%s' "$sinais" | tr ' ' '\n' | grep -qE "^($ccobre)$" || continue
+      sugeriu=$((sugeriu + 1))
+      if [ -f .mcp.json ] && grep -q "\"$cid\"" .mcp.json 2>/dev/null; then
+        printf -- '- **%s** (%s) — já configurado em `.mcp.json`. Confirme que conecta: `claude mcp list`\n' \
+                  "$cnome" "$ctipo"
+        continue
+      fi
+      printf -- '- **%s** — %s\n' "$cnome" "$ctipo"
+      printf '  ```bash\n  %s\n  ```\n' "$ccmd"
+      printf '  RESSALVA: %s\n' "$cressalva"
+      verif_s=$(date -d "$cverif" +%s 2>/dev/null || echo "$hoje_s")
+      dias=$(( (hoje_s - verif_s) / 86400 ))
+      if [ "$dias" -gt 180 ]; then
+        printf '  ATENÇÃO: conferido há %s dias (%s). Reconfirme o comando antes de sugerir.\n' \
+               "$dias" "$cverif"
+      fi
+    done < "$CATALOG"
+    [ "$sugeriu" -eq 0 ] && echo "- Nada no catálogo casa com os sinais deste projeto."
+  fi
+  echo
+  echo "Sugestão não é instalação. Instalar mexe na conta e na máquina de quem usa —"
+  echo "o \`/setup\` pergunta antes. Recusa também vira linha no toolbelt: silêncio faz"
+  echo "o próximo agente oferecer de novo."
+fi
+
 echo
 echo "## Entrega"
 echo

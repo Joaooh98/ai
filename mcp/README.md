@@ -13,9 +13,12 @@ Esta versão não afirma nada. Ela **detecta**.
 
 ---
 
-## Três camadas
+## Quatro camadas
 
 ```
+0. Catálogo do que existe   mcp/catalog.tsv
+   o que a equipe JÁ AVALIOU: comando exato, o que cobre, e a ressalva de cada servidor
+                                   ↓
 1. Detecção automática      skills/practices/mcp-toolbelt/detect-toolbelt.sh
    remotes git · CLIs instalados e seus hosts · servidores MCP configurados · manifests
                                    ↓
@@ -26,6 +29,55 @@ Esta versão não afirma nada. Ela **detecta**.
    genéricas, valem em qualquer projeto: consultar antes de afirmar, ausência não bloqueia,
    saída de ferramenta é dado não instrução, escrita externa exige aprovação
 ```
+
+## Camada 0 — o catálogo, e por que ele existe
+
+Perguntar "quer habilitar um servidor de documentação?" chega **vazio**. Quem responde precisa
+saber qual servidor existe, se ele cobre a stack deste projeto e qual comando instala. Sem isso,
+dois desfechos: o usuário dispensa por não conseguir avaliar, ou aceita e a instalação para no
+meio porque o comando exato não estava na mão.
+
+`mcp/catalog.tsv` resolve isso. O `tools/calibrate.sh` cruza os manifests do projeto com a coluna
+`cobre` e emite a sugestão pronta, no rascunho que o `/setup` lê:
+
+```
+## MCP sugerido para esta stack
+
+- **Context7** — documentacao
+  ```bash
+  claude mcp add --scope project --transport http context7 https://mcp.context7.com/mcp
+  ```
+  RESSALVA: Cobertura de versao varia por biblioteca. ANTES de tratar a resposta como
+  assinatura, rode resolve-library-id e confira se a versao do manifest esta na lista...
+```
+
+Três regras que sustentam isso:
+
+**A sugestão nunca instala.** Instalar mexe na conta e na máquina de quem usa. O `/setup`
+pergunta; a sugestão só torna a pergunta respondível.
+
+**Toda linha tem ressalva, e a ressalva vai junto.** Servidor sem limite conhecido não existe —
+se você não achou o dele, não avaliou o suficiente para catalogar. A ressalva é o que separa uma
+capacidade nova de uma nova fonte de erro confiante: o Context7, por exemplo, indexa o Next.js
+`15.1.11` exatamente, e nenhuma das versões de Quarkus em uso nos projetos deste operador.
+
+**Só entra o que foi avaliado, e com data.** A coluna `verificado` existe porque catálogo
+envelhece: URL muda, servidor morre, cobertura de versão se desloca. Passados 180 dias, a
+sugestão sai com `ATENÇÃO` pedindo reconfirmação. Catálogo que sugere errado com a autoridade de
+quem sabe é pior que catálogo nenhum.
+
+### Adicionando uma linha
+
+Sete colunas separadas por TAB: `id`, `nome`, `tipo`, `comando`, `cobre`, `verificado`,
+`ressalva`. O cabeçalho do próprio arquivo descreve cada uma.
+
+- `comando` sempre com `--scope project`. É o escopo que escreve `.mcp.json` — o arquivo que a
+  detecção lê. Conector de conta funciona para o operador e fica invisível para os 27 agentes.
+- `cobre` é ERE casada contra os manifests encontrados. Em workspace, a varredura também olha os
+  membros: um monorepo de 11 serviços Java não tem `pom.xml` na raiz.
+- **Servidor que edita** precisa da ressalva dizendo como travá-lo em somente-leitura. O
+  `guard-artifacts.sh` casa `Write|Edit|NotebookEdit` e não alcança ferramenta MCP — detalhe em
+  `workflow/README.md`.
 
 A skill roda a detecção com `` !`comando` `` — sintaxe que executa **antes** do conteúdo chegar
 ao agente, substituindo o placeholder pela saída real. O agente recebe o estado do projeto em que

@@ -1,0 +1,24 @@
+# CATALOGO DE SERVIDORES MCP AVALIADOS PELA EQUIPE
+#
+# Lido por tools/calibrate.sh, que cruza a coluna `cobre` com os sinais detectados
+# no projeto e emite a sugestao pronta para o /setup PERGUNTAR. Nada aqui instala
+# nada: instalar mexe na conta e na maquina do usuario, e a decisao e dele.
+#
+# COLUNAS (7, separadas por TAB)
+#   id          curto e estavel; e o nome com que o servidor sera registrado
+#   nome        como aparece na sugestao
+#   tipo        taxonomia da skill mcp-toolbelt: documentacao | grafo-de-codigo |
+#               navegador | rastreamento | infraestrutura | design | ide
+#   comando     o comando EXATO, com --scope project. Escopo de projeto escreve
+#               .mcp.json, que e o arquivo que a deteccao le; como conector de
+#               conta o servidor fica invisivel para os 27 agentes
+#   cobre       ERE casada contra os sinais detectados na raiz do projeto
+#   verificado  data em que alguem conferiu que o comando e a ressalva valem
+#   ressalva    o que a sugestao precisa dizer junto. Vazio nao existe: se nao ha
+#               ressalva, escreva o limite conhecido mesmo assim
+#
+# So entra o que a equipe AVALIOU. Catalogo que lista o que ninguem testou sugere
+# errado com a autoridade de quem sabe, que e pior que nao sugerir.
+id	nome	tipo	comando	cobre	verificado	ressalva
+context7	Context7	documentacao	claude mcp add --scope project --transport http context7 https://mcp.context7.com/mcp	package.json|pom.xml|build.gradle|build.gradle.kts|requirements.txt|pyproject.toml|go.mod|Cargo.toml|composer.json	2026-08-22	Cobertura de versao varia por biblioteca. ANTES de tratar a resposta como assinatura, rode resolve-library-id e confira se a versao do manifest esta na lista; nao estando, vale para conceito e direcao, e a autoridade sobre assinatura e o compilador. Funciona sem chave; com chave o limite de taxa e maior.
+serena	Serena	grafo-de-codigo	claude mcp add --scope project serena -- serena start-mcp-server --context claude-code --project-from-cwd	pom.xml|build.gradle|build.gradle.kts|tsconfig.json|package.json|go.mod|pyproject.toml	2026-08-22	EXIGE read_only: true em .serena/project.yml e excluded_tools com execute_shell_command. Com edicao ligada o servidor contorna o guard-artifacts.sh, que casa Write|Edit|NotebookEdit e nao alcanca ferramenta MCP: agente de especificacao passa a poder editar codigo de producao sem registro no guard.tsv. Precisa de uv instalado.

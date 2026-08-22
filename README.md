@@ -96,9 +96,11 @@ em `.claude/toolbelt.md` — carregado por todo agente, em toda invocação.
 
 O `/setup` também **pergunta antes de habilitar**, em vez de assumir. Duas decisões que são suas:
 
-- **Quais servidores MCP este projeto ganha** — documentação, grafo de código, navegador. Ele
-  instala com `--scope project`, que escreve `.mcp.json`; instalado como conector de conta, o
-  servidor fica invisível para os 27 agentes e eles seguem adivinhando.
+- **Quais servidores MCP este projeto ganha.** A pergunta não chega vazia: `mcp/catalog.tsv`
+  guarda o que a equipe já avaliou, e a detecção cruza com os manifests daqui para trazer o
+  comando exato **e a ressalva** de cada um. Instala com `--scope project`, que escreve
+  `.mcp.json`; como conector de conta o servidor fica invisível para os 27 agentes, e eles
+  seguem adivinhando.
 - **Qual é a meta de qualidade daqui** — cobertura, latência, o que nunca vai para produção.
   Gravada em `.claude/meta.tsv`, é o que os portões 3 e 4 conferem. Em projeto que já existe,
   use catraca: não bloqueia a dívida que estava lá, só impede piorar.
@@ -425,7 +427,6 @@ caminho de arquivo. Sem isso é vontade, não plano.
 
 | Plano | Sobre |
 |---|---|
-| [`plans/mcp-pre-setado.md`](plans/mcp-pre-setado.md) | Sugerir os servidores MCP a partir da stack detectada, em vez de perguntar do zero — com a ressalva de cobertura de versão junto |
 | [`plans/grafo-de-codigo.md`](plans/grafo-de-codigo.md) | Grafo de símbolos para os agentes responderem "quem chama isto" por consulta, e não por grep |
 
 Plano **descartado fica no repositório, com o motivo** — é o registro mais barato contra refazer a

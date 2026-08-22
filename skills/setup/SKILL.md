@@ -60,36 +60,43 @@ Faltando resposta, registre a pergunta em aberto em vez de assumir.
 
 ## Passo 4 — Habilitar as capacidades que faltam
 
-A detecção acima diz o que **existe**. Este passo decide o que **passa a existir** — e a decisão
-é do usuário, não sua. Nunca instale servidor MCP sem perguntar: é a máquina e a conta dele.
+A detecção acima diz o que **existe**. A seção **"MCP sugerido para esta stack"** diz o que
+poderia existir: ela cruza os manifests deste projeto com `mcp/catalog.tsv` — o que a equipe já
+avaliou — e traz o comando exato mais a ressalva de cada servidor.
 
-Olhe a seção de capacidades da detecção e pergunte, uma pergunta por lacuna real:
+**Ela sugere. Você pergunta. O usuário decide.** Nunca instale servidor MCP sem autorização
+explícita: mexe na conta e na máquina dele.
 
-| Lacuna detectada | Pergunte | Resolve |
-|---|---|---|
-| Nenhum servidor de documentação | "Habilito um servidor de documentação (Context7)? Ele responde a API atual da biblioteca em vez de eu responder de memória." | Versão errada de API no código |
-| Nenhum grafo de código | "Habilito busca semântica por símbolo? Responde 'quem chama isto' pelo compilador, não por grep." | Afirmação errada sobre impacto de mudança |
-| Nenhum navegador | "Habilito navegador para verificar UI de verdade?" | Mudança visual aprovada sem ninguém olhar |
+Para cada item sugerido, pergunte usando o que a detecção já trouxe — não invente a pergunta do
+zero, e **não omita a ressalva**. Ela é o que separa uma capacidade nova de uma nova fonte de
+erro confiante:
 
-Autorizado, instale **com escopo de projeto**:
+> "Habilito o Context7 aqui? Ele responde a API atual da biblioteca em vez de eu responder de
+> memória. Ressalva: a cobertura de versão varia — para as versões que ele não indexa, vale para
+> conceito, e a autoridade sobre assinatura continua sendo o compilador."
+
+Autorizado, rode **o comando exato que a detecção imprimiu** e confirme:
 
 ```bash
-claude mcp add --scope project <nome> <comando-ou-url>
 claude mcp list        # configurado ≠ conectado: confirme antes de contar com ele
 ```
 
-O escopo importa mais do que parece. `--scope project` escreve `.mcp.json` na raiz, e é
-exatamente esse arquivo que a detecção do `mcp-toolbelt` lê. Instalado como conector de conta, o
-servidor funciona para você e fica **invisível** para os 27 agentes — eles recebem "nenhum
-servidor MCP em arquivo de configuração" e seguem adivinhando.
+O escopo não é detalhe. `--scope project` escreve `.mcp.json` na raiz, e é exatamente esse
+arquivo que a detecção do `mcp-toolbelt` lê. Instalado como conector de conta, o servidor
+funciona para você e fica **invisível** para os 27 agentes — eles recebem "nenhum servidor MCP em
+arquivo de configuração" e seguem adivinhando.
 
-Recusado, registre a recusa no toolbelt. "O usuário optou por não ter servidor de documentação"
-é contexto útil; silêncio faz o próximo agente perguntar de novo.
+Recusado, registre a recusa no toolbelt. "O usuário optou por não ter servidor de documentação" é
+contexto útil; silêncio faz o próximo agente oferecer de novo.
 
-**Antes de habilitar qualquer servidor com ferramenta de escrita**, leia o aviso em
-`workflow/README.md` sobre fronteiras: o hook que impede agente de especificação de editar código
-casa `Write|Edit|NotebookEdit` e não alcança ferramenta MCP. Servidor de leitura é seguro;
-servidor que edita precisa ser configurado em modo somente-leitura.
+**Servidor com ferramenta de escrita exige cuidado extra.** O `guard-artifacts.sh` casa
+`Write|Edit|NotebookEdit` e **não alcança** ferramenta MCP: com edição ligada, agente de
+especificação passa a poder alterar código de produção sem registro no `guard.tsv`. Configure o
+servidor em modo somente-leitura, como a ressalva do catálogo manda. O aviso completo está em
+`workflow/README.md`.
+
+Nada sugerido, ou a sugestão veio com **ATENÇÃO de data**? Diga isso no relatório. Catálogo
+conferido há muito tempo pode estar recomendando comando que já mudou.
 
 ## Passo 5 — Estabelecer as metas do projeto
 

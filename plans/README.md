@@ -43,5 +43,13 @@ documentação duplicada, e documentação duplicada diverge.
 
 | Plano | Sobre | Status |
 |---|---|---|
-| [`mcp-pre-setado.md`](mcp-pre-setado.md) | Servidores MCP sugeridos por stack detectada, em vez de perguntados do zero | proposto |
 | [`grafo-de-codigo.md`](grafo-de-codigo.md) | Grafo de símbolos para os agentes pararem de afirmar por inferência | proposto |
+
+### Entregues
+
+| Plano | Entregue como |
+|---|---|
+| MCP pré-setado | `mcp/catalog.tsv` + a seção "MCP sugerido para esta stack" do `tools/calibrate.sh`, consumida pelo Passo 4 do `/setup`. Documentado em [`mcp/README.md`](../mcp/README.md) |
+
+O arquivo do plano entregue foi apagado, como manda a regra acima. Esta linha fica porque saber
+**onde** um plano virou código custa menos que redescobrir.
