@@ -58,8 +58,8 @@ ficam onde o código está.
 **Este repositório é a oficina.** Nenhum trabalho de produto acontece aqui dentro — os projetos
 ficam cadastrados em `workspace/` e a sessão abre dentro deles.
 
-**Ver antes de ler.** Três diagramas, cada um começando onde o anterior para — tema claro/escuro
-e exportação em todos:
+**Ver antes de ler.** Quatro diagramas, cada um começando onde o anterior para — tema
+claro/escuro e exportação em todos:
 
 | # | Diagrama | Responde |
 |---|---|---|
@@ -72,11 +72,13 @@ Leia nessa ordem. O primeiro responde *por quê*, o último responde *onde* — 
 antes do *porquê* é exatamente o que faz o repositório parecer um monte de pasta sem propósito.
 
 ```bash
+docs/gerar.sh            # gera os quatro a partir dos .json
 xdg-open docs/porque.html
 ```
 
-Os `.html` são **derivados**: a fonte é o `.json` ao lado. Mexeu na estrutura da equipe, regere —
-o procedimento está em [`docs/README.md`](docs/README.md).
+Os `.html` **não são versionados** — são saída, e cada um embute o runtime do `archify` inteiro.
+Versionar os quatro colocava 2162 linhas duplicadas no repositório. A fonte é o `.json` ao lado;
+`docs/gerar.sh` refaz em segundos. Detalhes em [`docs/README.md`](docs/README.md).
 
 ---
 

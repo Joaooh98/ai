@@ -32,3 +32,8 @@ workspace/projects/*.md
 
 # Cache local do CLI Quarkus. Estado de ferramenta, nao conteudo do repositorio.
 .quarkus/
+
+# Diagramas gerados: a fonte e o .json ao lado. Cada .html embute o runtime
+# do archify inteiro, entao versionar os quatro colocava 2162 linhas duplicadas
+# no repositorio. Refaca com docs/gerar.sh.
+docs/*.html

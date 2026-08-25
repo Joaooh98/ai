@@ -37,6 +37,19 @@ alvo() {
   esac
 }
 
+# `docs/*.html` é GERADO e não versionado. Conferir se o arquivo existe daria
+# verde aqui, onde ele acabou de ser gerado, e mentiria para quem clonou agora.
+# O que tem que existir é a FONTE: o .json ao lado. Sem esta regra o lint
+# aprovaria link para diagrama que ninguém consegue abrir.
+fonte_do_html() {
+  local base tipo
+  base="$(basename "$1" .html)"
+  for tipo in workflow architecture sequence dataflow lifecycle; do
+    [ -f "docs/$base.$tipo.json" ] && return 0
+  done
+  return 1
+}
+
 echo "== links markdown =="
 for f in $DOCS; do
   d=$(dirname "$f")
@@ -45,6 +58,10 @@ for f in $DOCS; do
     link="${link%%#*}"
     [ -z "$link" ] && continue
     alvo "$link" && continue
+    # Diagrama gerado: vale a fonte, não o arquivo.
+    case "$link" in
+      *.html) fonte_do_html "$link" && continue ;;
+    esac
     [ -e "$d/$link" ] || [ -e "$link" ] || falha "  link quebrado  $f -> $link"
   done < <(grep -oE '\]\([^)#][^)]*\)' "$f" 2>/dev/null | sed 's/^](//; s/)$//')
 done
