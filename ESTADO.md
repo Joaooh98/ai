@@ -8,7 +8,7 @@ nem por que parou.
 **Toda sessão lê isto ao abrir e atualiza ao sair.** É um arquivo só, versionado; o git
 resolve a concorrência.
 
-> Última atualização: 2026-08-25
+> Última atualização: 2026-08-25, depois da rodada de merges
 
 ## Como conferir o estado real
 
@@ -23,29 +23,43 @@ git branch -vv | grep -v origin  # branch local sem remote — trabalho em risco
 
 ## Frentes abertas
 
-| # | Branch | Merge | Tamanho | Parada desde | O que é |
-|---|---|---|---|---|---|
-| [#7](https://github.com/Joaooh98/ai/pull/7) | `plano-skills-comunidade` | ✅ CLEAN | +8369/−2 | — | Skills da comunidade: pesquisa, auditoria de segurança e absorção dos especialistas de stack |
-| [#8](https://github.com/Joaooh98/ai/pull/8) | `guard-publish` | ✅ CLEAN | +465/−43 | 03/08 | Hook que impede artefato de planejamento chegar ao repositório |
-| [#6](https://github.com/Joaooh98/ai/pull/6) | `nightly-atividades` | ✅ CLEAN | +755/−33 | 30/07 | Atividade executável para cada uma das 6 rotinas noturnas |
-| [#5](https://github.com/Joaooh98/ai/pull/5) | `sdlc-docker-devflow` | ✅ CLEAN | +804/−0 | 30/07 | Bootstrap do fluxo de dev e execução em Docker (onda 00) |
-| [#1](https://github.com/Joaooh98/ai/pull/1) | `arch-conformance` | ⚠️ **CONFLITANTE** | +703/−7 | 29/07 | Rotina de conformidade arquitetural com catraca |
+| # | Branch | Estado | Parada desde | O que é |
+|---|---|---|---|---|
+| [#1](https://github.com/Joaooh98/ai/pull/1) | `arch-conformance` | ⚠️ **CONFLITANTE** · rascunho | 29/07 | Rotina de conformidade arquitetural com catraca |
+
+Só uma frente ativa. Ela precisa de **rebase sobre a `main`** antes de qualquer coisa — a
+main andou 5 commits desde que ela parou. E continua marcada como rascunho: o
+`gh pr merge` recusa PR em draft, então precisa de `gh pr ready 1` também.
 
 ### Fora de escopo por decisão
 
 | # | Branch | Situação |
 |---|---|---|
-| [#2](https://github.com/Joaooh98/ai/pull/2) | `vault-secrets` | **Parado por decisão do operador em 25/08.** Vault local para credenciais. Não desenvolver agora — o PR fica aberto como registro, sem trabalho ativo. |
-
-### Encerradas
-
-| # | Branch | Situação |
-|---|---|---|
-| [#3](https://github.com/Joaooh98/ai/pull/3) | `meta-e-mcp` | **Fechado sem merge** em 25/08. O worktree `.claude/worktrees/meta-e-mcp` continua em disco — remover quando confirmar que nada se aproveita. |
+| [#2](https://github.com/Joaooh98/ai/pull/2) | `vault-secrets` | **Parado por decisão do operador em 25/08.** Vault local para credenciais. Não desenvolver agora — o PR fica aberto como registro, sem trabalho ativo. Já está conflitante; quando for retomado, rebase primeiro. |
 
 ---
 
-## Riscos abertos
+## Concluído em 25/08
+
+Quatro frentes entraram na `main` na mesma rodada:
+
+| # | Branch | O que entregou |
+|---|---|---|
+| [#7](https://github.com/Joaooh98/ai/pull/7) | `plano-skills-comunidade` | Skills da comunidade: pesquisa, auditoria de segurança e os 4 especialistas de stack em `skills/stack/` |
+| [#8](https://github.com/Joaooh98/ai/pull/8) | `guard-publish` | Hook que impede artefato de planejamento chegar ao repositório |
+| [#6](https://github.com/Joaooh98/ai/pull/6) | `nightly-atividades` | Atividade executável para cada uma das 6 rotinas noturnas |
+| [#5](https://github.com/Joaooh98/ai/pull/5) | `sdlc-docker-devflow` | Bootstrap do fluxo de dev e execução em Docker (onda 00) |
+
+O [#3](https://github.com/Joaooh98/ai/pull/3) (`meta-e-mcp`) foi **fechado sem merge**.
+
+**A equipe já está ativa com o resultado:** `./agents/install.sh --user` rodado do checkout
+principal, com **27 agentes e 20 skills** linkados em `~/.claude/` (eram 16 skills).
+Confirmado que os symlinks apontam para `/home/smart/Documents/person/ai/`, não para
+worktree.
+
+---
+
+## Pendências de limpeza
 
 **1. Trabalho que existe só nesta máquina.** A branch `worktree-workspace-skill` tem um
 commit sem remote e sem PR:
@@ -55,40 +69,20 @@ cf5698e feat(workspace): add /workspace skill and non-TTY guard for go script
 ```
 
 Se o disco falhar ou o worktree for removido, some. **Empurrar ou descartar
-conscientemente** — não deixar no limbo.
+conscientemente** — não deixar no limbo. É a pendência mais urgente desta lista.
 
-**2. O #1 conflita com a `main`.** Parado desde 29/07, e a main andou. Precisa de rebase
-antes de qualquer coisa. Quanto mais tempo parado, pior fica.
+**2. Worktree órfão.** `.claude/worktrees/meta-e-mcp` continua em disco, mas o PR #3 foi
+fechado sem merge. Remover depois de confirmar que nada se aproveita:
+
+```bash
+git worktree remove .claude/worktrees/meta-e-mcp
+git branch -D worktree-meta-e-mcp
+```
 
 **3. Este repositório não usa o próprio SDLC.** `docs/sdlc/` está vazio aqui, apesar de
 `skills/sdlc-status` existir justamente para responder "onde o trabalho parou, inclusive
 em sessão nova". A oficina não se aplica a si mesma. Enquanto isso não muda, **este
 arquivo é o substituto manual**.
-
----
-
-## Ordem sugerida de merge
-
-As quatro frentes limpas não se sobrepõem em arquivo, então a ordem entre elas é livre.
-Verificado: o #8 toca `agents/install.sh` e `skills/sdlc/SKILL.md`; o #7 toca
-`agents/03-build/`, `skills/stack/` e `.gitignore`. Sem interseção.
-
-```bash
-gh pr merge 7 --squash --delete-branch    # skills de stack
-gh pr merge 8 --squash --delete-branch    # guard-publish
-gh pr merge 6 --squash --delete-branch    # nightly
-gh pr merge 5 --squash --delete-branch    # docker devflow
-```
-
-Depois de cada merge que toque `agents/` ou `skills/`, reativar a equipe a partir do
-**checkout principal** (nunca de um worktree — ver abaixo):
-
-```bash
-cd /home/smart/Documents/person/ai && git pull && ./agents/install.sh --user
-./agents/install.sh --check     # confere a contagem
-```
-
-O #1 fica por último, depois de resolver o conflito.
 
 ---
 
@@ -100,3 +94,5 @@ um worktree, repontaria a equipe global para lá — e quando o worktree fosse r
 todo link ficaria quebrado, derrubando as outras sessões.
 
 De dentro de worktree, use apenas `./agents/install.sh --check`, que valida sem escrever.
+
+Rodar de novo o `--user` sempre que um merge tocar `agents/` ou `skills/`.
