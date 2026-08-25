@@ -4,7 +4,10 @@ Scripts determinísticos que os agentes chamam via Bash. Existem porque reconstr
 informação a cada execução do modelo é caro, lento e inconsistente — um script devolve o mesmo
 resultado sempre, e o agente gasta o raciocínio no julgamento, não na coleta.
 
-Todos são **somente leitura**. Nenhum instala, builda, acessa a rede ou altera arquivo.
+Quase todos são **somente leitura** — nenhum instala, builda ou acessa a rede. A exceção é
+`restrict.sh`, que grava as regras de restrição que **você** escolheu, e só em
+`.claude/settings.local.json` (pessoal, gitignorado). Ele faz backup antes e nunca toca no
+`settings.json` versionado.
 
 ## Dois formatos de projeto
 
@@ -46,6 +49,16 @@ Arquitetura se descobre lendo o código — trabalho do `project-analyst`, não 
 | `preview-env.sh [dir]` | Como subir o projeto num ambiente controlado e o que já está de pé. Não sobe nem derruba nada | `/verify-live` |
 | `tracker.sh [dir]` | Qual rastreador de trabalho (Jira, Linear, GitHub, GitLab) o projeto usa e como falar com ele. Sem chamada de rede | `/sdlc-intake` |
 | `git-conventions.sh [dir] [n]` | Como o time versiona: formato de commit, prefixo de branch, branch de integração e se MR é o caminho. `--resumo` devolve 4 linhas para o toolbelt | `/setup`, `code-reviewer`, `release-manager` |
+| `secret-scan.sh [dir]` | Onde estão as credenciais: arquivo com nome de credencial, forma de segredo no conteúdo, e se está **rastreado no git**. Imprime `arquivo:linha` e a classe, **nunca o valor**. Exit 1 quando acha segredo versionado | você, antes de migrar para o vault |
+| `restrict.sh [dir]` | Aplica o mínimo de restrição e mostra os candidatos para **você escolher** o que o agente não pode ler. Escreve em `.claude/settings.local.json` | você, uma vez por projeto |
+
+`_secret-shapes.sh` é o detector de formas de segredo compartilhado pelos dois acima. Helper carregado
+por outro script, não tool que agente chama — daí o `_`, mesma regra do `_workspace.sh`.
+
+**Por que o detector usa `grep -E` e não `awk`:** o `awk` padrão do Ubuntu é o mawk, que não suporta
+intervalo em ERE — `awk '/AKIA[A-Z0-9]{16}/'` não casa `AKIAIOSFODNN7EXAMPLE`. Como quase toda forma
+de segredo depende de contagem, um detector em awk falharia **em silêncio**: pareceria instalado e
+não acharia nada. É o pior defeito possível num controle de segurança.
 
 ## Uso
 
@@ -67,7 +80,7 @@ que permite usá-lo como portão real em `/sdlc-gate`, e não como sugestão.
 
 MCP resolve acesso a **sistemas externos** (GitLab, Figma, VPS, documentação). Estes scripts
 resolvem **fatos locais do repositório**. Um agente sem nenhum servidor MCP configurado continua
-tendo os oito — é o piso de capacidade da equipe, não um extra.
+tendo todos eles — é o piso de capacidade da equipe, não um extra.
 
 ## Como as skills os alcançam
 
