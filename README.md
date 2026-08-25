@@ -22,6 +22,10 @@ ficam cadastrados em `workspace/` e a sessão abre dentro deles.
 feito, [`docs/fluxo.html`](docs/fluxo.html) mostra como se usa. Tema claro/escuro e exportação.
 Abra com `xdg-open docs/fluxo.html`.
 
+**Trabalhando neste repositório?** Leia [`ESTADO.md`](ESTADO.md) primeiro — é o índice das
+frentes em voo. O trabalho aqui acontece em sessões paralelas que não enxergam umas às
+outras; esse arquivo é o único lugar que sabe o que existe, o que falta e o que está parado.
+
 ---
 
 ## Começar

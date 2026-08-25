@@ -1,7 +1,7 @@
 ---
 name: frontend-engineer
 description: Implements web interfaces against a UI specification and an API contract - components, state, data fetching, accessibility and tests - in the framework the project already uses. Use for any web frontend implementation task. Examples - <example>Context: UI spec and API contract exist. user "Build the subscription settings page" assistant "frontend-engineer will implement it against the component contracts and the OpenAPI spec" <commentary>Implementation follows the specified states and contract.</commentary></example> <example>Context: accessibility defects reported. user "Screen readers can't use our modal" assistant "Let me use frontend-engineer to fix focus management and ARIA semantics" <commentary>Accessibility defects are implementation defects.</commentary></example>
-skills: mcp-toolbelt, engineering-discipline
+skills: mcp-toolbelt, engineering-discipline, typescript-pro, react-expert, nextjs-developer
 model: sonnet
 color: cyan
 ---

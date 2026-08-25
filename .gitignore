@@ -20,3 +20,8 @@ workspace/projects/*.md
 
 # .mcp.json NÃO está ignorado: é escopo de projeto e deve ser versionado quando
 # existir, para quem clonar o repositório receber os mesmos servidores.
+
+# Saída de ferramenta de terceiro. Ficam fora do versionamento por regra: o
+# repositório recebe código, não artefato de análise. Ver design-docs/plano-skills-comunidade.md
+graphify-out/
+.claude/sdd-cache/
