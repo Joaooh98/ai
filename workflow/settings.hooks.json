@@ -11,6 +11,17 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/workflow/hooks/guard-publish.sh",
+            "statusMessage": "verificando o que vai para o repositório",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PostToolUse": [

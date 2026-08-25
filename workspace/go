@@ -266,24 +266,16 @@ cmd_wire() {
 
   # 2. Hooks. Mesmo snippet versionado deste repo — sem cópia divergente.
   local settings="$target/.claude/settings.json"
-  if [ ! -f "$settings" ]; then
-    cp "$HOOK_SNIPPET" "$settings"; changed=1
-    [ -n "$quiet" ] || echo "  hooks:   settings.json criado"
-  elif command -v jq >/dev/null 2>&1; then
-    if diff -q <(jq -S '.hooks' "$settings" 2>/dev/null) <(jq -S '.hooks' "$HOOK_SNIPPET") >/dev/null 2>&1; then
-      [ -n "$quiet" ] || echo "  hooks:   já atualizados"
-    elif jq -e '.hooks' "$settings" >/dev/null 2>&1; then
-      warn "$settings já define 'hooks' diferente do esperado — NÃO foi alterado."
-      echo "       Compare com workflow/settings.hooks.json e mescle à mão." >&2
-    else
-      local tmp; tmp="$(mktemp)"
-      jq -s '.[0] * .[1]' "$settings" "$HOOK_SNIPPET" > "$tmp" && mv "$tmp" "$settings"
-      changed=1
-      [ -n "$quiet" ] || echo "  hooks:   mesclados em settings.json"
-    fi
-  else
-    warn "jq ausente e $settings já existe — mescle os hooks à mão"
-  fi
+  mkdir -p "$target/.claude"
+  case "$("$AI_REPO/workflow/hooks-sync.sh" "$settings" "$HOOK_SNIPPET")" in
+    criado)        changed=1; [ -n "$quiet" ] || echo "  hooks:   settings.json criado" ;;
+    ja-atualizado) [ -n "$quiet" ] || echo "  hooks:   já atualizados" ;;
+    atualizado)    changed=1; [ -n "$quiet" ] || echo "  hooks:   atualizados para a versão atual do toolkit" ;;
+    mesclado)      changed=1; [ -n "$quiet" ] || echo "  hooks:   mesclados em settings.json" ;;
+    divergente)    warn "$settings define hooks que não são do toolkit — NÃO foi alterado."
+                   echo "       Compare com workflow/settings.hooks.json e mescle à mão." >&2 ;;
+    sem-jq)        warn "jq ausente e $settings já existe — mescle os hooks à mão" ;;
+  esac
 
   # 3. Escopo de usuário. Sem isto o alvo não enxerga agente nenhum.
   if ! user_scope_ok; then

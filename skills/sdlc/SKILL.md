@@ -84,3 +84,8 @@ Pare aqui. Uma invocação, uma onda. Quem decide avançar é o usuário.
 3. **Nunca deixe dois agentes escrevendo o mesmo arquivo** na mesma onda.
 4. **Nunca aceite "os testes passam"** sem a saída real. Se o agente não colou, rode você.
 5. **Estado vem do disco.** Em sessão nova, `tools/sdlc-state.sh` é a única fonte.
+6. **Artefato não vai para o repositório.** O repositório recebe **código desenvolvido**. Plano,
+   PRD, ADR, modelo de ameaças, MANIFEST, ledger e registro de incidente ficam no disco, ao lado do
+   código que descrevem, e não são commitados nem publicados. Não proponha commit de `docs/sdlc/`
+   nem inclua esses caminhos num commit de código. O hook `guard-publish.sh` impõe isso; a regra
+   está aqui para você não tentar.

@@ -1,0 +1,20 @@
+## Template do FDD como contrato de completude
+O template do FDD funciona como um contrato de completude: ele define quais partes mínimas precisam existir para que o documento seja útil como especificação, mesmo antes de estar perfeito. O valor principal não está só em formatar a saída, mas em impedir que contratos, comportamento, dependências e critérios importantes fiquem implícitos ou esquecidos. Quando a IA recebe esse template como estrutura de saída, ela não escreve livremente; ela preenche um espaço técnico já delimitado. Isso aumenta consistência entre documentos e torna o draft mais revisável.
+
+## Perguntas do prompt como checklist de definição
+As perguntas do prompt não servem apenas para conduzir uma entrevista; elas funcionam como checklist de definição da feature. Mesmo sem usar o fluxo interativo, você ainda precisa responder essas perguntas em algum formato, porque são elas que revelam lacunas de escopo, comportamento e integração. Por isso, o prompt tem valor mesmo quando não é executado literalmente: ele explicita o que precisa ser decidido. Ler as perguntas com atenção é uma forma de validar se a feature já está suficientemente definida para virar FDD.
+
+## Codebase como contexto adicional
+A codebase entra como contexto adicional quando o conhecimento necessário para especificar a feature não está todo no PRD, no HLD ou na memória de quem escreve. Trechos de código, contratos existentes, convenções internas e estruturas reais do projeto ajudam a IA a produzir um draft mais aderente ao sistema que já existe. Isso reduz respostas genéricas e aproxima o documento do ambiente real da empresa. O uso da codebase não substitui decisão técnica, mas melhora a precisão do ponto de partida.
+
+## Combinação de insumos para gerar o draft
+Retomando o fluxo já conhecido, o FDD pode nascer de múltiplos insumos combinados: template, HLD, PRD, respostas da entrevista e contexto adicional do projeto. O documento pode existir sozinho, mas a qualidade do rascunho aumenta quando a IA recebe também os artefatos que já fixaram arquitetura e objetivos de negócio. No exemplo do rate limiter, isso significa aproveitar o que já foi decidido e usar o template para detalhar a feature sem recomeçar do zero. A combinação de insumos transforma geração em composição guiada, não em improviso.
+
+## IA como geradora de rascunho
+A IA é mais confiável como geradora de rascunho do que como autora final autônoma do FDD. Ela acelera a estruturação inicial, preenche seções recorrentes e organiza o conteúdo em um formato útil para revisão, mas continua dependente de contexto suficiente e validação humana. Em ambientes reais, informações específicas da empresa, restrições locais e exemplos concretos quase sempre exigem complementação manual. O objetivo correto é sair do zero para um draft útil, não automatizar a decisão técnica inteira.
+
+## Workflow de geração assistida
+O workflow prático segue uma sequência simples: reunir insumos, usar o template e as perguntas como guia, gerar um draft e revisar o resultado. Se a entrevista for útil, ela ajuda a coletar respostas; se for mais lento do que escrever diretamente, o mesmo template pode ser preenchido com contexto já preparado. Esse fluxo é flexível porque o centro do processo não é a entrevista em si, mas a qualidade dos insumos e da estrutura de saída. A revisão humana fecha o ciclo, corrigindo suposições e adicionando o que só o contexto da empresa pode fornecer.
+
+## Aplicação prática no exemplo do rate limiter
+Retomando o cenário do rate limiter, a camada nova aqui não é redefinir a feature, mas gerar sua especificação detalhada com apoio da IA. Em vez de depender apenas de perguntas soltas, você pode anexar o HLD já existente, o PRD correspondente, trechos da codebase e o template do FDD para pedir um draft inicial. Se preferir, pode até pular a entrevista e usar diretamente o esqueleto de saída como instrução de preenchimento. O resultado esperado é um documento próximo do que a empresa precisa, mas ainda tratado como rascunho a ser refinado.

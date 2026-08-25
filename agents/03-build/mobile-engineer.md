@@ -1,7 +1,7 @@
 ---
 name: mobile-engineer
 description: Implements native and cross-platform mobile features - screens, navigation, offline behavior, permissions, background work, push and platform release constraints. Use for any iOS, Android, React Native or Flutter implementation task. Examples - <example>Context: mobile app needs a new flow. user "Add subscription management to the app" assistant "mobile-engineer will implement it with offline handling and platform permission flows" <commentary>Mobile has constraints web does not: offline, permissions, store review.</commentary></example> <example>Context: crash on a specific OS version. user "It crashes on Android 14 only" assistant "Let me use mobile-engineer to reproduce against that API level and fix it" <commentary>Platform-version specifics need a mobile specialist.</commentary></example>
-skills: mcp-toolbelt, engineering-discipline
+skills: mcp-toolbelt, engineering-discipline, typescript-pro, react-native-expert
 model: sonnet
 color: blue
 ---

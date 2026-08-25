@@ -133,5 +133,5 @@ Chamados direto do shell, os caminhos relativos acima continuam valendo.
 `.toolkit/` é uma pasta de symlinks (`tools`, `workflow`, `skills`, `mcp`) que existe por um
 motivo só: a âncora **não pode** apontar para a raiz do repositório, porque a raiz contém um
 `.claude/` que contém a própria âncora — e isso aninha `.claude` dentro de `.claude` sem fim.
-Medido antes da correção: `find -L .claude -name SKILL.md` devolvia 85 resultados num repositório
-com 16 skills.
+Medido antes da correção: `find -L .claude -name SKILL.md` devolvia 85 resultados num
+repositório que na época tinha 16 skills — cinco voltas do mesmo arquivo.

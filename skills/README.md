@@ -17,7 +17,7 @@ Curadoria a partir da pesquisa do ecossistema:
 
 ## Estrutura
 
-As 16 skills:
+As 20 skills:
 
 ```
 skills/
@@ -33,13 +33,24 @@ skills/
 ├── sdlc-intake/             /sdlc-intake — puxa a tarefa do tracker e devolve status
 ├── incident/                /incident — modo emergência + severity.md + templates/postmortem.md
 ├── verify-live/             /verify-live — sobe num ambiente controlado e verifica de verdade
-├── nightly/                 /nightly — trabalho recorrente fora do horário
+├── nightly/                 /nightly — trabalho recorrente + routines/ (6 rotinas executáveis)
 ├── setup/                   /setup — calibra a equipe para o projeto que a recebeu
-└── practices/
-    ├── engineering-discipline/   disciplina compartilhada — todos os 27 agentes
-    └── mcp-toolbelt/             ferramental detectado por projeto — 26 dos 27 agentes
-                                  (o context-manager não a carrega: não fala com sistema externo)
+├── practices/
+│   ├── engineering-discipline/   disciplina compartilhada — todos os 27 agentes
+│   └── mcp-toolbelt/             ferramental detectado por projeto — 26 dos 27 agentes
+│                                 (o context-manager não a carrega: não fala com sistema externo)
+└── stack/
+    ├── nextjs-developer/         App Router, server components, server actions
+    ├── react-expert/             React 18+, hooks, Suspense, migração de classe
+    ├── react-native-expert/      Expo, navegação, FlatList, código por plataforma
+    └── typescript-pro/           tipos avançados, type guards, tRPC ponta a ponta
 ```
+
+As quatro de `stack/` são de natureza diferente das outras dezesseis. As de fluxo (`sdlc-*`,
+`incident`, `setup`) descrevem **como a equipe trabalha** e valem em qualquer projeto; as de
+`stack/` carregam **conhecimento de uma tecnologia** e só são acionadas quando o projeto usa
+aquela stack. Por isso ficam num grupo à parte: misturar as duas na mesma lista faria parecer
+que o fluxo depende de React.
 
 ## Você só precisa lembrar de um comando
 

@@ -41,8 +41,8 @@ em `prompts/` e `design-docs/` — frente separada, que não é usada em runtime
 
 ```
 agents/       27 agentes — 24 do SDLC + 2 de incidente + 1 de integração externa
-skills/       16 skills — os fluxos, a entrada por ticket e a disciplina da equipe
-workflow/     3 hooks que impõem as fronteiras e registram o que acontece
+skills/       os fluxos, a entrada por ticket, a disciplina da equipe e as skills de stack
+workflow/     4 hooks que impõem as fronteiras e registram o que acontece
 tools/        11 scripts de apoio somente-leitura chamados pelos agentes
 workspace/    os projetos onde você trabalha — cadastro e abertura de sessão
 mcp/          como a equipe detecta o ferramental do projeto, em vez de assumir
@@ -79,6 +79,10 @@ xdg-open docs/porque.html
 Os `.html` **não são versionados** — são saída, e cada um embute o runtime do `archify` inteiro.
 Versionar os quatro colocava 2162 linhas duplicadas no repositório. A fonte é o `.json` ao lado;
 `docs/gerar.sh` refaz em segundos. Detalhes em [`docs/README.md`](docs/README.md).
+
+**Trabalhando neste repositório?** Leia [`ESTADO.md`](ESTADO.md) primeiro — é o índice das
+frentes em voo. O trabalho aqui acontece em sessões paralelas que não enxergam umas às
+outras; esse arquivo é o único lugar que sabe o que existe, o que falta e o que está parado.
 
 ---
 

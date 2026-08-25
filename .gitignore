@@ -37,3 +37,12 @@ workspace/projects/*.md
 # do archify inteiro, entao versionar os quatro colocava 2162 linhas duplicadas
 # no repositorio. Refaca com docs/gerar.sh.
 docs/*.html
+
+# Saída de ferramenta de terceiro. Ficam fora do versionamento por regra: o
+# repositório recebe código, não artefato de análise. Ver design-docs/plano-skills-comunidade.md
+graphify-out/
+.claude/sdd-cache/
+
+# Worktrees sao efemeras e locais da maquina. Um gitlink para elas nao
+# significa nada num clone — e ja entrou no repositorio uma vez por engano.
+.claude/worktrees/

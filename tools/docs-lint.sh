@@ -24,9 +24,15 @@ cd "$R" 2>/dev/null || { echo "raiz inexistente: $R" >&2; exit 2; }
 fails=0
 falha(){ printf '%s\n' "$*"; fails=$((fails + 1)); }
 
-# `prompts/` e `.claude/` têm ciclo de vida próprio e não descrevem a oficina.
+# O que NÃO é documentação da oficina:
+#   prompts/, .claude/     ciclo de vida próprio
+#   docs/sdlc/, docs/incidents/   artefato de CICLO. Um plano descreve o que
+#                          ainda vai ser construído: citar caminho inexistente
+#                          é o propósito dele, não defeito. Medi-los faria o
+#                          lint reprovar todo bootstrap de onda 00.
 DOCS=$(find . -name '*.md' -not -path './.git/*' -not -path './.claude/*' \
-                           -not -path './prompts/*' -not -path './node_modules/*' | sort)
+                           -not -path './prompts/*' -not -path './node_modules/*' \
+                           -not -path './docs/sdlc/*' -not -path './docs/incidents/*' | sort)
 
 # Caminhos que descrevem o PROJETO ALVO, não este repositório. Eles não existem
 # aqui por definição — é a oficina, não o produto.
@@ -68,8 +74,9 @@ done
 
 echo "== caminhos citados em crase =="
 for f in $DOCS; do
-  # `plans/` descreve o que ainda não existe — é o propósito da pasta.
-  case "$f" in ./plans/*) continue ;; esac
+  # Plano descreve o que ainda não existe — é o propósito. Vale para `plans/`
+  # e para qualquer `plano-*.md`, que é como eles aparecem fora da pasta.
+  case "$f" in ./plans/*|*/plano-*.md|./plano-*.md) continue ;; esac
   # Sem esta linha, `$d` carrega o valor do último documento do laço ANTERIOR e
   # todo caminho relativo é resolvido contra a pasta errada — em silêncio.
   d=$(dirname "$f")
@@ -80,6 +87,7 @@ for f in $DOCS; do
     grep -qF "$p" <(grep -iE 'não existe|nao existe|removid|apagad' "$f") && continue
     # Glob é padrão, não caminho: basta que case alguma coisa.
     case "$p" in
+      *'**'*) continue ;;   # glob recursivo: compgen não expande, não dá para conferir
       *'*'*) compgen -G "$p" >/dev/null 2>&1 || falha "  glob sem correspondência  $f -> $p"
              continue ;;
     esac
@@ -134,9 +142,12 @@ n_tl=$(find tools -name '*.sh' -not -name '_*' 2>/dev/null | wc -l | tr -d ' ')
 
 # Declaração histórica é legítima: "quando esta skill foi criada, com 24 agentes".
 # Só conta como divergência a que fala do estado ATUAL.
+# Plano fica de fora: o numero ali e ALVO ("vamos ter 66 skills"), nao estado.
+DOCS_ESTADO=$(printf '%s\n' $DOCS | grep -vE '(^|/)plano-[^/]*\.md$|^\./plans/')
+
 confere_contagem() {
   local termo="$1" real="$2"
-  grep -rnoE "[0-9]+ $termo" $DOCS 2>/dev/null | while IFS= read -r hit; do
+  grep -rnoE "[0-9]+ $termo" $DOCS_ESTADO 2>/dev/null | while IFS= read -r hit; do
     local arq num linha
     arq="${hit%%:*}"; linha=$(printf '%s' "$hit" | cut -d: -f2)
     num=$(printf '%s' "$hit" | sed "s/.*:\([0-9]*\) $termo/\1/")
