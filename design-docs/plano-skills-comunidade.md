@@ -526,6 +526,28 @@ Rodado em `smaug-system` (2453 arquivos, monorepo Quarkus + frontends):
 | `affected "PanacheCompany"` | **173 nós**, cada um com relação (`calls`/`references`) e `file:line`, cruzando micro-serviços e incluindo teste |
 | O mesmo por grep | **1978 ocorrências em 471 arquivos**, sem tipo de relação nem direção |
 
+Rodado também no `smart` (workspace com 17 repositórios, 16.420 arquivos):
+
+| | Resultado |
+|---|---|
+| Construção | **5m38s**, ainda 100% local e sem LLM |
+| Tamanho | 122.842 nós · 407.427 arestas · 1.996 comunidades |
+| Cruza repositório? | **Sim** — uma `query` puxou nós de `dafe-gateway`, `vitaverse/gestor-clinicas-api` e `vitaverse/gestor-clinicas-next` na mesma resposta |
+
+**E ele expôs três problemas estruturais do workspace, invisíveis antes:**
+
+1. **30 cópias de `Utils.java`** — a mesma classe duplicada em quase todo micro-serviço. Sete
+   delas aparecem no top-10 de `god-nodes` com ~980 arestas cada, afogando o sinal real.
+2. **Clones com nome de branch** ao lado dos originais: `dafe-pix-wt-estorno` junto de
+   `dafe-pix`, e `solve-card-api-fix-debit-installment` junto de `solve-card-api`.
+3. **Repositório dentro de repositório** — `dafe-payment/dafe-maa/` e `dafe-payment/dafe-pix/` —
+   mais uma worktree escondida em `micro-services/.wt-onboarding-track/`. É exatamente o caso
+   que `tools/README.md` avisa que conta a mesma mudança duas vezes.
+
+Consequência prática: `affected "QueryFieldInfoVO"` **recusa responder** — *"No unique node
+match"* — porque o rótulo não é único num workspace com código duplicado. O grafo funciona; o
+que atrapalha é a duplicação do workspace, e agora ela está medida.
+
 O ganho não é só de volume — é de **tipo de resposta**. O grep devolve ocorrência de texto; o
 grafo devolve aresta dirigida com origem e destino. É a diferença que o `plans/grafo-de-codigo.md`
 descreve como intransponível por busca textual.
