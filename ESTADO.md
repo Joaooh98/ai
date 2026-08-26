@@ -23,24 +23,47 @@ git branch -vv | grep -v origin  # branch local sem remote — trabalho em risco
 
 ## Frentes abertas
 
-| # | Branch | Merge | Tamanho | Parada desde | O que é |
-|---|---|---|---|---|---|
-| [#7](https://github.com/Joaooh98/ai/pull/7) | `plano-skills-comunidade` | ✅ CLEAN | +8369/−2 | — | Skills da comunidade: pesquisa, auditoria de segurança e absorção dos especialistas de stack |
-| [#8](https://github.com/Joaooh98/ai/pull/8) | `guard-publish` | ✅ CLEAN | +465/−43 | 03/08 | Hook que impede artefato de planejamento chegar ao repositório |
-| [#6](https://github.com/Joaooh98/ai/pull/6) | `nightly-atividades` | ✅ CLEAN | +755/−33 | 30/07 | Atividade executável para cada uma das 6 rotinas noturnas |
-| [#5](https://github.com/Joaooh98/ai/pull/5) | `sdlc-docker-devflow` | ✅ CLEAN | +804/−0 | 30/07 | Bootstrap do fluxo de dev e execução em Docker (onda 00) |
-| [#1](https://github.com/Joaooh98/ai/pull/1) | `arch-conformance` | ⚠️ **CONFLITANTE** | +703/−7 | 29/07 | Rotina de conformidade arquitetural com catraca |
+| # | Branch | Estado | O que é |
+|---|---|---|---|
+| — | `worktree-meta-e-mcp` | **16 commits, fast-forward da main** | Metas de qualidade, catálogo de MCP, docs-lint, 4 diagramas, correção do `.claude` aninhado, graphify medido. **Não tem PR — neste repositório não abrimos PR.** Merge direto quando você quiser |
+| [#1](https://github.com/Joaooh98/ai/pull/1) | `arch-conformance` | ⚠️ **CONFLITANTE** e em rascunho | Rotina de conformidade arquitetural com catraca. Precisa de rebase sobre a main **e** `gh pr ready 1` |
+| — | `worktree-workspace-skill` | **só nesta máquina** | Commit `cf5698e` — skill `/workspace` e guard não-TTY. Sem remote, sem PR. Decidir: empurrar ou descartar |
 
 ### Fora de escopo por decisão
 
 | # | Branch | Situação |
 |---|---|---|
-| [#2](https://github.com/Joaooh98/ai/pull/2) | `vault-secrets` | **Parado por decisão do operador em 25/08.** Vault local para credenciais. Não desenvolver agora — o PR fica aberto como registro, sem trabalho ativo. |
+| [#2](https://github.com/Joaooh98/ai/pull/2) | `vault-secrets` | **Parado por decisão do operador.** Vault local para credenciais. O PR fica aberto como registro, sem trabalho ativo. |
 
 ### Encerradas
 
 | # | Branch | Situação |
 |---|---|---|
+| [#5](https://github.com/Joaooh98/ai/pull/5) | `sdlc-docker-devflow` | **Mergeado.** Bootstrap do fluxo em Docker (onda 00) |
+| [#6](https://github.com/Joaooh98/ai/pull/6) | `nightly-atividades` | **Mergeado.** Atividade executável para as 6 rotinas noturnas |
+| [#7](https://github.com/Joaooh98/ai/pull/7) | `plano-skills-comunidade` | **Mergeado.** Trouxe as quatro de stack, levando o total de 16 para 20 skills e o plano do graphify |
+| [#8](https://github.com/Joaooh98/ai/pull/8) | `guard-publish` | **Mergeado.** 4º hook — impede artefato de planejamento no repositório |
+| [#3](https://github.com/Joaooh98/ai/pull/3) | `meta-e-mcp` | **PR fechado por escolha de processo, NÃO por descarte.** O branch está vivo e é a frente principal acima. ⚠️ Não rode `git branch -D worktree-meta-e-mcp` — apagaria 16 commits validados que ainda não estão na main |
+
+---
+
+## Estado das ferramentas nos projetos
+
+Medido em 22/08. Só o que falta:
+
+| | smaug-system | smart |
+|---|---|---|
+| hooks · calibração · grafo graphify | ok | ok |
+| `.claude/meta.tsv` | rascunho gravado, tudo `aviso` | rascunho gravado, tudo `aviso` |
+| `.mcp.json` (graphify) | registrado, **aguarda aprovação** | registrado, **aguarda aprovação** |
+| âncora `.claude/ai-toolkit` | **forma antiga** — migra no `wire` pós-merge | **forma antiga** |
+
+**Achado do grafo no `smart`, que precisa de decisão sua:** 30 cópias de `Utils.java`, os clones
+`dafe-pix-wt-estorno` e `solve-card-api-fix-debit-installment` ao lado dos originais, dois
+repositórios aninhados em `dafe-payment/` e uma worktree em `micro-services/.wt-onboarding-track/`.
+Enquanto isso existir, número medido sobre o workspace conta a mesma coisa duas vezes.
+
+---|---|---|
 | [#3](https://github.com/Joaooh98/ai/pull/3) | `meta-e-mcp` | **Fechado sem merge** em 25/08. O worktree `.claude/worktrees/meta-e-mcp` continua em disco — remover quando confirmar que nada se aproveita. |
 
 ---
