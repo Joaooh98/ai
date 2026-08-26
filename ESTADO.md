@@ -27,7 +27,7 @@ git branch -vv | grep -v origin  # branch local sem remote — trabalho em risco
 |---|---|---|---|
 | — | `worktree-meta-e-mcp` | **16 commits, fast-forward da main** | Metas de qualidade, catálogo de MCP, docs-lint, 4 diagramas, correção do `.claude` aninhado, graphify medido. **Não tem PR — neste repositório não abrimos PR.** Merge direto quando você quiser |
 | [#1](https://github.com/Joaooh98/ai/pull/1) | `arch-conformance` | ⚠️ **CONFLITANTE** e em rascunho | Rotina de conformidade arquitetural com catraca. Precisa de rebase sobre a main **e** `gh pr ready 1` |
-| — | `worktree-workspace-skill` | **só nesta máquina** | Commit `cf5698e` — skill `/workspace` e guard não-TTY. Sem remote, sem PR. Decidir: empurrar ou descartar |
+| — | `integra-workspace-skill` | **4 commits, pronto para merge** | Resgata o `cf5698e` (skill `/workspace` + guard não-TTY, agora no remote), tira o ledger do versionamento e corrige o `guard-publish`, que barrava a própria remediação que recomenda |
 
 ### Fora de escopo por decisão
 
@@ -70,15 +70,9 @@ Enquanto isso existir, número medido sobre o workspace conta a mesma coisa duas
 
 ## Riscos abertos
 
-**1. Trabalho que existe só nesta máquina.** A branch `worktree-workspace-skill` tem um
-commit sem remote e sem PR:
-
-```
-cf5698e feat(workspace): add /workspace skill and non-TTY guard for go script
-```
-
-Se o disco falhar ou o worktree for removido, some. **Empurrar ou descartar
-conscientemente** — não deixar no limbo.
+**1. ~~Trabalho só nesta máquina~~ — RESOLVIDO em 22/08.** O commit `cf5698e` foi
+empurrado para `origin/worktree-workspace-skill` e integrado em
+`integra-workspace-skill`. Não há mais trabalho em um lugar só.
 
 **2. O #1 conflita com a `main`.** Parado desde 29/07, e a main andou. Precisa de rebase
 antes de qualquer coisa. Quanto mais tempo parado, pior fica.
