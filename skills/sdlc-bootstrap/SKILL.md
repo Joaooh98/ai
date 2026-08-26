@@ -40,10 +40,12 @@ A escala define o tamanho do fluxo:
 
 ## Registro
 
-Delegue ao `context-manager`:
+Delegue ao `context-manager` — `subagent_type` com esse nome exato, sem apelido:
 
 > Inicialize docs/sdlc/00-orchestration/MANIFEST.md a partir do plano, com a checklist de
 > cobertura derivada dos entregáveis planejados.
+
+O arquivo é dele. Você não o abre — nem aqui, nem nas ondas seguintes (regra 6 do roteador `sdlc`).
 
 ## Portão 0
 

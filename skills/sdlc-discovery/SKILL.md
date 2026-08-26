@@ -38,7 +38,8 @@ falhando** — diga ao usuário o que está bloqueando.
 
 ## Registro
 
-Reporte cada artefato ao `context-manager`.
+Reporte cada artefato ao `context-manager` — `Task(subagent_type: "context-manager")`, esse nome
+exato. Você não escreve `MANIFEST.md` (regra 6 do roteador `sdlc`).
 
 ## Saída
 

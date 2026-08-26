@@ -44,6 +44,11 @@ Critérios em `../sdlc-gate/gates.md`. Rode antes:
 tools/artifact-lint.sh 05
 ```
 
+## Registro
+
+Reporte cada artefato ao `context-manager` — `Task(subagent_type: "context-manager")`, esse nome
+exato. Você não escreve `MANIFEST.md` (regra 6 do roteador `sdlc`).
+
 ## Saída
 
 **GO**, **NO-GO** ou **GO COM CONDIÇÕES**, com a evidência de cada portão e, se for no-go,

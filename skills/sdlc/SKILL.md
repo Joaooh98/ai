@@ -89,3 +89,15 @@ Pare aqui. Uma invocação, uma onda. Quem decide avançar é o usuário.
    código que descrevem, e não são commitados nem publicados. Não proponha commit de `docs/sdlc/`
    nem inclua esses caminhos num commit de código. O hook `guard-publish.sh` impõe isso; a regra
    está aqui para você não tentar.
+
+7. **O MANIFEST não é seu para escrever.** `docs/sdlc/00-orchestration/MANIFEST.md` tem escritor
+   único. Registrar artefato é delegar — nunca abrir o arquivo com Write ou Edit:
+
+   ```
+   Task(subagent_type: "context-manager")
+   > Registre no MANIFEST: <título> | <caminho absoluto> | <agente que produziu> | <timestamp UTC>
+   ```
+
+   Use esse `subagent_type` exato. Batizar o agente de `manifest-keeper` ou coisa parecida troca a
+   identidade que o hook enxerga e a escrita é negada — o apelido não herda a permissão do papel.
+   O `artifact-ledger.tsv` ao lado é preenchido sozinho por hook: também não se edita à mão.

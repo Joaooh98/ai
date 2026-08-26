@@ -254,7 +254,7 @@ O modelo agora é **capacidade ampla, restrição por caminho**:
 |---|---|
 | Herança | Todo agente recebe as ferramentas built-in **e as MCP** da sessão |
 | `disallowedTools` | Em `code-reviewer`, `security-auditor` e `root-cause-analyst`: sem `Edit`/`NotebookEdit` — quem investiga ou revisa não altera o que está analisando |
-| Hook `guard-artifacts.sh` | Agentes de especificação só escrevem no diretório da própria fase; `MANIFEST.md` só aceita o `context-manager` |
+| Hook `guard-artifacts.sh` | Agentes de especificação só escrevem no diretório da própria fase; `MANIFEST.md` só aceita o `context-manager` — despachado com esse `subagent_type`, não com apelido: o hook compara a identidade, e um `manifest-keeper` é negado como qualquer outro |
 | Seção `Boundaries` | O limite de julgamento, para o que caminho nenhum expressa |
 
 Agentes que legitimamente alteram o sistema — builders, `test-engineer`, `devops-engineer`,
