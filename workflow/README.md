@@ -63,8 +63,14 @@ incentivo para versioná-lo, e um `git add -A` leva o diretório inteiro junto s
 | `git commit` com artefato no índice | **nega** |
 | `git commit -am` arrastando artefato já versionado | **nega** |
 | `git commit --amend` · `git commit -m` sem artefato no índice | permite |
+| `git commit` que **remove** artefato do índice (`git rm --cached`) | permite |
 | `git push` com commit inédito que toca artefato | **nega** |
 | `git status`, `git diff`, qualquer comando não-git | permite |
+
+A última linha existe por um defeito real: o hook barrava o commit que **tira** o artefato
+do versionamento — ou seja, impedia a única correção que a própria mensagem de negação
+recomenda. A causa era `diff --cached` listar deleção junto com adição; a correção é
+`--diff-filter=d`. Coberto pelo caso `3b` da suíte.
 
 Metade da tabela é sobre o que **passa**. Guarda que dá falso positivo é guarda que alguém desliga
 no primeiro dia ruim — por isso `git add` só é barrado na forma abrangente, e `--amend` não é

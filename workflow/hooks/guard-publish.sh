@@ -139,7 +139,11 @@ fi
 # 3. git commit — o que já está no índice, mais o que -a arrastaria.
 # ---------------------------------------------------------------------------
 if printf '%s' "$cmd" | grep -qE '(^|[[:space:]])git[[:space:]]+(-C[[:space:]]+[^[:space:]]+[[:space:]]+)?commit([[:space:]]|$)'; then
-  staged="$(git_planning diff --cached --name-only)"
+  # `--diff-filter=d` EXCLUI deleções. Sem isso o hook barra o commit que
+  # REMOVE um artefato do índice — que é exatamente a correção que a própria
+  # mensagem de negação recomenda ("acrescente docs/sdlc/ ao .gitignore").
+  # O guarda ficava impedindo a única saída que ele mesmo oferece.
+  staged="$(git_planning diff --cached --name-only --diff-filter=d)"
   if [ -n "$staged" ]; then
     deny "Há artefato de planejamento no índice — este commit o levaria junto." "$staged"
   fi
