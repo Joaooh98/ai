@@ -46,3 +46,8 @@ graphify-out/
 # Worktrees sao efemeras e locais da maquina. Um gitlink para elas nao
 # significa nada num clone — e ja entrou no repositorio uma vez por engano.
 .claude/worktrees/
+
+# Ledger do hook register-artifact: reescrito a cada escrita sob docs/sdlc/.
+# E rastro de execucao, nao conteudo — e o guard-publish nomeia "ledger" entre
+# o que nao vai para o repositorio. Ver workflow/README.md.
+docs/sdlc/00-orchestration/artifact-ledger.tsv

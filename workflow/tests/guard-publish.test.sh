@@ -76,6 +76,14 @@ chk DENY  "git commit -am"                    'git commit -am "chore: bar"'
 chk ALLOW "git commit --amend (não é -a)"     'git commit --amend --no-edit'
 chk ALLOW "git commit -m com índice vazio"    'git commit -m "chore"'
 
+echo "3b. remover planejamento do indice — a saida que o proprio hook recomenda"
+# A mensagem de negacao oferece "acrescente docs/sdlc/ ao .gitignore". Fazer isso
+# poe uma DELECAO no indice, e o hook barrava o commit dela — impedindo a unica
+# correcao que ele mesmo sugere. Delecao tem que passar.
+git -C "$T" rm -q --cached docs/sdlc/00-orchestration/plan.md
+chk ALLOW "commit que REMOVE planejamento do indice" 'git commit -m "chore: tira plano do versionamento"'
+git -C "$T" add -f docs/sdlc/00-orchestration/plan.md   # restaura para os casos seguintes
+
 echo "4. git push"
 new_repo push
 chk ALLOW "push sem commit nenhum (nada a publicar)" "git push origin HEAD"
