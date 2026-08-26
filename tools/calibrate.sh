@@ -166,6 +166,21 @@ else
     done <<< "$WS_MEMBERS"
   fi
 
+  # Monorepo: repositorio git unico com os manifests em subdiretorio. Nao e
+  # workspace (a raiz E repositorio), entao a varredura de membros nao pega —
+  # e sem esta busca o `smaug-system`, com 11 micro-servicos em
+  # `micro-services/`, saia sem sugestao nenhuma.
+  if [ -z "$sinais" ]; then
+    while IFS= read -r achado; do
+      [ -n "$achado" ] && sinais="$sinais $(basename "$achado")"
+    done < <(find . -maxdepth 3 \( "${_WS_PRUNE[@]}" \) -prune -o \
+                  -type f \( -name package.json -o -name pom.xml \
+                           -o -name build.gradle -o -name build.gradle.kts \
+                           -o -name tsconfig.json -o -name pyproject.toml \
+                           -o -name go.mod -o -name Cargo.toml \) -print 2>/dev/null | head -40)
+    [ -n "$sinais" ] && echo "- Manifests em subdiretório (monorepo):$(printf '%s' "$sinais" | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+  fi
+
   if [ -z "$sinais" ]; then
     echo "- Nenhum manifest reconhecido — sem sinal para casar com o catálogo."
   else

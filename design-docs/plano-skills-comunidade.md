@@ -495,7 +495,67 @@ Validado com `./agents/install.sh --check` a cada passo: **27 agentes, 20 skills
 por redundância com `quarkus-senior-developer` e `fullstack-quarkus-expert`, ambos mais
 específicos para esta base.
 
-### 8.3 Fase 1B (graphify) — preparada, não executada
+### 8.3 Fase 1B (graphify) — EXECUTADA
+
+Os dois bloqueios caíram: a outra sessão terminou, e o `uv` foi instalado.
+
+```
+uv 0.12.5            curl -LsSf https://astral.sh/uv/install.sh | sh
+graphify 0.9.50      uv tool install graphifyy
+skill instalada      graphify install --platform claude
+```
+
+**Correção do que estava escrito aqui.** A versão auditada era 0.3.x; a instalada é **0.9.50** —
+outro patamar de API, e o comando do §8.3 anterior mandava `export GRAPHIFY_QUERY_LOG_DISABLE=1`,
+variável que **não existe**. A auditoria §3.3 diz o certo: o log é OFF por padrão e a variável
+que o liga é `GRAPHIFY_QUERY_LOG_ENABLE`. Não havia nada para desligar.
+
+**O que o `install` de fato tocou:** criou `~/.claude/skills/graphify/` e um
+`~/.claude/CLAUDE.md` **global**, de 3 linhas, que só descreve o gatilho `/graphify`. Não é
+metodologia opinativa — atende a ressalva da §5.2 sobre governança de contexto.
+
+#### Medição — o critério de aceite
+
+Rodado em `smaug-system` (2453 arquivos, monorepo Quarkus + frontends):
+
+| | Resultado |
+|---|---|
+| Construção do grafo | **45s**, 100% local via tree-sitter, **zero LLM** (`graphify update .`) |
+| Tamanho | 27.861 nós · 72.865 arestas · 774 comunidades |
+| `god-nodes` | `AgentExecutionBO` (195), `EnumErrorCode` (167), `PanacheCompany` (165), `CrmException` (147) |
+| `affected "PanacheCompany"` | **173 nós**, cada um com relação (`calls`/`references`) e `file:line`, cruzando micro-serviços e incluindo teste |
+| O mesmo por grep | **1978 ocorrências em 471 arquivos**, sem tipo de relação nem direção |
+
+O ganho não é só de volume — é de **tipo de resposta**. O grep devolve ocorrência de texto; o
+grafo devolve aresta dirigida com origem e destino. É a diferença que o `plans/grafo-de-codigo.md`
+descreve como intransponível por busca textual.
+
+`git status` do alvo ficou limpo: `graphify-out/` entrou no `.gitignore` do `smaug-system`,
+conforme manda a §6.0.
+
+#### Limites encontrados na prática
+
+- **45 arquivos `.sql` contribuíram zero** — falta o extra `graphifyy[sql]`.
+- **1 arquivo Java** com erro de sintaxe foi extraído parcialmente (`MediaUnderstandingService.java`).
+- **A oficina não é caso de uso.** Rodado neste repositório, `affected` devolve *nada*: bash e
+  markdown não têm as relações (`calls`, `imports`, `inherits`) que o extrator procura. O valor
+  está em código de aplicação, não em ferramental de shell.
+- O grafo **envelhece**. Depois de refatoração, `graphify update .` de novo, ou `graphify watch`.
+
+#### Evolução entregue junto
+
+- **`mcp/catalog.tsv`** ganhou a linha do `graphify`, com o comando
+  `claude mcp add --scope project graphify -- graphify-mcp` e a ressalva completa. Agora o
+  `/setup` oferece o grafo por stack, em vez de ele existir só como CLI que alguém lembra de rodar.
+- **`tools/calibrate.sh`** passou a detectar **monorepo**: repositório git único com os manifests
+  em subdiretório. Sem isso o `smaug-system` — 82 `pom.xml`, nenhum na raiz — não recebia
+  sugestão nenhuma. Foi um defeito real, achado por usar a ferramenta em vez de raciocinar sobre ela.
+
+---
+
+### 8.3.1 Registro histórico — por que estava parada
+
+
 
 Dois motivos, ambos de segurança operacional e não de mérito:
 

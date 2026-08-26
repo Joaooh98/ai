@@ -11,10 +11,13 @@ próprios projetos**, não hipotéticos:
 
 | A afirmação | Por que ela sai errada aqui |
 |---|---|
-| *"os testes passam"* | `crm-api` **não tem JaCoCo** e `crm_pro` só tem Playwright e2e. Não existe relatório de cobertura para ler |
-| *"nada mais usa isso"* | `grep "sendMessage(" src/main` em `crm-api` devolve **10 acertos, 5 deles símbolos homônimos** — e omite o `RecordingMessagingProvider` em `src/test`, que quebra a compilação |
-| *"essa é a API da biblioteca"* | seus 12 serviços Java rodam **6 versões diferentes de Quarkus** (3.4.2 → 3.33.1). Uma resposta de memória está errada para pelo menos cinco delas |
+| *"os testes passam"* | `smaug-system` tem **82 `pom.xml` e só 16 com JaCoCo**. Em 66 módulos não existe relatório de cobertura para ler |
+| *"nada mais usa isso"* | `grep -r "PanacheCompany"` devolve **1978 ocorrências em 471 arquivos**, sem tipo de relação nem direção. O grafo devolve **173 nós**, cada um com `calls`/`references` e `file:line` |
+| *"essa é a API da biblioteca"* | os módulos rodam Quarkus **3.33.1 e 3.35.3**; o Context7 indexa 3.20.3, 3.30.0 e 3.31.2 — **nenhuma das duas** |
 | *"o orçamento de performance foi atendido"* | o portão pedia isso *"quando existir"* — e nunca existia, porque nada declarava o número |
+
+E no `smart`, com **17 repositórios**, nenhuma dessas perguntas atravessa a fronteira entre
+`dafe-pix` e `dafe-gateway` sem um grafo que cruze repositório.
 
 O trabalho **parece** terminado. Você descobre que não estava em produção.
 
@@ -194,9 +197,9 @@ Roda no shell, a partir da raiz deste repositório.
 Tudo que vem depois do nome vai direto para o `claude`, então dá para entrar já num fluxo:
 
 ```bash
-./workspace/go crm "/sdlc-status"
-./workspace/go crm "/sdlc 'permitir pausar assinatura'"
-./workspace/go crm "/incident 'checkout 500 desde as 14h'"
+./workspace/go smaug-system "/sdlc-status"
+./workspace/go smaug-system "/sdlc 'permitir pausar assinatura'"
+./workspace/go smaug-system "/incident 'checkout 500 desde as 14h'"
 ```
 
 O cadastro fica em `workspace/projects/<nome>.md` — frontmatter para a máquina, corpo livre para
@@ -240,8 +243,8 @@ Use o tech-lead-orchestrator para planejar <objetivo>
 
 ```bash
 ./workspace/go                       # onde eu parei em cada projeto?
-./workspace/go crm "/sdlc-status"    # e neste, especificamente?
-./workspace/go crm                   # abre a sessão
+./workspace/go smaug-system "/sdlc-status"    # e neste, especificamente?
+./workspace/go smaug-system                   # abre a sessão
 ```
 
 Dentro da sessão:

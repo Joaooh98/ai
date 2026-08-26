@@ -168,6 +168,10 @@ echo "== toda pasta de topo tem README e aparece no README central =="
 for d in */; do
   d="${d%/}"
   case "$d" in .*|node_modules) continue ;; esac
+  # O que o git ignora nao e conteudo do repositorio — e saida de ferramenta.
+  # Sem isto, rodar o graphify uma vez fazia o lint exigir README para
+  # `graphify-out/`, que nem versionado esta.
+  git check-ignore -q "$d" 2>/dev/null && continue
   [ -f "$d/README.md" ] || falha "  sem README próprio  $d/"
   grep -q "$d/" README.md || falha "  ausente do README central  $d/"
 done
