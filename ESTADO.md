@@ -41,7 +41,7 @@ git branch -vv | grep -v origin  # branch local sem remote — trabalho em risco
 |---|---|---|
 | [#5](https://github.com/Joaooh98/ai/pull/5) | `sdlc-docker-devflow` | **Mergeado.** Bootstrap do fluxo em Docker (onda 00) |
 | [#6](https://github.com/Joaooh98/ai/pull/6) | `nightly-atividades` | **Mergeado.** Atividade executável para as 6 rotinas noturnas |
-| [#7](https://github.com/Joaooh98/ai/pull/7) | `plano-skills-comunidade` | **Mergeado.** Trouxe as quatro de stack, levando o total de 16 para 20 skills e o plano do graphify |
+| [#7](https://github.com/Joaooh98/ai/pull/7) | `plano-skills-comunidade` | **Mergeado.** Trouxe as quatro de stack, levando o total de 16 para 20 skills na época (hoje 21) e o plano do graphify |
 | [#8](https://github.com/Joaooh98/ai/pull/8) | `guard-publish` | **Mergeado.** 4º hook — impede artefato de planejamento no repositório |
 | [#3](https://github.com/Joaooh98/ai/pull/3) | `meta-e-mcp` | **PR fechado por escolha de processo, NÃO por descarte.** O branch está vivo e é a frente principal acima. ⚠️ Não rode `git branch -D worktree-meta-e-mcp` — apagaria 16 commits validados que ainda não estão na main |
 

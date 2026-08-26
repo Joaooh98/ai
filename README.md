@@ -194,6 +194,9 @@ Roda no shell, a partir da raiz deste repositório.
 | `./workspace/go check <nome>` | Diagnóstico: tipo, fiação, âncora, hooks, calibração, fluxo, repositórios |
 | `./workspace/go rm <nome>` | Descadastrar. Não toca no projeto |
 
+De dentro do Claude, use a skill `/workspace` — mesmos subcomandos, sem abrir sessão:
+`/workspace <nome>` fia e devolve o comando de terminal pronto para colar.
+
 Tudo que vem depois do nome vai direto para o `claude`, então dá para entrar já num fluxo:
 
 ```bash

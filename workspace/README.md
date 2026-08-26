@@ -134,6 +134,11 @@ Tudo depois do nome vai direto para o `claude`:
 | `./workspace/go check <nome>` | Diagnóstico de um projeto |
 | `./workspace/go rm <nome>` | Descadastrar (não toca no projeto) |
 
+De dentro de uma sessão do Claude, o comando é a skill `/workspace` — mesmos subcomandos
+(`/workspace`, `/workspace check <nome>`, `/workspace wire <nome>`, `/workspace add`,
+`/workspace rm`). Só **abrir a sessão** continua sendo no terminal: `/workspace <nome>` fia e
+devolve o comando pronto para colar.
+
 ## O cadastro não é versionado
 
 `workspace/projects/*.md` guarda caminhos absolutos desta máquina — o mesmo

@@ -117,7 +117,11 @@ for f in $DOCS; do
                || falha "  glob relativo sem correspondência  $f -> $p"
              continue ;;
     esac
-    [ -e "$base/$p" ] || falha "  caminho relativo inexistente  $f -> $p"
+    # Um caminho que resolve da RAIZ e valido mesmo quando o primeiro segmento
+    # tambem existe ao lado do documento — `skills/README.md` cita
+    # `workspace/go`, e desde que passou a existir `skills/workspace/` a
+    # resolucao relativa achava a pasta errada.
+    [ -e "$base/$p" ] || [ -e "$p" ] || falha "  caminho relativo inexistente  $f -> $p"
   done < <(grep -oE '`[A-Za-z0-9_.*-]+/[A-Za-z0-9_./*-]*`' "$f" 2>/dev/null | tr -d '`' | sort -u)
 
   # Bloco de código costuma listar a estrutura da pasta, uma linha por arquivo,

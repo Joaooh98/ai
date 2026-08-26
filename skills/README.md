@@ -17,7 +17,7 @@ Curadoria a partir da pesquisa do ecossistema:
 
 ## Estrutura
 
-As 20 skills:
+As 21 skills:
 
 ```
 skills/
@@ -35,6 +35,9 @@ skills/
 ├── verify-live/             /verify-live — sobe num ambiente controlado e verifica de verdade
 ├── nightly/                 /nightly — trabalho recorrente + routines/ (6 rotinas executáveis)
 ├── setup/                   /setup — calibra a equipe para o projeto que a recebeu
+├── workspace/               /workspace — listar, conferir, fiar e cadastrar projeto
+│                            de dentro da sessão (o `workspace/go` segue sendo o
+│                            script do operador, no terminal)
 ├── practices/
 │   ├── engineering-discipline/   disciplina compartilhada — todos os 27 agentes
 │   └── mcp-toolbelt/             ferramental detectado por projeto — 26 dos 27 agentes
