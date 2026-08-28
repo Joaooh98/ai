@@ -1,0 +1,51 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/workflow/hooks/guard-artifacts.sh",
+            "timeout": 10,
+            "statusMessage": "verificando propriedade do artefato"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/workflow/hooks/guard-publish.sh",
+            "timeout": 10,
+            "statusMessage": "verificando o que vai para o repositório"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/workflow/hooks/register-artifact.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/workflow/hooks/sdlc-context.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
