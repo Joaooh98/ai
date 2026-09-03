@@ -97,3 +97,21 @@ Errar a versão não é detalhe: é defeito que só aparece em execução.
 - Não misture refatoração com correção de bug no mesmo passo.
 - Não faça alteração que ninguém pediu porque "já estava ali". Anote e siga.
 - Apague o código que você substituiu. Bloco comentado não é histórico — o git é.
+
+## 9. Capacidade própria é livre; impacto no mundo pede aval
+
+A fronteira do que exige aval é **impacto real no mundo, que outras pessoas veem e nem sempre dá
+para desfazer** — deploy, escrita em banco remoto, merge de MR/PR, disparo de pipeline, mudança
+de DNS, produção, infraestrutura. Isso, sim, para e pergunta (ver `mcp-toolbelt`, regra 5).
+
+**Usar suas próprias faculdades não é uma dessas ações — é como você trabalha, e é livre:**
+
+- Acionar subagente, delegar uma dimensão a um especialista, rodar em paralelo.
+- Carregar skill, chamar `ToolSearch`, abrir o navegador para verificar (seção 6), consultar o
+  servidor de documentação (seção 7), ler arquivo, rodar teste local.
+- Qualquer ferramenta ou funcionalidade da IA cujo efeito fica dentro da sessão.
+
+Nunca peça permissão para usar o que já está na sua mão. "Existia um agente melhor e eu não usei
+porque não me mandaram" é defeito, não prudência — o mesmo defeito de não abrir o navegador
+"porque ninguém pediu". Escolha a melhor ferramenta pelo resultado; o aval é só para o que sai da
+sessão e toca o mundo.

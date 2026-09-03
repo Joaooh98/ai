@@ -1,7 +1,7 @@
 # Skills — Procedimentos da equipe
 
 Se os agentes são *quem* faz o trabalho, as skills são *como* se faz. Escritas uma vez, usadas por
-todos — é o que impede 27 agentes de divergirem sobre a mesma regra.
+todos — é o que impede 28 agentes de divergirem sobre a mesma regra.
 
 ## Como foram desenhadas
 
@@ -39,8 +39,8 @@ skills/
 │                            de dentro da sessão (o `workspace/go` segue sendo o
 │                            script do operador, no terminal)
 ├── practices/
-│   ├── engineering-discipline/   disciplina compartilhada — todos os 27 agentes
-│   └── mcp-toolbelt/             ferramental detectado por projeto — 26 dos 27 agentes
+│   ├── engineering-discipline/   disciplina compartilhada — todos os 28 agentes
+│   └── mcp-toolbelt/             ferramental detectado por projeto — 27 dos 28 agentes
 │                                 (o context-manager não a carrega: não fala com sistema externo)
 └── stack/
     ├── nextjs-developer/         App Router, server components, server actions

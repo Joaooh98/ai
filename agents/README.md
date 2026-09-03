@@ -43,7 +43,7 @@ flowchart TD
     TICKET["/sdlc-intake — puxa do tracker"] -.-> CMD
     CMD["/sdlc 'objetivo'"] --> W0
 
-    W0["<b>00 BOOTSTRAP</b><br/>project-analyst → tech-lead-orchestrator"]
+    W0["<b>00 BOOTSTRAP</b><br/>project-analyst → project-configurator → tech-lead-orchestrator"]
     W0 --> G0{"plano com donos,<br/>ondas e portões"}
 
     G0 --> W1["<b>01 DISCOVERY</b> — paralelo<br/>product-owner · business-analyst · ux-researcher"]
@@ -84,9 +84,9 @@ o comandante é bloqueado se tentar escrever fora de `docs/incidents/`.
 
 ---
 
-## Roster (27 agentes)
+## Roster (28 agentes)
 
-24 do SDLC · 2 de incidente · 1 de integração externa. Distribuição de modelo: 12 opus, 14 sonnet,
+25 do SDLC · 2 de incidente · 1 de integração externa. Distribuição de modelo: 13 opus, 14 sonnet,
 1 haiku.
 
 ### 00 — Orquestração
@@ -94,6 +94,7 @@ o comandante é bloqueado se tentar escrever fora de `docs/incidents/`.
 |---|---|---|
 | `tech-lead-orchestrator` | opus | Decompõe o objetivo em plano de execução com ondas, donos e gates |
 | `project-analyst` | sonnet | Detecta stack, arquitetura e convenções com evidência (path + linha) |
+| `project-configurator` | opus | Transforma evidências ou drivers greenfield em baseline e regras persistentes do projeto |
 | `context-manager` | haiku | Mantém o `MANIFEST.md`: registro e cobertura dos artefatos |
 
 ### 01 — Discovery (*Specify*)

@@ -1,6 +1,6 @@
 # AI — Repositório de Desenvolvimento
 
-Uma **equipe de 27 agentes** que executa um ciclo de desenvolvimento disciplinado **dentro do seu
+Uma **equipe de 28 agentes** que executa um ciclo de desenvolvimento disciplinado **dentro do seu
 projeto**, uma onda por vez, parando num portão que sabe reprovar.
 
 ## O que isto resolve
@@ -43,7 +43,7 @@ O repositório também guarda o **material do MBA** (prompt engineering, evaluat
 em `prompts/` e `design-docs/` — frente separada, que não é usada em runtime pelos agentes.
 
 ```
-agents/       27 agentes — 24 do SDLC + 2 de incidente + 1 de integração externa
+agents/       28 agentes — 25 do SDLC + 2 de incidente + 1 de integração externa
 skills/       os fluxos, a entrada por ticket, a disciplina da equipe e as skills de stack
 workflow/     4 hooks que impõem as fronteiras e registram o que acontece
 tools/        11 scripts de apoio somente-leitura chamados pelos agentes
@@ -53,6 +53,7 @@ docs/         quatro diagramas interativos: por que existe, como se usa, a onda,
 plans/        decidido e ainda não construído — com a medição que sustenta a decisão
 prompts/      material do MBA + biblioteca de prompts versionada (PT e EN)
 design-docs/  ensaios de contexto do MBA: documentação como ativo, e RUP
+research/     pesquisas com fontes que fundamentam decisões e melhorias do toolkit
 ```
 
 Cada pasta tem README próprio com as decisões de desenho. Este arquivo é o mapa; os detalhes
@@ -159,7 +160,7 @@ O `/setup` também **pergunta antes de habilitar**, em vez de assumir. Duas deci
 - **Quais servidores MCP este projeto ganha.** A pergunta não chega vazia: `mcp/catalog.tsv`
   guarda o que a equipe já avaliou, e a detecção cruza com os manifests daqui para trazer o
   comando exato **e a ressalva** de cada um. Instala com `--scope project`, que escreve
-  `.mcp.json`; como conector de conta o servidor fica invisível para os 27 agentes, e eles
+  `.mcp.json`; como conector de conta o servidor fica invisível para os 28 agentes, e eles
   seguem adivinhando.
 - **Qual é a meta de qualidade daqui** — cobertura, latência, o que nunca vai para produção.
   Gravada em `.claude/meta.tsv`, é o que os portões 3 e 4 conferem. Em projeto que já existe,
@@ -271,12 +272,12 @@ parou é o disco**, não a memória da conversa.
 
 ## A equipe
 
-27 agentes genéricos — nenhum preso a linguagem ou framework. Cada um lê o perfil da stack do
+28 agentes genéricos — nenhum preso a linguagem ou framework. Cada um lê o perfil da stack do
 repositório e segue as convenções que já existem lá.
 
 | Fase | Agentes |
 |---|---|
-| **00 Orquestração** | tech-lead-orchestrator · project-analyst · context-manager |
+| **00 Orquestração** | tech-lead-orchestrator · project-analyst · project-configurator · context-manager |
 | **01 Discovery** | product-owner · business-analyst · ux-researcher |
 | **02 Design** | solution-architect · api-designer · data-architect · ux-ui-designer · threat-modeler |
 | **03 Build** | backend · frontend · mobile · data · ai-engineer · integration-engineer |
@@ -485,7 +486,7 @@ Seis mecanismos, e nenhum deles é "o prompt é bom":
    **O `.claude/` do seu projeto e o desta oficina coexistem, e nenhum enxerga o outro.** A
    instalação nunca substitui o que já existe: reaproveita o `.claude/` do projeto, mescla os
    hooks no `settings.json` (e recusa, avisando, se já houver um bloco `hooks` diferente), e
-   instala os 27 agentes em **escopo de usuário** (`~/.claude`) — então `.claude/agents/` e
+   instala os 28 agentes em **escopo de usuário** (`~/.claude`) — então `.claude/agents/` e
    `.claude/skills/` do seu projeto ficam intactos.
 
 ---

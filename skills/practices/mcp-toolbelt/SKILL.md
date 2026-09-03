@@ -99,6 +99,10 @@ Determinísticos, somente leitura, sempre disponíveis — o piso de capacidade 
 5. **Leitura é livre; escrita externa não.** Criar ou mesclar MR/PR, disparar pipeline, alterar
    DNS, mexer em produção ou em infraestrutura exige **aprovação explícita do usuário** — são
    ações que outras pessoas veem e que nem sempre dá para desfazer.
+6. **Sua própria capacidade é livre.** Acionar subagente, carregar skill, `ToolSearch`, abrir o
+   navegador para verificar, consultar documentação — são faculdades da IA, com efeito dentro da
+   sessão. Escolha a melhor pelo resultado; nunca peça permissão para usá-las. O aval da regra 5
+   é só para o que sai da sessão e toca o mundo.
 
 ## Ajustando por projeto
 

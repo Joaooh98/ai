@@ -10,7 +10,7 @@ allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/.claude/ai-toolkit/tools/*.sh) Bash(${
 
 Instalar cria os links. **Calibrar é o que faz a equipe acertar.**
 
-Sem isto, 27 agentes chegam sabendo o método e nada sobre o seu projeto — e método sem contexto
+Sem isto, 28 agentes chegam sabendo o método e nada sobre o seu projeto — e método sem contexto
 produz o palpite plausível: o comando de teste errado, a convenção ignorada, a afirmação de que
 "a suíte passa" quando nem existe suíte.
 
@@ -38,12 +38,20 @@ o erro no arquivo, para nenhum agente perder tempo redescobrindo.
 Se o projeto tem venv, container ou passo de setup, descubra **agora** qual é a sequência que
 funciona de fato, e registre.
 
-## Passo 2 — Perfilar a fundo
+## Passo 2 — Perfilar e configurar a fundo
 
-Delegue ao `project-analyst`:
+Delegue ao `project-configurator`. Ele usa o `project-analyst` como etapa somente-leitura quando o
+perfil ainda não existe:
 
-> Perfile este repositório em `docs/sdlc/00-orchestration/stack-profile.md`, com evidência
-> (caminho de arquivo) para cada afirmação e a lista do que não conseguiu determinar.
+> Configure este projeto para as próximas implementações. Classifique-o como brownfield,
+> greenfield ou híbrido; registre arquitetura e convenções com evidência em
+> `docs/sdlc/00-orchestration/project-configuration.md`; e crie regras concisas e verificáveis em
+> `.claude/rules/`. Preserve instruções existentes e não altere código de produto.
+
+Em brownfield, convenção observada vence preferência genérica. Em greenfield, o agente levanta
+atributos de qualidade mensuráveis, compara opções atuais com fontes primárias e pede aprovação
+antes de consolidar decisões caras ou difíceis de reverter. SOLID e Clean Code são padrões de
+partida, não licença para criar abstrações sem necessidade.
 
 ## Passo 3 — Perguntar o que nenhuma detecção alcança
 
@@ -83,7 +91,7 @@ claude mcp list        # configurado ≠ conectado: confirme antes de contar com
 
 O escopo não é detalhe. `--scope project` escreve `.mcp.json` na raiz, e é exatamente esse
 arquivo que a detecção do `mcp-toolbelt` lê. Instalado como conector de conta, o servidor
-funciona para você e fica **invisível** para os 27 agentes — eles recebem "nenhum servidor MCP em
+funciona para você e fica **invisível** para os 28 agentes — eles recebem "nenhum servidor MCP em
 arquivo de configuração" e seguem adivinhando.
 
 Recusado, registre a recusa no toolbelt. "O usuário optou por não ter servidor de documentação" é

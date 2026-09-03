@@ -72,7 +72,7 @@ Sete colunas separadas por TAB: `id`, `nome`, `tipo`, `comando`, `cobre`, `verif
 `ressalva`. O cabeçalho do próprio arquivo descreve cada uma.
 
 - `comando` sempre com `--scope project`. É o escopo que escreve `.mcp.json` — o arquivo que a
-  detecção lê. Conector de conta funciona para o operador e fica invisível para os 27 agentes.
+  detecção lê. Conector de conta funciona para o operador e fica invisível para os 28 agentes.
 - `cobre` é ERE casada contra os manifests encontrados. Em workspace, a varredura também olha os
   membros: um monorepo de 11 serviços Java não tem `pom.xml` na raiz.
 - **Servidor que edita** precisa da ressalva dizendo como travá-lo em somente-leitura. O
